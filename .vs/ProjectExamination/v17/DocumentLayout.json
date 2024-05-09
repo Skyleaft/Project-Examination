@@ -1,0 +1,160 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\repo\\c#\\ProjectExamination\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|e:\\repo\\c#\\projectexamination\\api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|solutionrelative:api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|e:\\repo\\c#\\projectexamination\\api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|solutionrelative:api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|e:\\repo\\c#\\projectexamination\\api\\database\\genericrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|solutionrelative:api\\database\\genericrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|e:\\repo\\c#\\projectexamination\\api\\features\\users\\insert\\endpoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|solutionrelative:api\\features\\users\\insert\\endpoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|e:\\repo\\c#\\projectexamination\\api\\features\\users\\insert\\models.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|solutionrelative:api\\features\\users\\insert\\models.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|e:\\repo\\c#\\projectexamination\\api\\features\\users\\insert\\mapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|solutionrelative:api\\features\\users\\insert\\mapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|e:\\repo\\c#\\projectexamination\\api\\meta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|solutionrelative:api\\meta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|e:\\repo\\c#\\projectexamination\\api\\features\\users\\insert\\data.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6E3C5F7A-4177-458C-9B8E-55ECB0402C41}|API\\API.csproj|solutionrelative:api\\features\\users\\insert\\data.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 8,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "E:\\repo\\c#\\ProjectExamination\\API\\appsettings.json",
+              "RelativeDocumentMoniker": "API\\appsettings.json",
+              "ToolTip": "E:\\repo\\c#\\ProjectExamination\\API\\appsettings.json",
+              "RelativeToolTip": "API\\appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA4AAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-05-08T14:16:47.444Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "GenericRepository.cs",
+              "DocumentMoniker": "E:\\repo\\c#\\ProjectExamination\\API\\Database\\GenericRepository.cs",
+              "RelativeDocumentMoniker": "API\\Database\\GenericRepository.cs",
+              "ToolTip": "E:\\repo\\c#\\ProjectExamination\\API\\Database\\GenericRepository.cs",
+              "RelativeToolTip": "API\\Database\\GenericRepository.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAXAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-08T14:12:47.322Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Models.cs",
+              "DocumentMoniker": "E:\\repo\\c#\\ProjectExamination\\API\\Features\\Users\\Insert\\Models.cs",
+              "RelativeDocumentMoniker": "API\\Features\\Users\\Insert\\Models.cs",
+              "ToolTip": "E:\\repo\\c#\\ProjectExamination\\API\\Features\\Users\\Insert\\Models.cs",
+              "RelativeToolTip": "API\\Features\\Users\\Insert\\Models.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-08T14:06:46.119Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Endpoint.cs",
+              "DocumentMoniker": "E:\\repo\\c#\\ProjectExamination\\API\\Features\\Users\\Insert\\Endpoint.cs",
+              "RelativeDocumentMoniker": "API\\Features\\Users\\Insert\\Endpoint.cs",
+              "ToolTip": "E:\\repo\\c#\\ProjectExamination\\API\\Features\\Users\\Insert\\Endpoint.cs",
+              "RelativeToolTip": "API\\Features\\Users\\Insert\\Endpoint.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAAZAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-08T14:08:25.483Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Meta.cs",
+              "DocumentMoniker": "E:\\repo\\c#\\ProjectExamination\\API\\Meta.cs",
+              "RelativeDocumentMoniker": "API\\Meta.cs",
+              "ToolTip": "E:\\repo\\c#\\ProjectExamination\\API\\Meta.cs",
+              "RelativeToolTip": "API\\Meta.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-08T14:08:21.342Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Mapper.cs",
+              "DocumentMoniker": "E:\\repo\\c#\\ProjectExamination\\API\\Features\\Users\\Insert\\Mapper.cs",
+              "RelativeDocumentMoniker": "API\\Features\\Users\\Insert\\Mapper.cs",
+              "ToolTip": "E:\\repo\\c#\\ProjectExamination\\API\\Features\\Users\\Insert\\Mapper.cs",
+              "RelativeToolTip": "API\\Features\\Users\\Insert\\Mapper.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-08T14:06:42.515Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Data.cs",
+              "DocumentMoniker": "E:\\repo\\c#\\ProjectExamination\\API\\Features\\Users\\Insert\\Data.cs",
+              "RelativeDocumentMoniker": "API\\Features\\Users\\Insert\\Data.cs",
+              "ToolTip": "E:\\repo\\c#\\ProjectExamination\\API\\Features\\Users\\Insert\\Data.cs",
+              "RelativeToolTip": "API\\Features\\Users\\Insert\\Data.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-08T14:06:34.063Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\repo\\c#\\ProjectExamination\\API\\Program.cs",
+              "RelativeDocumentMoniker": "API\\Program.cs",
+              "ToolTip": "E:\\repo\\c#\\ProjectExamination\\API\\Program.cs",
+              "RelativeToolTip": "API\\Program.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABEAAAAhAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-08T14:06:05.606Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

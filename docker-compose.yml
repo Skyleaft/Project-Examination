@@ -1,0 +1,18 @@
+﻿services:
+  projectexamination:
+    image: projectexamination
+    build:
+      context: .
+      dockerfile: ProjectExamination/Dockerfile
+
+  webapplication1:
+    image: webapplication1
+    build:
+      context: .
+      dockerfile: WebApplication1/Dockerfile
+
+  api:
+    image: api
+    build:
+      context: .
+      dockerfile: API/Dockerfile
