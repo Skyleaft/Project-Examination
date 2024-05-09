@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "018i579cGqhWwCcpkwa3shkoZFEX1bfF0zpJNj4X1GmiMIhWeTQOuY9d62wzfU87QRmSq23c3W1HCQWzgjY3GA==",
+  "dgSpecHash": "O2EvRhKBH9+NzjXE05lRcr1EzZfIkcTOVBgHhEBe/6Tk2BifebdIWcN666KnYCsArRUhWl0tfvVMcRKbCkzv8A==",
   "success": true,
-  "projectFilePath": "E:\\repo\\c#\\ProjectExamination\\Domain\\Domain.csproj",
+  "projectFilePath": "E:\\repo\\c#\\Project-Examination\\Domain\\Domain.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Milzan\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Milzan\\.nuget\\packages\\mapster\\7.4.0\\mapster.7.4.0.nupkg.sha512",

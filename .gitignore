@@ -41,3 +41,9 @@ bld/
 msbuild.log
 msbuild.err
 msbuild.wrn
+.vs
+.idea
+API/obj
+API/bin
+Domain/bin
+ProjectExamination/bin
