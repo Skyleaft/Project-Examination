@@ -10,7 +10,8 @@ builder.AddServiceDefaults();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder
     .Services
-    .AddAuthenticationJwtBearer(o => o.SigningKey = builder.Configuration["Auth:SigningKey"])
+    .AddAuthenticationJwtBearer(o => 
+        o.SigningKey = builder.Configuration["Auth:SigningKey"])
     .AddAuthorization()
     .AddFastEndpoints();
 builder.Services.AddTransient<GenericRepository>();

@@ -1,27 +1,37 @@
 ﻿using API.Database;
+using FastEndpoints.Security;
+using Microsoft.EntityFrameworkCore;
 
-namespace Features.Auth.Login;
+namespace API.Features.Auth.Login;
 
 internal sealed class Endpoint : Endpoint<Request, Response>
 {
-    public readonly GenericRepository genericRepository;
-    public Endpoint(GenericRepository  genericRepository)
+    private readonly GenericRepository repo;
+    private readonly IConfiguration  configuration;
+    public Endpoint(GenericRepository  genericRepository,IConfiguration configuration)
     {
-        this.genericRepository = genericRepository;
+        this.repo = genericRepository;
+        this.configuration = configuration;
     }
     public override void Configure()
     {
         Post("Auth");
+        AllowAnonymous();
     }
 
     public override async Task HandleAsync(Request r, CancellationToken c)
     {
-        var user =genericRepository.UserAccount.FirstOrDefault(x => x.Username == r.Username);
+        var user =repo
+            .UserAccount
+            .FirstOrDefault(x => x.Username == r.Username);
         if (user == null)
             await SendNotFoundAsync(c);
 
         if (user.Password != r.Password)
             await SendUnauthorizedAsync(c);
+        
+        if(!user.IsActive)
+            await SendForbiddenAsync(c);
 
         string clientDeviceInfo = HttpContext.Request.Headers["User-Agent"];
         string ipAddress = HttpContext.Request.Headers["X-Forwarded-For"];
@@ -32,11 +42,28 @@ internal sealed class Endpoint : Endpoint<Request, Response>
 
         user.Device = clientDeviceInfo;
         user.IPAddress = ipAddress;
+        await repo.SaveChangesAsync(c);
+        
 
         var res = new Response();
-        res.UserProfile = genericRepository
+        res.UserProfile = repo
             .UserProfile
+            .Include(x=>x.Role)
+            .AsNoTracking()
             .FirstOrDefault(x => x.UserAccountId == user.Id);
-        await SendAsync(new Response());
+        var validto =DateTime.UtcNow.AddDays(1);
+        var jwtToken = JwtBearer.CreateToken(
+            o =>
+            {
+                o.SigningKey = configuration["Auth:SigningKey"];
+                o.ExpireAt = validto;
+                o.User.Roles.Add(res.UserProfile.Role.Nama, res.UserProfile.Role.Level.ToString());
+                o.User.Claims.Add(("Username", r.Username));
+                o.User.Claims.Add(("Name", res.UserProfile.NamaLengkap));
+                o.User["UserProfileId"] = res.UserProfile.Id.ToString();
+            });
+        res.Token = jwtToken;
+        res.Valid = validto;
+        await SendAsync(res);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Domain.User;
 
-namespace Features.Auth.Login;
+namespace API.Features.Auth.Login;
 
 internal sealed class Request
 {
