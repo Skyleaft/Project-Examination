@@ -17,19 +17,25 @@ builder.Services.AddTransient<GenericRepository>();
 builder.Services.Configure<JsonOptions>(o =>
     o.SerializerOptions.PropertyNamingPolicy = null);
 builder.Services.SwaggerDocument(
-        d => d.DocumentSettings =
-                 s =>
-                 {
-                     s.DocumentName = "v0";
-                     s.Version = "0.0.0";
-                 });
-
+    d => d.DocumentSettings =
+        s =>
+        {
+            s.DocumentName = "v0";
+            s.Version = "0.0.0";
+        });
 
 
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
-
-
+app.UseAuthentication()
+    .UseAuthorization()
+    .UseFastEndpoints(c =>
+        {
+            c.Endpoints.RoutePrefix = "api";
+            c.Serializer.Options.PropertyNamingPolicy = null;
+        }
+    );
+app.UseSwaggerGen(uiConfig: u => u.DeActivateTryItOut());
 
 app.Run();

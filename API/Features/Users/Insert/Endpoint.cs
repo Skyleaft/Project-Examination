@@ -1,5 +1,4 @@
-﻿
-namespace Features.Users;
+﻿namespace Features.Users;
 
 internal sealed class Endpoint : Endpoint<Request, Response, Mapper>
 {

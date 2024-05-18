@@ -8,13 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ProjectExamination.ServiceDefaults\ProjectExamination.ServiceDefaults.csproj" />
+        <ProjectReference Include="..\ProjectExamination.ServiceDefaults\ProjectExamination.ServiceDefaults.csproj"/>
     </ItemGroup>
 
 </Project>
