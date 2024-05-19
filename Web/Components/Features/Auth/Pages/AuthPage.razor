@@ -8,6 +8,7 @@
 @page "/"
 @layout LoginLayout
 @using FluentValidation
+@rendermode InteractiveServer
 
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator/>
@@ -59,6 +60,21 @@
         var dial = await DialogService.ShowAsync<BluryDialog>("Authentication...", options);
 
         await Task.Delay(1000);
+        if (model.Username == "sysadmin" && model.Password == "@superuser")
+        {
+            StateHasChanged();
+            dial.Close();
+            navManager.NavigateTo("/dashboard", true);
+        }
+        else
+        {
+            dial.Close();
+            DialogService.ShowMessageBox(
+                "Info",
+                "Username atau Password Salah!",
+                yesText: "Ok");
+            return;
+        }
         // var userAccount = await AuthAsync(model);
         // if (userAccount == null)
         // {
@@ -70,7 +86,6 @@
         //     return;
         // }
 
-        StateHasChanged();
 
         // var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvicder;
         // await customAuthStateProvider.UpdateAuthenticationState(new UserSession
@@ -79,9 +94,6 @@
         //     Id = userAccount.Account.Id.ToString(),
         //     Role = userAccount.Account.Role,
         // });
-
-        dial.Close();
-        navManager.NavigateTo("/manage-galery", true);
     }
 
     // public async Task<Jwt> AuthAsync(UserAccount _account)

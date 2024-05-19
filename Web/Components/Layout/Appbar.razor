@@ -1,0 +1,44 @@
+﻿@using Web.Common.Enums
+@using Web.Services
+<MudHidden Breakpoint="Breakpoint.MdAndUp">
+            <MudIconButton OnClick="DrawerToggleCallback" Icon="@Icons.Material.Rounded.Notes" Color="Color.Inherit" Edge="Edge.Start"/>
+            <MudSpacer/>
+            <NavLink ActiveClass="d-flex" href="/">
+                <MudBlazorLogo Class="docs-mudblazor-logo"/>
+                <MudText Color="Color.Primary" Typo="Typo.h5" Class="docs-brand-text">MudBlazor</MudText>
+            </NavLink>
+            <MudSpacer/>
+            <MudIconButton OnClick="DrawerToggleCallback" Icon="@Icons.Material.Rounded.Notes" Color="Color.Inherit" Edge="Edge.Start"/>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+            Bosdik Purwakarta
+            <MudSpacer/>
+            <MudTooltip Duration="1000" Text="@(LayoutService.DarkModeToggle == DarkLightMode.System ? "Switch to Light Theme" : LayoutService.DarkModeToggle == DarkLightMode.Dark ? "Switch to system" : "Switch to Dark Theme")">
+                <MudIconButton Icon="@(LayoutService.DarkModeToggle == DarkLightMode.System ? @Icons.Material.Filled.AutoMode : LayoutService.DarkModeToggle == DarkLightMode.Dark ? @Icons.Material.Rounded.LightMode : @Icons.Material.Outlined.DarkMode)" Color="Color.Inherit" OnClick="@LayoutService.ToggleDarkMode"/>
+            </MudTooltip>
+            <MudBadge Content="100" Color="Color.Primary" Overlap="true" Class="my-4 mr-8">
+                    <MudIconButton Icon="@Icons.Material.Filled.Notifications" Class="rounded-0 ma-n2" />
+            </MudBadge>
+            <MudDivider FlexItem="true" Vertical="true" DividerType="DividerType.Middle" Class="mx-4 my-4"/>
+            <AuthorizeView>
+                <Authorized>
+                    @* <MudText Class="mr-2">@currentAccountSession.Nama</MudText> *@
+                    @* <MudAvatar Size="Size.Medium" Image="@currentAccountSession.Photo" /> *@
+                    @*  <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight"> *@
+                    @*     <MudMenuItem>Profile</MudMenuItem> *@
+                    @*     <MudMenuItem>My account</MudMenuItem> *@
+                    @*     <MudMenuItem OnClick="Logout">Logout</MudMenuItem> *@
+                    @*  </MudMenu> *@
+                </Authorized>
+                <NotAuthorized>
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
+                        <MudMenuItem>Profile</MudMenuItem>
+                        <MudMenuItem>My account</MudMenuItem>
+                        <MudMenuItem Href="/">Logout</MudMenuItem>
+                    </MudMenu>
+                    @* <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/auth/login">Login</MudButton> *@
+                </NotAuthorized>
+            </AuthorizeView>
+            
+        </MudHidden>
+

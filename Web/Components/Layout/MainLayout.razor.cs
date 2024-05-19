@@ -11,6 +11,9 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
     [Inject] ISnackbar Snackbar { get; set; }
 
     private MudThemeProvider _mudThemeProvider;
+    private NavMenu _navMenuRef;
+    private bool _drawerOpen = true;
+    private bool _topMenuOpen = false;
     protected override void OnInitialized()
     {
         LayoutService.SetBaseTheme(Themes.LandingPageTheme());
@@ -29,6 +32,22 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
             await _mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
             StateHasChanged();
         }
+    }
+    
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+    private void OpenTopMenu()
+    {
+        _topMenuOpen = true;
+    }
+    
+    private void OnDrawerOpenChanged(bool value)
+    {
+        _topMenuOpen = false;
+        _drawerOpen = value;
+        StateHasChanged();
     }
     
     private async Task ApplyUserPreferences()

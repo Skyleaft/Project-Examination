@@ -140,7 +140,7 @@ namespace Web.Common.Theme
         };
         private static readonly PaletteLight LandingPageLightPalette = new()
         {
-            Primary = "#67f4bd",
+            Primary = "#6edea8",
             AppbarText = "#424242",
             AppbarBackground = "rgba(0,0,0,0)",
             BackgroundGrey = "#F9FAFC",
@@ -153,7 +153,7 @@ namespace Web.Common.Theme
         };
         private static readonly PaletteDark LandingPageDarkPalette = new()
         {
-            Primary = "#67f4bd",
+            Primary = "#6edea8",
             AppbarText = "#92929f",
             AppbarBackground = "rgba(0,0,0,0)",
             BackgroundGrey = "#1a1a27",

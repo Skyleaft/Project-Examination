@@ -8,6 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Content Remove="compilerconfig.json" />
+      <Content Remove="wwwroot\css\Layout\_mainlayout.css" />
+      <Content Remove="wwwroot\css\Layout\_mainlayout.min.css" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Content Include="..\.dockerignore">
             <Link>.dockerignore</Link>
         </Content>
@@ -15,7 +21,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Domain\Domain.csproj" />
-        <ProjectReference Include="..\ProjectExamination.ServiceDefaults\ProjectExamination.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\ProjectExamination.ServiceDefaults\ProjectExamination.ServiceDefaults.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -31,10 +37,22 @@
       <_ContentIncludedByDefault Remove="Shared\MudBlazorLogo.razor" />
       <_ContentIncludedByDefault Remove="Shared\NotAuthorizedPage.razor" />
       <_ContentIncludedByDefault Remove="Shared\NotFoundPage.razor" />
+      <_ContentIncludedByDefault Remove="Features\Auth\Pages\AuthPage.razor" />
+      <_ContentIncludedByDefault Remove="Features\Dashboards\Pages\Dashboard.razor" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Common\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Components\Features\Auth\Pages\AuthPage.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="compilerconfig.json" />
+      <None Include="wwwroot\css\Layout\_mainlayout.css" />
+      <None Include="wwwroot\css\Layout\_mainlayout.min.css" />
     </ItemGroup>
 
 </Project>
