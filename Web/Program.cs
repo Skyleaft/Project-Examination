@@ -3,6 +3,7 @@ using MudBlazor.Services;
 using Web.Common.Extensions;
 using Web.Components;
 using Web.Services;
+using Web.Services.Notifications;
 using Web.Services.UserPreferences;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddMudServices();
 builder.Services.AddSystemd();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<IUserPreferencesService, UserPreferencesService>();
+builder.Services.AddScoped<INotificationService, InMemoryNotificationService>();
 builder.Services.AddScoped<LayoutService>();
 builder.Services.AddScoped<Navigation>();
 // Add services to the container.
@@ -34,6 +36,15 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+using (var scope = app.Services.CreateScope())
+{
+    var notificationService = scope.ServiceProvider.GetService<INotificationService>();
+    if (notificationService is InMemoryNotificationService inMemoryService)
+    {
+        inMemoryService.Preload();
+    }
+}
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

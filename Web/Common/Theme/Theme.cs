@@ -12,7 +12,7 @@ namespace Web.Common.Theme
         {
             var theme = new MudTheme()
             {
-                Palette = LandingPageLightPalette,
+                PaletteLight = LandingPageLightPalette,
                 PaletteDark = LandingPageDarkPalette,
                 Shadows = LandingPageShadows,
                 LayoutProperties = LandingPageLayoutProperties,
@@ -26,7 +26,7 @@ namespace Web.Common.Theme
         {
             var theme = new MudTheme()
             {
-                Palette = DocsLightPalette,
+                PaletteLight = DocsLightPalette,
                 PaletteDark = DocsDarkPalette,
                 LayoutProperties = new LayoutProperties()
             };
@@ -52,7 +52,7 @@ namespace Web.Common.Theme
             Primary = "#7e6fff",
             Surface= "#1e1e2d",
             Background = "#1a1a27",
-            BackgroundGrey = "#151521",
+            BackgroundGray = "#151521",
             AppbarText = "#92929f",
             AppbarBackground = "rgba(26,26,39,0.8)",
             DrawerBackground = "#1a1a27",
@@ -143,7 +143,7 @@ namespace Web.Common.Theme
             Primary = "#6edea8",
             AppbarText = "#424242",
             AppbarBackground = "rgba(0,0,0,0)",
-            BackgroundGrey = "#F9FAFC",
+            BackgroundGray = "#F9FAFC",
             TextSecondary = "#425466",
             Dark = "#110E2D",
             DarkLighten = "#1A1643",
@@ -156,7 +156,7 @@ namespace Web.Common.Theme
             Primary = "#6edea8",
             AppbarText = "#92929f",
             AppbarBackground = "rgba(0,0,0,0)",
-            BackgroundGrey = "#1a1a27",
+            BackgroundGray = "#1a1a27",
             Surface= "#1e1e2d",
             Background = "#151521",
             Dark = "#111019",

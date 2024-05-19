@@ -15,7 +15,7 @@ public partial class LoginLayout : LayoutComponentBase, IDisposable
     {
         LayoutService.SetBaseTheme(Themes.LandingPageTheme());
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-        LayoutService.MajorUpdateOccured += LayoutServiceOnMajorUpdateOccured;
+        LayoutService.MajorUpdateOccurred += LayoutServiceOnMajorUpdateOccured;
         base.OnInitialized();
     }
     
@@ -44,7 +44,7 @@ public partial class LoginLayout : LayoutComponentBase, IDisposable
 
     public void Dispose()
     {
-        LayoutService.MajorUpdateOccured -= LayoutServiceOnMajorUpdateOccured;
+        LayoutService.MajorUpdateOccurred -= LayoutServiceOnMajorUpdateOccured;
     }
     private void LayoutServiceOnMajorUpdateOccured(object sender, EventArgs e) => StateHasChanged();
 }

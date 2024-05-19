@@ -1,44 +1,65 @@
-﻿@using Web.Common.Enums
-@using Web.Services
-<MudHidden Breakpoint="Breakpoint.MdAndUp">
-            <MudIconButton OnClick="DrawerToggleCallback" Icon="@Icons.Material.Rounded.Notes" Color="Color.Inherit" Edge="Edge.Start"/>
-            <MudSpacer/>
-            <NavLink ActiveClass="d-flex" href="/">
-                <MudBlazorLogo Class="docs-mudblazor-logo"/>
-                <MudText Color="Color.Primary" Typo="Typo.h5" Class="docs-brand-text">MudBlazor</MudText>
-            </NavLink>
-            <MudSpacer/>
-            <MudIconButton OnClick="DrawerToggleCallback" Icon="@Icons.Material.Rounded.Notes" Color="Color.Inherit" Edge="Edge.Start"/>
-        </MudHidden>
-        <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
-            Bosdik Purwakarta
-            <MudSpacer/>
-            <MudTooltip Duration="1000" Text="@(LayoutService.DarkModeToggle == DarkLightMode.System ? "Switch to Light Theme" : LayoutService.DarkModeToggle == DarkLightMode.Dark ? "Switch to system" : "Switch to Dark Theme")">
-                <MudIconButton Icon="@(LayoutService.DarkModeToggle == DarkLightMode.System ? @Icons.Material.Filled.AutoMode : LayoutService.DarkModeToggle == DarkLightMode.Dark ? @Icons.Material.Rounded.LightMode : @Icons.Material.Outlined.DarkMode)" Color="Color.Inherit" OnClick="@LayoutService.ToggleDarkMode"/>
-            </MudTooltip>
-            <MudBadge Content="100" Color="Color.Primary" Overlap="true" Class="my-4 mr-8">
-                    <MudIconButton Icon="@Icons.Material.Filled.Notifications" Class="rounded-0 ma-n2" />
-            </MudBadge>
-            <MudDivider FlexItem="true" Vertical="true" DividerType="DividerType.Middle" Class="mx-4 my-4"/>
-            <AuthorizeView>
-                <Authorized>
-                    @* <MudText Class="mr-2">@currentAccountSession.Nama</MudText> *@
-                    @* <MudAvatar Size="Size.Medium" Image="@currentAccountSession.Photo" /> *@
-                    @*  <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight"> *@
-                    @*     <MudMenuItem>Profile</MudMenuItem> *@
-                    @*     <MudMenuItem>My account</MudMenuItem> *@
-                    @*     <MudMenuItem OnClick="Logout">Logout</MudMenuItem> *@
-                    @*  </MudMenu> *@
-                </Authorized>
-                <NotAuthorized>
-                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
-                        <MudMenuItem>Profile</MudMenuItem>
-                        <MudMenuItem>My account</MudMenuItem>
-                        <MudMenuItem Href="/">Logout</MudMenuItem>
-                    </MudMenu>
-                    @* <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/auth/login">Login</MudButton> *@
-                </NotAuthorized>
-            </AuthorizeView>
-            
-        </MudHidden>
+﻿<div class="d-flex align-center flex-grow-1 d-md-none">
+    <MudTooltip Delay="1000" Text="Drawer">
+        <MudIconButton OnClick="DrawerToggleCallback" Icon="@Icons.Material.Rounded.Notes" Color="Color.Inherit" Edge="Edge.Start" />
+    </MudTooltip>
+    <MudSpacer />
+    <NavLink ActiveClass="d-flex align-center" href="/">
+        <MudBlazorLogo Class="docs-mudblazor-logo" />
+        <MudText Color="Color.Primary" Typo="Typo.h5" Class="docs-brand-text">Aplikasi Exam</MudText>
+    </NavLink>
+    <MudSpacer />
+    <MudTooltip Delay="1000" Text="Search">
+        <MudIconButton Icon="@Icons.Material.Rounded.Search" Color="Color.Inherit" Edge="Edge.End" OnClick="@(() => OpenSearchDialog())" />
+    </MudTooltip>
+</div>
+<div class="d-none d-md-flex align-center flex-grow-1">
+    <NavLink ActiveClass="d-flex align-center me-4" href="/">
+        <MudBlazorLogo Class="docs-mudblazor-logo" />
+        <MudText Color="Color.Primary" Typo="Typo.h5" Class="docs-brand-text">Aplikasi Exam</MudText>
+    </NavLink>
+    <MudSpacer />
+    @if (DisplaySearchBar)
+    {
+        @* <MudAutocomplete @ref="_searchAutocomplete" T="ApiLinkServiceEntry" Class="docs-search-bar mx-4" *@
+        @*                  AutoFocus="false" Placeholder="Search" Variant="Variant.Outlined" MaxHeight="480" *@
+        @*                  SearchFunc="async (text, token) => await Search(text, token)" DebounceInterval="0" *@
+        @*                  ValueChanged="OnSearchResult" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentAriaLabel="Search adornment"> *@
+        @*     <ItemTemplate Context="result"> *@
+        @*         <MudText>@result.Title</MudText> <MudText Typo="Typo.body2">@result.SubTitle</MudText> *@
+        @*     </ItemTemplate> *@
+        @* </MudAutocomplete> *@
+        <MudDivider FlexItem="true" Vertical="true" DividerType="DividerType.Middle" Class="mx-4 my-4" />
+    }
+    else
+    {
+        <MudTooltip Delay="1000" Text="Search">
+            <MudIconButton Icon="@Icons.Material.Rounded.Search" Color="Color.Inherit" OnClick="@(() => OpenSearchDialog())" />
+        </MudTooltip>
+    }
+    <AppbarButtons />
+</div>
 
+<MudDialog @bind-Visible="IsSearchDialogOpen" Options="_dialogOptions" Class="docs-gray-bg" ContentClass="docs-mobile-dialog-search d-flex flex-column" DefaultFocus="DefaultFocus.FirstChild">
+    <DialogContent>
+        @* <MudAutocomplete @ref="_searchAutocomplete" T="ApiLinkServiceEntry" PopoverClass="docs-mobile-dialog-search-popover" *@
+        @*                  AutoFocus="true" Placeholder="Search" Clearable="true" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" *@
+        @*                  SearchFunc="async (text, token) => await Search(text, token)" DebounceInterval="0" *@
+        @*                  ValueChanged="OnSearchResult" OpenChanged="o => _searchDialogAutocompleteOpen = o" ReturnedItemsCountChanged="c => _searchDialogReturnedItemsCount = c"> *@
+        @*     <ItemTemplate Context="result"> *@
+        @*         <MudText>@result.Title</MudText> <MudText Typo="Typo.body2">@result.SubTitle</MudText> *@
+        @*     </ItemTemplate> *@
+        @* </MudAutocomplete> *@
+
+        @* This text element will always be rendered but it's easier to write it this way *@
+        <MudText Typo="Typo.body2" Class="flex-grow-1 mud-text-secondary" Align="Align.Center">
+            @if (!_searchDialogAutocompleteOpen)
+            {
+                @("Use the box above to search the docs")
+            }
+            else if (_searchDialogReturnedItemsCount == 0)
+            {
+                @("No results found")
+            }
+        </MudText>
+    </DialogContent>
+</MudDialog>

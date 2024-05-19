@@ -1,13 +1,8 @@
 ﻿@using Domain.User
-@using Microsoft.AspNetCore.Components.Authorization
-@using MudBlazor
-@using Web.Components.Layout
-@using Web.Components.Shared
 @inject AuthenticationStateProvider authStateProvicder
 @inject NavigationManager navManager
 @page "/"
 @layout LoginLayout
-@using FluentValidation
 @rendermode InteractiveServer
 
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
@@ -53,13 +48,14 @@
     MudForm form;
     UserAccount model = new UserAccount();
     private bool isVisible;
-
+    
     private async Task OnValidSubmit()
     {
-        var options = new DialogOptions { ClassBackground = "bg-filter", DisableBackdropClick = true };
+        var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
         var dial = await DialogService.ShowAsync<BluryDialog>("Authentication...", options);
 
         await Task.Delay(1000);
+        StateHasChanged();
         if (model.Username == "sysadmin" && model.Password == "@superuser")
         {
             StateHasChanged();
