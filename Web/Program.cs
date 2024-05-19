@@ -1,9 +1,17 @@
+using Blazored.LocalStorage;
+using MudBlazor.Services;
 using Web.Components;
+using Web.Services;
+using Web.Services.UserPreferences;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-
+builder.Services.AddMudServices();
+builder.Services.AddSystemd();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddScoped<IUserPreferencesService, UserPreferencesService>();
+builder.Services.AddScoped<LayoutService>();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

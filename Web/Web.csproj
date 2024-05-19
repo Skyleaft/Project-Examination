@@ -14,7 +14,27 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Domain\Domain.csproj" />
         <ProjectReference Include="..\ProjectExamination.ServiceDefaults\ProjectExamination.ServiceDefaults.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.0" />
+      <PackageReference Include="MudBlazor" Version="6.19.1" />
+      <PackageReference Include="MudBlazor.ThemeManager" Version="1.0.9" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Shared\Appbar.razor" />
+      <_ContentIncludedByDefault Remove="Shared\MainLayout.razor" />
+      <_ContentIncludedByDefault Remove="Shared\MudBlazorLogo.razor" />
+      <_ContentIncludedByDefault Remove="Shared\NotAuthorizedPage.razor" />
+      <_ContentIncludedByDefault Remove="Shared\NotFoundPage.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Common\" />
     </ItemGroup>
 
 </Project>
