@@ -3,8 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using Web.Common.Enums;
+using Web.Components.Features.Auth;
 using Web.Services;
 using Web.Services.Notifications;
 
@@ -14,6 +16,8 @@ public partial class AppbarButtons
 {
     [Inject] private INotificationService NotificationService { get; set; }
     [Inject] private LayoutService LayoutService { get; set; }
+    [Inject] NavigationManager navManager { get; set; }
+    [Inject] AuthenticationStateProvider authStateProvicder { get; set; }
     private IDictionary<NotificationMessage, bool> _messages = null;
     private bool _newNotificationsAvailable = false;
 
@@ -47,5 +51,12 @@ public partial class AppbarButtons
         }
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task Logout()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvicder;
+        await customAuthStateProvider.UpdateAuthenticationState(null);
+        navManager.NavigateTo("/login");
     }
 }

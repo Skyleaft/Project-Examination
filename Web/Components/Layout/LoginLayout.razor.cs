@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using Web.Common.Theme;
 using Web.Services;
@@ -7,12 +8,25 @@ namespace Web.Components.Layout;
 
 public partial class LoginLayout : LayoutComponentBase, IDisposable
 {
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
     [Inject] private LayoutService LayoutService { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
+    [Inject] NavigationManager navManager { get; set; }
 
     private MudThemeProvider _mudThemeProvider;
-    protected override void OnInitialized()
+    protected override async Task  OnInitializedAsync()
     {
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+
+            if (user?.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                navManager.NavigateTo("/");
+            }
+        }
         LayoutService.SetBaseTheme(Themes.LandingPageTheme());
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
         LayoutService.MajorUpdateOccurred += LayoutServiceOnMajorUpdateOccured;

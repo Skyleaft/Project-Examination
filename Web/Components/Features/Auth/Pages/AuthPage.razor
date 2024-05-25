@@ -6,6 +6,7 @@
 @page "/login"
 @layout LoginLayout
 @rendermode InteractiveServer
+@attribute [AllowAnonymous]
 
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator/>
@@ -73,9 +74,8 @@
         {
             var res = await JsonSerializer.DeserializeAsync<AuthResponse>(req.Content.ReadAsStream());
             var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvicder;
-            var claims =await customAuthStateProvider.UpdateAuthenticationState(res);
-            await HttpContext.SignInAsync(claims);
-            StateHasChanged();
+            await customAuthStateProvider.UpdateAuthenticationState(res);
+            
             dial.Close();
             navManager.NavigateTo("/", true);
         }

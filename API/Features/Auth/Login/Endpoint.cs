@@ -63,7 +63,7 @@ internal sealed class Endpoint : Endpoint<Request, Response>
                 o.User["UserProfileId"] = res.UserProfile.Id.ToString();
             });
         res.Token = jwtToken;
-        res.Valid = validto;
+        res.ValidTo = validto;
         await SendAsync(res);
     }
 }

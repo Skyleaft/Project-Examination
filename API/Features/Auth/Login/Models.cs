@@ -18,6 +18,6 @@ internal sealed class Validator : Validator<Request>
 internal sealed class Response
 {
     public string Token { get; set; }
-    public DateTime Valid { get; set; }
+    public DateTime ValidTo { get; set; }
     public UserProfile UserProfile { get; set; } = null!;
 }
