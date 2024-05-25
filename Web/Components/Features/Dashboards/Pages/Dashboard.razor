@@ -1,6 +1,9 @@
-﻿@page "/Dashboard"
+﻿@page "/"
+@using System.Security.Claims
 @layout MainLayout
 @rendermode InteractiveServer
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
 <h3>Dashboard</h3>
 <MudGrid>
     <MudItem xs="12" sm="6" md="4">
@@ -15,7 +18,18 @@
     <MudItem xs="12" sm="6">
         <MudGrid>
             <MudItem xs="12">
-                <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+                <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                    <button @onclick="GetClaimsPrincipalData">Get ClaimsPrincipal Data</button>
+                    @if (claims.Count() > 0)
+                    {
+                        <ul>
+                            @foreach (var claim in claims)
+                            {
+                                <li>@claim.Type: @claim.Value</li>
+                            }
+                        </ul>
+                    }
+                </MudPaper>
             </MudItem>
             <MudItem xs="12">
                 <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
@@ -35,6 +49,28 @@
         <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
     </MudItem>
 </MudGrid>
+
 @code {
-    
+    private string? authMessage;
+    private string? surname;
+    private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
+
+    private async Task GetClaimsPrincipalData()
+    {
+        var authState = await AuthenticationStateProvider
+            .GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            authMessage = $"{user.Identity.Name} is authenticated.";
+            claims = user.Claims;
+            surname = user.FindFirst(c => c.Type == ClaimTypes.Surname)?.Value;
+        }
+        else
+        {
+            authMessage = "The user is NOT authenticated.";
+        }
+    }
+
 }

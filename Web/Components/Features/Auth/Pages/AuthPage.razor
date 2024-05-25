@@ -1,7 +1,9 @@
-﻿@using Domain.User
+﻿@using System.Text.Json
+@using Web.Common.Models
+@using Microsoft.AspNetCore.Authentication
 @inject AuthenticationStateProvider authStateProvicder
 @inject NavigationManager navManager
-@page "/"
+@page "/login"
 @layout LoginLayout
 @rendermode InteractiveServer
 
@@ -42,69 +44,42 @@
 </EditForm>
 
 @code {
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] HttpClient httpClient { get; set; }
     MudForm form;
-    UserAccount model = new UserAccount();
+    AuthRequest model = new AuthRequest();
     private bool isVisible;
     
     private async Task OnValidSubmit()
     {
         var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
         var dial = await DialogService.ShowAsync<BluryDialog>("Authentication...", options);
-
-        await Task.Delay(1000);
-        StateHasChanged();
-        if (model.Username == "sysadmin" && model.Password == "@superuser")
+        
+        var req = await httpClient.PostAsJsonAsync("api/Auth", model);
+        if (!req.IsSuccessStatusCode)
         {
-            StateHasChanged();
-            dial.Close();
-            navManager.NavigateTo("/dashboard", true);
-        }
-        else
-        {
+            var res = await JsonSerializer.DeserializeAsync<ErrorResult>(req.Content.ReadAsStream());
             dial.Close();
             DialogService.ShowMessageBox(
                 "Info",
-                "Username atau Password Salah!",
+                res.Errors.GeneralErrors.FirstOrDefault(),
                 yesText: "Ok");
             return;
         }
-        // var userAccount = await AuthAsync(model);
-        // if (userAccount == null)
-        // {
-        //     dial.Close();
-        //     DialogService.ShowMessageBox(
-        //         "Info",
-        //         "Username atau Password Salah!",
-        //         yesText: "Ok");
-        //     return;
-        // }
-
-
-        // var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvicder;
-        // await customAuthStateProvider.UpdateAuthenticationState(new UserSession
-        // {
-        //     UserName = userAccount.Account.Nama == null ? userAccount.Account.Username : userAccount.Account.Nama,
-        //     Id = userAccount.Account.Id.ToString(),
-        //     Role = userAccount.Account.Role,
-        // });
+        else
+        {
+            var res = await JsonSerializer.DeserializeAsync<AuthResponse>(req.Content.ReadAsStream());
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvicder;
+            var claims =await customAuthStateProvider.UpdateAuthenticationState(res);
+            await HttpContext.SignInAsync(claims);
+            StateHasChanged();
+            dial.Close();
+            navManager.NavigateTo("/", true);
+        }
+        
     }
-
-    // public async Task<Jwt> AuthAsync(UserAccount _account)
-    // {
-    //     var response = await httpClient.PostAsJsonAsync(@"api/UserAccount/authenticate", _account);
-    //
-    //     if (response.IsSuccessStatusCode)
-    //     {
-    //         var responseContent = await response.Content.ReadAsStringAsync();
-    //         return JsonConvert.DeserializeObject<Jwt>(responseContent);
-    //     }
-    //     else
-    //     {
-    //         return null;
-    //     }
-    // }
 
 }

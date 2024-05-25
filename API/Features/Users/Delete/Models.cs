@@ -1,5 +1,5 @@
 ﻿using API.Common;
-using Domain.User;
+using Domain.Users;
 
 namespace API.Features.Users.Delete;
 

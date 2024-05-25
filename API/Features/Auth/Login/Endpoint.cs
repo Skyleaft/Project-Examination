@@ -25,13 +25,13 @@ internal sealed class Endpoint : Endpoint<Request, Response>
             .UserAccount
             .FirstOrDefault(x => x.Username == r.Username);
         if (user == null)
-            await SendNotFoundAsync(c);
+            ThrowError("Username atau Email Tidak Ditemukan");
 
         if (user.Password != r.Password)
-            await SendUnauthorizedAsync(c);
+            ThrowError("Password Salah");
         
         if(!user.IsActive)
-            await SendForbiddenAsync(c);
+            ThrowError("Akun Tidak Aktif");
 
         string clientDeviceInfo = HttpContext.Request.Headers["User-Agent"];
         string ipAddress = HttpContext.Request.Headers["X-Forwarded-For"];

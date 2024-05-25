@@ -1,6 +1,6 @@
 ﻿using Domain.RoomSet;
 using Domain.TakeExam;
-using Domain.User;
+using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Database;
@@ -54,7 +54,7 @@ public class GenericRepository : DbContext
             }
         );
     }
-
+    public DbSet<User> User { get; set; }
     public DbSet<UserAccount> UserAccount { get; set; }
     public DbSet<UserProfile> UserProfile { get; set; }
     public DbSet<Role> Role { get; set; }

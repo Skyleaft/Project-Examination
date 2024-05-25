@@ -1,6 +1,5 @@
 ﻿using API.Common;
 using API.Database;
-using Domain.User;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 

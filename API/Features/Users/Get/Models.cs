@@ -1,5 +1,4 @@
 ﻿using API.Common;
-using Domain.User;
 
 namespace API.Features.Users.Get;
 

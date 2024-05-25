@@ -1,6 +1,6 @@
 ﻿using Domain.Common;
 
-namespace Domain.User;
+namespace Domain.Users;
 
 public class UserProfile : IGenericModifier
 {

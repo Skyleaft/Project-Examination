@@ -1,5 +1,5 @@
 ﻿using Domain.RoomSet;
-using Domain.User;
+using Domain.Users;
 
 namespace Domain.TakeExam;
 

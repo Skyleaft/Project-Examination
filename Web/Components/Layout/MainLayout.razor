@@ -1,5 +1,5 @@
 ﻿@inherits LayoutComponentBase
-<MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="LayoutService.SetDarkMode" />
+<MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="LayoutService.SetDarkMode"/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 <MudPopoverProvider/>
@@ -7,17 +7,17 @@
 <MudLayout>
     <MudAppBar Class="docs-appbar-filter" Color="Color.Transparent" Elevation="0"></MudAppBar>
     <MudAppBar Class="docs-appbar" Elevation="0">
-        <Appbar DrawerToggleCallback="ToggleDrawer" />
+        <Appbar DrawerToggleCallback="ToggleDrawer"/>
     </MudAppBar>
     <MudDrawer Open="@_drawerOpen" OpenChanged="OnDrawerOpenChanged" ClipMode="DrawerClipMode.Docked" Elevation="0" Breakpoint="Breakpoint.Md" aria-label="Navigation Drawer">
         <div class="d-block d-md-none">
             <MudToolBar Dense="true" Gutters="false" Class="docs-gray-bg">
-                <MudIconButton Icon="@Icons.Material.Rounded.Close" Color="Color.Inherit" OnClick="ToggleDrawer" />
-                <MudSpacer />
-                <AppbarButtons />
+                <MudIconButton Icon="@Icons.Material.Rounded.Close" Color="Color.Inherit" OnClick="ToggleDrawer"/>
+                <MudSpacer/>
+                <AppbarButtons/>
             </MudToolBar>
         </div>
-        <NavMenu />
+        <NavMenu/>
     </MudDrawer>
     <MudMainContent >
         <MudContainer Class="mt-8 px-8" MaxWidth="MaxWidth.False">
