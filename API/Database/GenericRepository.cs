@@ -30,7 +30,7 @@ public class GenericRepository : DbContext
         //    .WithMany()
         //    .OnDelete(DeleteBehavior.NoAction);
         modelBuilder.Entity<Role>().HasData(
-            new Role() { Id = 1, Level = 1, Nama = "SuperUser" },
+            new Role() { Id = 1, Level = 1, Nama = "Superuser" },
             new Role() { Id = 2, Level = 2, Nama = "Operator" },
             new Role() { Id = 3, Level = 3, Nama = "Dosen" },
             new Role() { Id = 4, Level = 4, Nama = "User" }

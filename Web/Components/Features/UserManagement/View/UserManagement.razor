@@ -1,0 +1,72 @@
+﻿@page "/UserManagement"
+@using System.Text.Json
+@using Domain.Common
+@using Domain.Users
+@inject HttpClient httpClient
+@attribute [Authorize(Roles = "Superuser")]
+<h3>UserManagement</h3>
+
+<MudTable ServerData="ServerReload"
+          Dense="true" Hover="true" @ref="table">
+    <ToolBarContent>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="ID" T="UserProfile">ID</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="NamaLengkap" T="UserProfile">Nama Lengkap</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="TanggalLahir" T="UserProfile">Tanggal Lahir</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="RoleName" T="UserProfile">Role</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="IsActive" T="UserProfile">Active</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="ID">@context.Id</MudTd>
+        <MudTd DataLabel="NamaLengkap">@context.NamaLengkap</MudTd>
+        <MudTd DataLabel="TanggalLahir">@context.TangalLahir</MudTd>
+        <MudTd DataLabel="RoleName">@context.Role.Nama</MudTd>
+        <MudTd DataLabel="IsActive">@context.UserAccount.IsActive</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private IEnumerable<UserProfile> pagedData;
+    private MudTable<UserProfile> table;
+
+    private int totalItems;
+    private string searchString = "";
+    
+    private async Task<TableData<UserProfile>> ServerReload(TableState state, CancellationToken token)
+    {
+        var req = new FindRequest();
+        req.Page = state.Page;
+        req.PageSize = state.PageSize;
+        req.Search = searchString;
+            var data = await httpClient.PostAsJsonAsync("api/users/find",req,cancellationToken:token);
+        if (!data.IsSuccessStatusCode)
+        {
+            return new TableData<UserProfile>() {TotalItems = 0, Items = null};
+        }
+
+        var res = await JsonSerializer
+            .DeserializeAsync<PaginatedResponse<UserProfile>>(data.Content.ReadAsStream());
+        totalItems = res.TotalItems;
+        pagedData = res.Items;
+        return new TableData<UserProfile>() {TotalItems = totalItems, Items = pagedData};
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+}

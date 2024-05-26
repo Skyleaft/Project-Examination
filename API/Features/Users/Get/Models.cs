@@ -1,6 +1,4 @@
-﻿using API.Common;
-
-namespace API.Features.Users.Get;
+﻿namespace API.Features.Users.Get;
 
 internal sealed class Request
 {

@@ -1,35 +1,36 @@
 ﻿using System.Net.Http.Headers;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Web.Components.Features.Auth;
 
 public class JwtBearerHandler : DelegatingHandler
 {
-    private readonly ProtectedSessionStorage _sessionStorage;
-
-    public JwtBearerHandler(ProtectedSessionStorage sessionStorage, HttpMessageHandler innerHandler)
-        : base(innerHandler)
+    private readonly AuthenticationStateProvider authStateProvider;
+    public JwtBearerHandler(AuthenticationStateProvider authStateProvider)
     {
-        _sessionStorage = sessionStorage;
+        this.authStateProvider = authStateProvider;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         // Fetch Session
-        var userSessionStorageResult = await _sessionStorage.GetAsync<AuthResponse>("UserSession");
-        var userSession = userSessionStorageResult.Success ? userSessionStorageResult.Value : null;
-
-        if (userSession.ValidTo < DateTime.Now)
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
         {
-            await _sessionStorage.DeleteAsync("UserSession");
-            userSession = null;
+            var claims = authState
+                .User
+                .Claims;
+            
+            var token = claims.First(c => c.Type == ClaimTypes.Authentication).Value;
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+        else
+        {
+            request.Headers.Clear();
         }
         
-        if (!string.IsNullOrEmpty(userSession.Token))
-        {
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", userSession.Token);
-        }
-
         return await base.SendAsync(request, cancellationToken);
     }
 }

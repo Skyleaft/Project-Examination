@@ -37,11 +37,6 @@ builder.Services.AddAuthentication()
     .AddScheme<AuthenticationSchemeOptions, CustomAuthenticationHandler>("CustomSchemeName", options => { });
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthorizationCore();
-// builder.Services.AddScoped<CookieEvents>();
-// builder.Services.ConfigureApplicationCookie(o =>
-// {
-//     o.EventsType = typeof(CookieEvents);
-// });
 
 builder.Services.AddScoped<IUserPreferencesService, UserPreferencesService>();
 builder.Services.AddScoped<INotificationService, InMemoryNotificationService>();
@@ -52,8 +47,12 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+builder.Services.AddTransient<JwtBearerHandler>();
 var apiURL = builder.Configuration.GetConnectionString("DefaultConnection") ?? "https+http://apiservice";
-builder.Services.AddHttpClient("API", (sp, cl) => { cl.BaseAddress = new Uri(apiURL); });
+builder.Services.AddHttpClient("API", (sp, cl) =>
+{
+    cl.BaseAddress = new Uri(apiURL);
+}).AddHttpMessageHandler<JwtBearerHandler>();
 builder.Services.AddScoped(
     sp => sp.GetService<IHttpClientFactory>().CreateClient("API"));
 
@@ -64,7 +63,6 @@ app.MapDefaultEndpoints();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();

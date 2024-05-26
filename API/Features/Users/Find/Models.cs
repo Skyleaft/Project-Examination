@@ -1,4 +1,4 @@
-﻿using API.Common;
+﻿using Domain.Common;
 using Domain.Users;
 
 namespace API.Features.Users.Find;

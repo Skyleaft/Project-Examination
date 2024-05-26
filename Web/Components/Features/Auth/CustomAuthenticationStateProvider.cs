@@ -17,17 +17,19 @@ namespace Web.Components.Features.Auth
         {
             try
             {
-                var userSession = Constant.UserProfile;
+                var userSession = Constant.AuthResponse;
                 if (userSession == null)
                 {
                     return await Task.FromResult(new AuthenticationState(_anonymous));
                 }
-                var userData = JsonSerializer.Serialize(userSession);
+                var userData = JsonSerializer.Serialize(userSession.UserProfile);
 
                 var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
                 {
-                new Claim(ClaimTypes.Name,userSession.NamaLengkap ?? ""),
-                new Claim(ClaimTypes.Role,userSession.Role.Nama),
+                new Claim(ClaimTypes.Name,userSession.UserProfile.NamaLengkap ?? ""),
+                new Claim(ClaimTypes.Role,userSession.UserProfile.Role.Nama),
+                new Claim(ClaimTypes.Authentication,userSession.Token),
+                new Claim(ClaimTypes.Expiration,userSession.ValidTo.ToString()),
                 new Claim(ClaimTypes.UserData,userData),
                 }, "CustomAuth"));
                 return await Task.FromResult(new AuthenticationState(claimsPrincipal));
@@ -42,12 +44,14 @@ namespace Web.Components.Features.Auth
             ClaimsPrincipal claimsPrincipal;
             if (userSession != null)
             {
-                Constant.UserProfile = userSession.UserProfile;
+                Constant.AuthResponse = userSession;
                 var userData = JsonSerializer.Serialize(userSession.UserProfile);
                 claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
                 {
                     new Claim(ClaimTypes.Name,userSession.UserProfile.NamaLengkap ?? ""),
                     new Claim(ClaimTypes.Role,userSession.UserProfile.Role.Nama),
+                    new Claim(ClaimTypes.Authentication,userSession.Token),
+                    new Claim(ClaimTypes.Expiration,userSession.ValidTo.ToString()),
                     new Claim(ClaimTypes.UserData,userData),
                 }, "CustomAuth"));
             }

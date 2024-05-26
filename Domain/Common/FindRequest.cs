@@ -1,4 +1,4 @@
-﻿namespace API.Common;
+﻿namespace Domain.Common;
 public class FindRequest
 {
     public string Search { get; set; }

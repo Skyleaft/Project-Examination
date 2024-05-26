@@ -1,19 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace API.Common;
+namespace Domain.Common;
 public class PaginatedResponse<T>
 {
     public int CurrentPage { get; set; }
     public int TotalPage { get; set; }
-    public int Count { get; set; }
-    public bool HasNext { get; set; }
-    public List<T> Items { get; set; }
+    public int TotalItems { get; set; }
+    public bool HasPrevious => CurrentPage > 1;
+    public bool HasNext => CurrentPage < TotalPage;
+    public List<T> Items { get; init; } = new List<T>();
 
-    public PaginatedResponse(List<T> datas,int page, int count,int pageSize)
+    public PaginatedResponse(List<T> items,int page, int count,int pageSize)
     {
+        TotalItems = count;
         CurrentPage = page;
         TotalPage = (int)Math.Ceiling(count / (double)pageSize);
-        Items.AddRange(datas);
+        Items.AddRange(items);
     }
     public PaginatedResponse() { }
 }

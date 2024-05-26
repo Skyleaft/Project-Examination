@@ -1,5 +1,4 @@
-﻿using API.Common;
-using Domain.Users;
+﻿using Domain.Users;
 
 namespace API.Features.Users.Activate;
 
