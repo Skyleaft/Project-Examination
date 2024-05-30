@@ -21,7 +21,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Domain\Domain.csproj" />
-        <ProjectReference Include="..\ProjectExamination.ServiceDefaults\ProjectExamination.ServiceDefaults.csproj" />
         <ProjectReference Include="..\Web.Client\Web.Client.csproj" />
     </ItemGroup>
 

@@ -14,13 +14,13 @@
         <PackageReference Include="FastEndpoints.Security" Version="5.25.0" />
         <PackageReference Include="FastEndpoints.Swagger" Version="5.25.0" />
         <PackageReference Include="FastEndpoints.Testing" Version="5.25.0" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.5">
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.6" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.6">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -31,7 +31,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Domain\Domain.csproj" />
-      <ProjectReference Include="..\ProjectExamination.ServiceDefaults\ProjectExamination.ServiceDefaults.csproj" />
     </ItemGroup>
 
 </Project>

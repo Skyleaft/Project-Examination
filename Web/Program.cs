@@ -15,7 +15,6 @@ using Web.Services.UserPreferences;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults();
 builder.Services.AddMudServices();
 builder.Services.AddSystemd();
 // builder.AddRedisClient("cache");
@@ -49,16 +48,13 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddTransient<JwtBearerHandler>();
 var apiURL = builder.Configuration.GetConnectionString("DefaultConnection") ?? "https+http://apiservice";
-builder.Services.AddHttpClient("API", (sp, cl) =>
-{
-    cl.BaseAddress = new Uri(apiURL);
-}).AddHttpMessageHandler<JwtBearerHandler>();
+builder.Services.AddHttpClient("API", (sp, cl) => { cl.BaseAddress = new Uri(apiURL); })
+    .AddHttpMessageHandler<JwtBearerHandler>();
 builder.Services.AddScoped(
     sp => sp.GetService<IHttpClientFactory>().CreateClient("API"));
 
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
