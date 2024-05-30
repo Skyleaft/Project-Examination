@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder
     .Services
@@ -25,6 +27,8 @@ builder.Services.SwaggerDocument(
 
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.UseAuthentication()
     .UseAuthorization()

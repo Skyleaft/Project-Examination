@@ -15,6 +15,8 @@ using Web.Services.UserPreferences;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Services.AddMudServices();
 builder.Services.AddSystemd();
 // builder.AddRedisClient("cache");
@@ -54,6 +56,8 @@ builder.Services.AddScoped(
     sp => sp.GetService<IHttpClientFactory>().CreateClient("API"));
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 
 // Configure the HTTP request pipeline.
