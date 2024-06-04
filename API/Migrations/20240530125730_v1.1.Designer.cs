@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using API.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(GenericRepository))]
-    partial class GenericRepositoryModelSnapshot : ModelSnapshot
+    [Migration("20240530125730_v1.1")]
+    partial class v11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -358,7 +361,7 @@ namespace API.Migrations
                     b.Property<string>("Photo")
                         .HasColumnType("text");
 
-                    b.Property<int>("RoleId")
+                    b.Property<int?>("RoleId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("TangalLahir")
@@ -440,9 +443,7 @@ namespace API.Migrations
                 {
                     b.HasOne("Domain.Users.Role", "Role")
                         .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RoleId");
 
                     b.HasOne("Domain.Users.UserAccount", "UserAccount")
                         .WithMany()

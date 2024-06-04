@@ -30,7 +30,7 @@ internal sealed class Endpoint : Endpoint<Request,Response>
         
         await SendOkAsync(new Response()
         {
-            Message = "User deleted successfully",
+            Message = $"User {data.NamaLengkap} deleted successfully",
             DeletedUser = data
         },c);
         

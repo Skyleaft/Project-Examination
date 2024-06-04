@@ -1,31 +1,72 @@
 ﻿@page "/UserManagement"
 @using System.Text.Json
 @using Domain.Common
+@using Web.Components.Features.UserManagement.Dialog
 @using Domain.Users
 @inject HttpClient httpClient
+@inject IDialogService Dialog
 @attribute [Authorize(Roles = "Superuser")]
 <h3>UserManagement</h3>
 
 <MudTable ServerData="ServerReload"
           Dense="true" Hover="true" @ref="table">
     <ToolBarContent>
-        <MudSpacer />
-        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        <MudButton OnClick="@((e) => OpenDialog(maxWidth))"
+                   Variant="Variant.Outlined"
+                   StartIcon="@Icons.Material.Outlined.PersonAdd"
+                   Color="Color.Primary">
+            Tambah
+        </MudButton>
+        <MudSpacer/>
+        <MudTextField T="string"
+                      ValueChanged="@(s => OnSearch(s))"
+                      Placeholder="Search"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" 
+                      IconSize="Size.Medium" Class="mt-0">
+        </MudTextField>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="ID" T="UserProfile">ID</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="NamaLengkap" T="UserProfile">Nama Lengkap</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="TanggalLahir" T="UserProfile">Tanggal Lahir</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="RoleName" T="UserProfile">Role</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="IsActive" T="UserProfile">Active</MudTableSortLabel></MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ID" T="UserProfile">ID</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="NamaLengkap" T="UserProfile">Nama Lengkap</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="TanggalLahir" T="UserProfile">Tanggal Lahir</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="RoleName" T="UserProfile">Role</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="IsActive" T="UserProfile">Active</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            Action
+        </MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="ID">@context.Id</MudTd>
         <MudTd DataLabel="NamaLengkap">@context.NamaLengkap</MudTd>
-        <MudTd DataLabel="TanggalLahir">@context.TangalLahir</MudTd>
+        <MudTd DataLabel="TanggalLahir">@context.TangalLahir.Value.ToString("dd-MM-yyyy")</MudTd>
         <MudTd DataLabel="RoleName">@context.Role.Nama</MudTd>
-        <MudTd DataLabel="IsActive">@context.UserAccount.IsActive</MudTd>
+        <MudTd DataLabel="Active">
+            @{
+                if (context.UserAccount.IsActive)
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Title="Active" Color="Color.Success"/>
+                }
+                else
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Cancel" Title="Non Active" Color="Color.Error"/>
+                }
+            }
+        </MudTd>
+        <MudTd DataLabel="Action">
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" aria-label="delete" OnClick="()=>OnDelete(context)"></MudIconButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="Edit"></MudIconButton>
+        </MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -34,7 +75,7 @@
         <MudText>Loading...</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudTablePager />
+        <MudTablePager/>
     </PagerContent>
 </MudTable>
 
@@ -44,24 +85,34 @@
 
     private int totalItems;
     private string searchString = "";
-    
+
+    DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
+
+    private async Task OpenDialog(DialogOptions options)
+    {
+        var form =await Dialog.ShowAsync<AddUserDialog>("Tambah User", options);
+        var result = await form.Result;
+        if(!result.Canceled)
+            await table.ReloadServerData();
+    }
+
     private async Task<TableData<UserProfile>> ServerReload(TableState state, CancellationToken token)
     {
         var req = new FindRequest();
         req.Page = state.Page;
         req.PageSize = state.PageSize;
         req.Search = searchString;
-            var data = await httpClient.PostAsJsonAsync("api/users/find",req,cancellationToken:token);
+        var data = await httpClient.PostAsJsonAsync("api/users/find", req, cancellationToken: token);
         if (!data.IsSuccessStatusCode)
         {
-            return new TableData<UserProfile>() {TotalItems = 0, Items = null};
+            return new TableData<UserProfile>() { TotalItems = 0, Items = null };
         }
 
         var res = await JsonSerializer
             .DeserializeAsync<PaginatedResponse<UserProfile>>(data.Content.ReadAsStream());
         totalItems = res.TotalItems;
         pagedData = res.Items;
-        return new TableData<UserProfile>() {TotalItems = totalItems, Items = pagedData};
+        return new TableData<UserProfile>() { TotalItems = totalItems, Items = pagedData };
     }
 
     private void OnSearch(string text)
@@ -69,4 +120,35 @@
         searchString = text;
         table.ReloadServerData();
     }
+
+    private async Task OnDelete(UserProfile data)
+    {
+        var result = await Dialog.ShowMessageBox(
+            "Warning",
+            $"Yakin Mau Dihapus ID :{data.Id}",
+            yesText: "Delete",cancelText:"Cancel");
+        StateHasChanged();
+        if (result!=null)
+        {
+            var res = await httpClient.DeleteAsync($"api/users/{data.Id}");
+            if (res.IsSuccessStatusCode)
+            {
+                await Dialog.ShowMessageBox(
+                    "Info",
+                    "Data Berhasil Dihapus",
+                    yesText: "Ok");
+                await table.ReloadServerData();
+            }
+            else
+            {
+                await Dialog.ShowMessageBox(
+                    "Error",
+                    res.ReasonPhrase,
+                    yesText: "Ok");
+            }
+                
+        }
+        
+    }
+
 }
