@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Domain.Common;
+using Domain.Users;
 
-namespace Domain.Users;
+namespace Web.Components.Features.UserManagement;
 
-public class UserProfile : IGenericModifier
+public class UserDTO
 {
-    public int Id { get; set; }
     [Required]
     [StringLength(40, ErrorMessage = "Nama Tidak Boleh lebih dari 40 character")]
     public string NamaLengkap { get; set; }
@@ -15,13 +15,13 @@ public class UserProfile : IGenericModifier
     [StringLength(15, ErrorMessage = "Nama Tidak Boleh lebih dari 15 character")]
     public string? NoTelp { get; set; }
     public string? Photo { get; set; }
-    public Role? Role { get; set; }
     public int RoleId { get; set; }
-    [ValidateComplexType]
-    public UserAccount UserAccount { get; set; }
-    public int UserAccountId { get; set; }
-    public string? CreatedBy { get; set; }
-    public DateTime? CreatedOn { get; set; }
-    public string? LastModifiedBy { get; set; }
-    public DateTime? LastModifiedOn { get; set; }
+    [Required]
+    [StringLength(20, ErrorMessage = "Username Tidak Boleh lebih dari 20 character")]
+    public string Username { get; set; }
+    [Required]
+    [StringLength(35, ErrorMessage = "Password minimal 6 character dan kurang dari 35", MinimumLength = 6)]
+    public string Password { get; set; }
+    public bool IsActive { get; set; }
+    public string? Email { get; set; }
 }

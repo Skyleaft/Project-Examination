@@ -4,7 +4,7 @@
 @using Domain.Users
 @inject HttpClient HttpClient
 <EditForm Model="@userModel" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator/>
+    <ObjectGraphDataAnnotationsValidator/>
     <MudDialog>
         <DialogContent>
             <MudGrid>
@@ -50,16 +50,17 @@
 
                             <MudTextField Label="Email" Class="mt-3"
                                           Variant="Variant.Outlined"
-                                          @bind-Value="userModel.Email"
-                                          For="@(() => userModel.Email)"/>
+                                          @bind-Value="userModel.UserAccount.Email"
+                                          For="@(() => userModel.UserAccount.Email)"/>
                             <MudTextField Label="Username" Class="mt-3"
                                           Variant="Variant.Outlined"
-                                          @bind-Value="userModel.Username"
-                                          For="@(() => userModel.Username)"/>
+                                          @bind-Value="userModel.UserAccount.Username"
+                                          ReadOnly
+                                          For="@(() => userModel.UserAccount.Username)"/>
                             <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
                                           Variant="Variant.Outlined"
-                                          @bind-Value="userModel.Password"
-                                          For="@(() => userModel.Password)" InputType="InputType.Password"/>
+                                          @bind-Value="userModel.UserAccount.Password"
+                                          For="@(() => userModel.UserAccount.Password)" InputType="InputType.Password"/>
 
                         </MudCardContent>
                     </MudCard>
@@ -76,23 +77,18 @@
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
+    [Parameter] public UserProfile userModel { get; set; } = new UserProfile();
+    
     void Cancel() => MudDialog.Cancel();
     bool success;
-
-    UserDTO userModel = new UserDTO()
-    {
-        RoleId = 2,
-        TangalLahir = DateTime.Now
-    };
+    
 
     private async Task OnValidSubmit(EditContext context)
     {
-        var postBody = userModel.Adapt<UserProfile>();
-        postBody.UserAccount = userModel.Adapt<UserAccount>();
         success = true;
         var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
-        var dial = await DialogService.ShowAsync<BluryDialog>("Registering...", options);
-        var res =await HttpClient.PostAsJsonAsync("api/users/register", postBody);
+        var dial = await DialogService.ShowAsync<BluryDialog>("Updating...", options);
+        var res =await HttpClient.PutAsJsonAsync($"api/users/{userModel.Id}",userModel);
         StateHasChanged();
         if (res.IsSuccessStatusCode)
         {
@@ -100,7 +96,7 @@
             MudDialog.Close(DialogResult.Ok(true));
             DialogService.ShowMessageBox(
                 "Info",
-                "Data Berhasil DiTambahkan",
+                "Data Berhasil Diubah",
                 yesText: "Ok");
         }
         else if (res.StatusCode == HttpStatusCode.BadRequest)

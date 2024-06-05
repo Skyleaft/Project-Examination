@@ -2,6 +2,7 @@
 @using System.Text.Json
 @using Domain.Common
 @using Web.Components.Features.UserManagement.Dialog
+@using Mapster
 @using Domain.Users
 @inject HttpClient httpClient
 @inject IDialogService Dialog
@@ -11,7 +12,7 @@
 <MudTable ServerData="ServerReload"
           Dense="true" Hover="true" @ref="table">
     <ToolBarContent>
-        <MudButton OnClick="@((e) => OpenDialog(maxWidth))"
+        <MudButton OnClick="@((e) => OpenDialog())"
                    Variant="Variant.Outlined"
                    StartIcon="@Icons.Material.Outlined.PersonAdd"
                    Color="Color.Primary">
@@ -65,7 +66,7 @@
         </MudTd>
         <MudTd DataLabel="Action">
             <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" aria-label="delete" OnClick="()=>OnDelete(context)"></MudIconButton>
-            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="Edit"></MudIconButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="Edit" OnClick="()=>OnEdit(context)"></MudIconButton>
         </MudTd>
     </RowTemplate>
     <NoRecordsContent>
@@ -88,9 +89,9 @@
 
     DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
 
-    private async Task OpenDialog(DialogOptions options)
+    private async Task OpenDialog()
     {
-        var form =await Dialog.ShowAsync<AddUserDialog>("Tambah User", options);
+        var form =await Dialog.ShowAsync<AddUserDialog>("Tambah User", maxWidth);
         var result = await form.Result;
         if(!result.Canceled)
             await table.ReloadServerData();
@@ -149,6 +150,15 @@
                 
         }
         
+    }
+
+    private async Task OnEdit(UserProfile data)
+    {
+        var parameters = new DialogParameters<EditUserDialog> { { x => x.userModel, data } };
+        var form =await Dialog.ShowAsync<EditUserDialog>("Edit User", parameters,maxWidth);
+        var result = await form.Result;
+        if(!result.Canceled)
+            await table.ReloadServerData();
     }
 
 }
