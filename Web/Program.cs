@@ -118,7 +118,6 @@ using (var scope = app.Services.CreateScope())
         UserName = "sysadmin",
         NormalizedUserName = "SYSADMIN",
         NamaLengkap = "System Administrator",
-        TangalLahir = DateTime.Now,
         Gender = Gender.LakiLaki,
         Email = "milzan_malik@outlook.com",
         NormalizedEmail = "MILZAN_MALIK@OUTLOOK.COM",

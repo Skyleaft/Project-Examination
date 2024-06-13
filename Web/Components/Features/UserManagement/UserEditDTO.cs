@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Domain.Common;
-using Web.Components.Features.Auth;
 
 namespace Web.Components.Features.UserManagement;
 
-public class UserDTO : LoginDTO
+public class UserEditDTO
 {
+    public string UserName { get; set; }
     [Required]
     public string NamaLengkap { get; set; }
     [Required]

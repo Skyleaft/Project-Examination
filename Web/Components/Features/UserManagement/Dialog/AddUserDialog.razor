@@ -2,6 +2,8 @@
 @using Domain.Common
 @using Mapster
 @using Web.Components.Features.Auth
+@using Web.Common.Database
+@using Microsoft.EntityFrameworkCore
 @using Domain.Users
 @inject HttpClient HttpClient
 <EditForm Model="@userModel" OnValidSubmit="OnValidSubmit">
@@ -11,26 +13,63 @@
             <MudGrid>
                 <MudItem xs="12" sm="6">
                     <MudCard>
-                        <MudCardHeader><MudText Typo="Typo.h6">Profile User</MudText></MudCardHeader>
+                        <MudCardHeader>
+                            <MudText Typo="Typo.h6">Profile User</MudText>
+                        </MudCardHeader>
                         <MudCardContent>
-
                             <MudTextField Label="Nama Lengkap" HelperText="Max. 40 characters"
+                                          Variant="Variant.Outlined"
+                                          MaxLength="40"
                                           @bind-Value="userModel.NamaLengkap"
                                           For="@(() => userModel.NamaLengkap)"/>
-                            <MudDatePicker Label="Tanggal Lahir" Class="mt-3" @bind-Date="userModel.TangalLahir"/>
-                            <MudRadioGroup T="Gender" bind-Value="userModel.Gender" Class="mt-4">
-                                <MudRadio Value="Gender.LakiLaki"
-                                          Color="Color.Primary">
-                                    Laki - Laki
-                                </MudRadio>
-                                <MudRadio Value="Gender.Perempuan"
+                            <MudRadioGroup T="int" ValueChanged="i => userModel.Gender=(Gender)i" Class="mt-4">
+                                <MudRadio Value="1"
                                           Color="Color.Primary">
                                     Perempuan
                                 </MudRadio>
+                                <MudRadio Value="0"
+                                          Color="Color.Primary">
+                                    Laki - Laki
+                                </MudRadio>
+
                             </MudRadioGroup>
+                            <MudSelect T="string" Label="Pekerjaan"
+                                       Class="mt-3"
+                                       @bind-Value="userModel.Pekerjaan"
+                                       Variant="Variant.Outlined"
+                                       AnchorOrigin="Origin.BottomCenter">
+                                <MudSelectItem T="string" Value="@("Mahasiswa")">Mahasiswa</MudSelectItem>
+                                <MudSelectItem T="string" Value="@("Alumni")">Alumni</MudSelectItem>
+                                <MudSelectItem T="string" Value="@("Umum")">Umum</MudSelectItem>
+                            </MudSelect>
                             <MudTextField Label="Nomor Telepon" HelperText="Max. 15 characters"
-                                          @bind-Value="userModel.NomorTelp"
-                                          For="@(() => userModel.NomorTelp)"/>
+                                          Class="mt-3"
+                                          Variant="Variant.Outlined"
+                                          MaxLength="15"
+                                          InputType="InputType.Number"
+                                          @bind-Value="userModel.PhoneNumber"
+                                          For="@(() => userModel.PhoneNumber)"/>
+                            <MudAutocomplete T="Provinsi" Label="Provinsi"
+                                             Variant="Variant.Outlined"
+                                             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                             Strict="false"
+                                             ValueChanged="(Provinsi selected) => { SelectedProv = selected; FilterKota(SelectedProv.Id); SelectedKota = null; }"
+                                             ToStringFunc="@(e => e == null ? null : $"{e.NamaProvinsi}")"
+                                             SearchFunc="@SearchProv"/>
+                            @{
+                                if (SelectedProv != null)
+                                {
+                                    FilterKota(SelectedProv.Id);
+                                    <MudAutocomplete T="Kota" Label="Kota"
+                                                     Variant="Variant.Outlined"
+                                                     AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                                     Strict="false"
+                                                     ValueChanged="kota => { SelectedKota = kota; userModel.KotaId = kota.Id; }"
+                                                     ToStringFunc="@(e => e == null ? null : $"{e.NamaKota}")"
+                                                     SearchFunc="@SearchKota"/>
+                                }
+                            }
+
                         </MudCardContent>
                     </MudCard>
 
@@ -38,7 +77,9 @@
 
                 <MudItem xs="12" sm="6">
                     <MudCard>
-                        <MudCardHeader><MudText Typo="Typo.h6">Akun Login</MudText></MudCardHeader>
+                        <MudCardHeader>
+                            <MudText Typo="Typo.h6">Akun Login</MudText>
+                        </MudCardHeader>
                         <MudCardContent>
                             <MudSelect T="string" Label="Role"
                                        @bind-Value="userModel.Role"
@@ -76,13 +117,36 @@
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] private IUser userService { get; set; }
+    [Inject] AppDbContext _appDbContext { get; set; }
     void Cancel() => MudDialog.Cancel();
     bool success;
+    
+    Provinsi SelectedProv = null;
+    Kota SelectedKota = null;
 
-    UserDTO userModel = new UserDTO()
+    UserDTO userModel = new UserDTO();
+    List<Provinsi> dataProv = new List<Provinsi>();
+    List<Kota> dataKota = new List<Kota>();
+    List<Kota> filterKota = new List<Kota>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        TangalLahir = DateTime.Now
-    };
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            dataProv = await _appDbContext.Provinsi.ToListAsync();
+            dataKota = await _appDbContext.Kota.ToListAsync();
+            StateHasChanged();
+        }
+    }
+
+
+    public async Task FilterKota(string ProvID)
+    {
+        filterKota = dataKota
+            .Where(x => x.ProvinsiId == ProvID)
+            .ToList();
+    }
 
     private async Task OnValidSubmit(EditContext context)
     {
@@ -101,12 +165,31 @@
         else
         {
             dial.Close();
-            MudDialog.Close(DialogResult.Ok(true));
             DialogService.ShowMessageBox(
                 "Error",
                 createdUser.Message,
                 yesText: "Ok");
         }
+    }
+
+    private async Task<IEnumerable<Provinsi>> SearchProv(string search, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(search))
+            return dataProv;
+        return dataProv
+            .Where(x => x.NamaProvinsi
+                .Contains(search, StringComparison.CurrentCultureIgnoreCase))
+            .ToList();
+    }
+
+    private async Task<IEnumerable<Kota>> SearchKota(string search, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(search))
+            return filterKota;
+        return filterKota
+            .Where(x => x.NamaKota
+                .Contains(search, StringComparison.CurrentCultureIgnoreCase))
+            .ToList();
     }
 
 }

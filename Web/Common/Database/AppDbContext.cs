@@ -14,4 +14,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<Room> Room { get; set; }
     public DbSet<UserExam> UserExam { get; set; }
     public DbSet<UserAnswer> UserAnswer { get; set; }
+    public DbSet<Provinsi> Provinsi { get; set; }
+    public DbSet<Kota> Kota { get; set; }
 }

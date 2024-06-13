@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Users;
+using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Web.Common.Database;
@@ -20,11 +21,10 @@ public class UserService:IUser
     public async Task<PaginatedResponse<ApplicationUser>> Find(FindRequest r)
     {
         var data =await _appDbContext.Users.WhereIf(!string.IsNullOrEmpty(r.Search),
-                x => EF
-                    .Functions
-                    .Like(x.NamaLengkap, $"%{r.Search}%"))
-            .OrderBy(x => x.Id)
-            .ToPaginatedListAsync(r.Page, r.PageSize);
+                x => x.NamaLengkap.ToLower()
+                    .Contains(r.Search.ToLower()))
+            .OrderBy(x=>x.UserName)
+            .ToPaginatedListAsync(r.Page, r.PageSize,r.OrderBy,r.Direction);
         return data;
     }
 
@@ -37,10 +37,11 @@ public class UserService:IUser
             NamaLengkap = r.NamaLengkap,
             UserName = r.UserName,
             Email = r.Email,
-            TangalLahir = r.TangalLahir,
             Gender = r.Gender,
-            PhoneNumber = r.NomorTelp,
+            PhoneNumber = r.PhoneNumber,
             Photo = r.Photo,
+            Pekerjaan = r.Pekerjaan,
+            KotaId = r.KotaId
         };
         var createUser = await _userManager.CreateAsync(user, r.Password);
         if (createUser.Succeeded)
@@ -49,5 +50,52 @@ public class UserService:IUser
             return new ServiceResponse(true, "Berhasil membuat user");
         }
         return new ServiceResponse(false, createUser.Errors.First().Description);
+    }
+
+    public async Task<ServiceResponse> Update(UserEditDTO r)
+    {
+        var finduser = await _userManager.FindByNameAsync(r.UserName);
+        var oldData = finduser.Adapt<UserDTO>();
+        var rol = await _userManager.GetRolesAsync(finduser);
+        oldData.Role = rol.First();
+        
+        finduser.NamaLengkap = r.NamaLengkap;
+        finduser.Email = r.Email;
+        finduser.Gender = r.Gender;
+        finduser.PhoneNumber = r.PhoneNumber;
+        finduser.Photo = r.Photo;
+        finduser.Pekerjaan = r.Pekerjaan;
+        finduser.KotaId = r.KotaId;
+        var updated = await _userManager.UpdateAsync(finduser);
+        if (oldData.Role != r.Role)
+        {
+            await _userManager.RemoveFromRoleAsync(finduser, oldData.Role);
+            await _userManager.AddToRoleAsync(finduser, r.Role);
+        }
+
+        if (updated.Succeeded)
+        {
+            return  new ServiceResponse(true, "Berhasil mengupdate user");
+        }
+        else
+        {
+            return  new ServiceResponse(false, updated.Errors.First().Description);
+        }
+    }
+
+    public async Task<ServiceResponse> Delete(UserDTO r)
+    {
+        var finduser = await _userManager.FindByNameAsync(r.UserName);
+        await _userManager.DeleteAsync(finduser);
+        return new ServiceResponse(true, "Berhasil menghapus user");
+    }
+
+    public async Task<UserDTO> Get(string id)
+    {
+        var finduser = await _userManager.FindByIdAsync(id);
+        var data = finduser.Adapt<UserDTO>();
+        var rol = await _userManager.GetRolesAsync(finduser);
+        data.Role = rol.First();
+        return data;
     }
 }

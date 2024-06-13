@@ -9,4 +9,7 @@ public interface IUser
 {
     public Task<PaginatedResponse<ApplicationUser>> Find(FindRequest r);
     public Task<ServiceResponse> Register(UserDTO r);
+    public Task<ServiceResponse> Update(UserEditDTO r);
+    public Task<ServiceResponse> Delete(UserDTO r);
+    public Task<UserDTO> Get(string id);
 }

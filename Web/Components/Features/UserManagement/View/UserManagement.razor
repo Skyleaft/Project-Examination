@@ -35,9 +35,6 @@
             <MudTableSortLabel SortLabel="NamaLengkap" T="ApplicationUser">Nama Lengkap</MudTableSortLabel>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="TanggalLahir" T="ApplicationUser">Tanggal Lahir</MudTableSortLabel>
-        </MudTh>
-        <MudTh>
             <MudTableSortLabel SortLabel="Gender" T="ApplicationUser">Gender</MudTableSortLabel>
         </MudTh>
         <MudTh>
@@ -49,8 +46,7 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="NamaLengkap">@context.NamaLengkap</MudTd>
-        <MudTd DataLabel="TanggalLahir">@context.TangalLahir.Value.ToString("dd-MM-yyyy")</MudTd>
-        <MudTd DataLabel="Jenis Kelamin">@context.Gender</MudTd>
+        <MudTd DataLabel="Jenis Kelamin">@setGender(context.Gender)</MudTd>
         <MudTd DataLabel="Username">@context.UserName</MudTd>
         <MudTd DataLabel="Action">
             <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" aria-label="delete" OnClick="()=>OnDelete(context)"></MudIconButton>
@@ -79,6 +75,10 @@
 
     DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
 
+    private string setGender(Gender gender)
+    {
+        return gender == Gender.LakiLaki ? "Laki - Laki" : "Perempuan";
+    }
     private async Task OpenDialog()
     {
         var form =await Dialog.ShowAsync<AddUserDialog>("Tambah User", maxWidth);
@@ -93,7 +93,13 @@
         req.Page = state.Page;
         req.PageSize = state.PageSize;
         req.Search = searchString;
+        req.OrderBy = state.SortLabel;
+        req.Direction = (int)state.SortDirection;
         var data = await UserService.Find(req);
+        if (data == null)
+        {
+            return new TableData<ApplicationUser>() { TotalItems = 0, Items = new List<ApplicationUser>() };
+        }
         totalItems = data.TotalItems;
         pagedData = data.Items;
         return new TableData<ApplicationUser>() { TotalItems = totalItems, Items = pagedData };
@@ -109,17 +115,17 @@
     {
         var result = await Dialog.ShowMessageBox(
             "Warning",
-            $"Yakin Mau Dihapus ID :{data.Id}",
+            $"Yakin Mau Dihapus UserName :{data.UserName}",
             yesText: "Delete",cancelText:"Cancel");
         StateHasChanged();
         if (result!=null)
         {
-            var res = await httpClient.DeleteAsync($"api/users/{data.Id}");
-            if (res.IsSuccessStatusCode)
+            var res = await UserService.Delete(data.Adapt<UserDTO>());
+            if (res.Flag)
             {
                 await Dialog.ShowMessageBox(
                     "Info",
-                    "Data Berhasil Dihapus",
+                    res.Message,
                     yesText: "Ok");
                 await table.ReloadServerData();
             }
@@ -127,7 +133,7 @@
             {
                 await Dialog.ShowMessageBox(
                     "Error",
-                    res.ReasonPhrase,
+                    res.Message,
                     yesText: "Ok");
             }
                 
@@ -137,10 +143,9 @@
 
     private async Task OnEdit(ApplicationUser data)
     {
-        var userDTO = new UserDTO();
-        userDTO.Adapt(data);
-        userDTO.Password = data.PasswordHash;
-        var parameters = new DialogParameters<EditUserDialog> { { x => x.userModel, userDTO } };
+        var userDTO = await UserService.Get(data.Id);
+        var edit = userDTO.Adapt<UserEditDTO>();
+        var parameters = new DialogParameters<EditUserDialog> { { x => x.userModel, edit } };
         var form =await Dialog.ShowAsync<EditUserDialog>("Edit User", parameters,maxWidth);
         var result = await form.Result;
         if(!result.Canceled)
