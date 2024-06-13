@@ -3,10 +3,13 @@
 @using Domain.Common
 @using Web.Components.Features.UserManagement.Dialog
 @using Mapster
+@using Web.Components.Features.Auth
 @using Domain.Users
 @inject HttpClient httpClient
 @inject IDialogService Dialog
-@attribute [Authorize(Roles = "Superuser")]
+@attribute [Authorize]
+@rendermode InteractiveServer
+
 <h3>UserManagement</h3>
 
 <MudTable ServerData="ServerReload"
@@ -29,41 +32,26 @@
     </ToolBarContent>
     <HeaderContent>
         <MudTh>
-            <MudTableSortLabel SortLabel="ID" T="UserProfile">ID</MudTableSortLabel>
+            <MudTableSortLabel SortLabel="NamaLengkap" T="ApplicationUser">Nama Lengkap</MudTableSortLabel>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="NamaLengkap" T="UserProfile">Nama Lengkap</MudTableSortLabel>
+            <MudTableSortLabel SortLabel="TanggalLahir" T="ApplicationUser">Tanggal Lahir</MudTableSortLabel>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="TanggalLahir" T="UserProfile">Tanggal Lahir</MudTableSortLabel>
+            <MudTableSortLabel SortLabel="Gender" T="ApplicationUser">Gender</MudTableSortLabel>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="RoleName" T="UserProfile">Role</MudTableSortLabel>
-        </MudTh>
-        <MudTh>
-            <MudTableSortLabel SortLabel="IsActive" T="UserProfile">Active</MudTableSortLabel>
+            <MudTableSortLabel SortLabel="UserName" T="ApplicationUser">UserName</MudTableSortLabel>
         </MudTh>
         <MudTh>
             Action
         </MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="ID">@context.Id</MudTd>
         <MudTd DataLabel="NamaLengkap">@context.NamaLengkap</MudTd>
         <MudTd DataLabel="TanggalLahir">@context.TangalLahir.Value.ToString("dd-MM-yyyy")</MudTd>
-        <MudTd DataLabel="RoleName">@context.Role.Nama</MudTd>
-        <MudTd DataLabel="Active">
-            @{
-                if (context.UserAccount.IsActive)
-                {
-                    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Title="Active" Color="Color.Success"/>
-                }
-                else
-                {
-                    <MudIcon Icon="@Icons.Material.Filled.Cancel" Title="Non Active" Color="Color.Error"/>
-                }
-            }
-        </MudTd>
+        <MudTd DataLabel="Jenis Kelamin">@context.Gender</MudTd>
+        <MudTd DataLabel="Username">@context.UserName</MudTd>
         <MudTd DataLabel="Action">
             <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" aria-label="delete" OnClick="()=>OnDelete(context)"></MudIconButton>
             <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="Edit" OnClick="()=>OnEdit(context)"></MudIconButton>
@@ -81,9 +69,11 @@
 </MudTable>
 
 @code {
-    private IEnumerable<UserProfile> pagedData;
-    private MudTable<UserProfile> table;
-
+    [Inject] private IUser UserService { get; set; }
+    
+    private IEnumerable<ApplicationUser> pagedData;
+    private MudTable<ApplicationUser> table;
+    
     private int totalItems;
     private string searchString = "";
 
@@ -97,23 +87,16 @@
             await table.ReloadServerData();
     }
 
-    private async Task<TableData<UserProfile>> ServerReload(TableState state, CancellationToken token)
+    private async Task<TableData<ApplicationUser>> ServerReload(TableState state, CancellationToken token)
     {
         var req = new FindRequest();
         req.Page = state.Page;
         req.PageSize = state.PageSize;
         req.Search = searchString;
-        var data = await httpClient.PostAsJsonAsync("api/users/find", req, cancellationToken: token);
-        if (!data.IsSuccessStatusCode)
-        {
-            return new TableData<UserProfile>() { TotalItems = 0, Items = null };
-        }
-
-        var res = await JsonSerializer
-            .DeserializeAsync<PaginatedResponse<UserProfile>>(data.Content.ReadAsStream());
-        totalItems = res.TotalItems;
-        pagedData = res.Items;
-        return new TableData<UserProfile>() { TotalItems = totalItems, Items = pagedData };
+        var data = await UserService.Find(req);
+        totalItems = data.TotalItems;
+        pagedData = data.Items;
+        return new TableData<ApplicationUser>() { TotalItems = totalItems, Items = pagedData };
     }
 
     private void OnSearch(string text)
@@ -122,7 +105,7 @@
         table.ReloadServerData();
     }
 
-    private async Task OnDelete(UserProfile data)
+    private async Task OnDelete(ApplicationUser data)
     {
         var result = await Dialog.ShowMessageBox(
             "Warning",
@@ -152,9 +135,12 @@
         
     }
 
-    private async Task OnEdit(UserProfile data)
+    private async Task OnEdit(ApplicationUser data)
     {
-        var parameters = new DialogParameters<EditUserDialog> { { x => x.userModel, data } };
+        var userDTO = new UserDTO();
+        userDTO.Adapt(data);
+        userDTO.Password = data.PasswordHash;
+        var parameters = new DialogParameters<EditUserDialog> { { x => x.userModel, userDTO } };
         var form =await Dialog.ShowAsync<EditUserDialog>("Edit User", parameters,maxWidth);
         var result = await form.Result;
         if(!result.Canceled)

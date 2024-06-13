@@ -6,8 +6,7 @@ namespace Domain.TakeExam;
 public class UserExam
 {
     public int Id { get; set; }
-    public UserProfile? UserProfile { get; set; }
-    public int? UserProfileId { get; set; }
+    public ApplicationUser? User { get; set; }
     public bool IsOngoing { get; set; }
     public Room? Room { get; set; }
     public int? RoomId { get; set; }

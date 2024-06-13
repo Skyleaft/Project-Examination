@@ -34,7 +34,7 @@
 <AuthorizeView>
     <Authorized>
         <MudText Class="mr-2">@context.User.Identity.Name</MudText>
-        <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
+        <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight" @rendermode="InteractiveServer">
             <MudMenuItem>Profile</MudMenuItem>
             <MudMenuItem>My account</MudMenuItem>
             <MudMenuItem OnClick="Logout">Logout</MudMenuItem>
@@ -44,3 +44,8 @@
         <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/login">Login</MudButton>
     </NotAuthorized>
 </AuthorizeView>
+
+@code
+{
+    private string? currentUrl;
+}

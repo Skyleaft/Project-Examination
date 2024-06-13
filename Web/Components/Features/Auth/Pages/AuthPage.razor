@@ -1,14 +1,19 @@
 ﻿@using System.Text.Json
+@using Domain.Users
 @using Web.Common.Models
 @using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Components.Endpoints
+@using Microsoft.AspNetCore.Identity
+@using Web.Components.Features.UserManagement
 @inject AuthenticationStateProvider authStateProvicder
 @inject NavigationManager navManager
-@page "/login"
-@layout LoginLayout
-@rendermode InteractiveServer
+@page "/Account/Login"
 @attribute [AllowAnonymous]
+@layout LoginLayout
+@inject SignInManager<ApplicationUser> signInManager
+@inject IdentityRedirectManager RedirectManager
 
-<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+<EditForm Model="model" method="post" OnValidSubmit="OnValidSubmit" FormName="login" >
     <DataAnnotationsValidator/>
     <MudGrid Class="align-content-center justify-center">
         <MudItem xs=9 md=5 lg=3>
@@ -19,6 +24,7 @@
                     </CardHeaderContent>
                 </MudCardHeader>
                 <MudCardContent>
+                    <StatusMessage Message="@errorMessage"/>
                     <div class="d-flex justify-center align-content-center">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96px" height="96px">
                             <linearGradient id="79mwFS8UXi9i9kxtPFHWVa" x1="30" x2="30" y1="2" y2="62.513" gradientUnits="userSpaceOnUse" spreadMethod="reflect">
@@ -32,10 +38,10 @@
                             </linearGradient><path fill="url(#79mwFS8UXi9i9kxtPFHWVc)" d="M48 40A5 5 0 1 0 48 50A5 5 0 1 0 48 40Z"/>
                         </svg>
                     </div>
-                    <MudTextField Label="Username" Class="mt-3" Required="true" RequiredError="Username is required!"
-                                  @bind-Value="model.Username" For="@(() => model.Username)" Variant="Variant.Outlined"/>
-                    <MudTextField Label="Password" Class="mt-3" Required="true" RequiredError="Password is required!"
-                                  @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" Variant="Variant.Outlined"/>
+                    <MudTextField T="string" Label="Username" Class="mt-3" ShrinkLabel name="model.Username" Required="true" RequiredError="Username is required!"
+                                  @bind-Value="model.UserName" InputType="InputType.Text" Variant="Variant.Outlined"/>
+                    <MudTextField T="string" Label="Password" Class="mt-3" ShrinkLabel name="model.Password" Required="true" RequiredError="Password is required!"
+                                  @bind-Value="model.Password" InputType="InputType.Password" Variant="Variant.Outlined"/>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto mt-4" FullWidth Style="height:60px">Login</MudButton>
                 </MudCardContent>
             </MudCard>
@@ -45,39 +51,72 @@
 </EditForm>
 
 @code {
-    [CascadingParameter]
-    public HttpContext? HttpContext { get; set; }
+    [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
+    [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
+    [SupplyParameterFromQuery] private bool? isLogout { get; set; }
+    [SupplyParameterFromForm]
+    private LoginDTO model { get; set; } = new();
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] HttpClient httpClient { get; set; }
-    MudForm form;
-    AuthRequest model = new AuthRequest();
-    private bool isVisible;
+    private string? errorMessage;
     
+    private bool isVisible;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (HttpMethods.IsGet(HttpContext.Request.Method))
+        {
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        }
+        
+        if (isLogout!=null && isLogout==true)
+        {
+            await signInManager.SignOutAsync();
+            //navManager.NavigateTo($"Account/Login", forceLoad: true);
+        }
+        if (HttpContext.User.Identity.IsAuthenticated)
+        {
+            RedirectManager.RedirectTo(ReturnUrl);
+        }
+    }
+
     private async Task OnValidSubmit()
     {
         var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
-        var dial = await DialogService.ShowAsync<BluryDialog>("Authentication...", options);
-        
-        var req = await httpClient.PostAsJsonAsync("api/Auth", model);
-        if (!req.IsSuccessStatusCode)
+        //var dial = await DialogService.ShowAsync<BluryDialog>("Authentication...", options);
+
+        try
         {
-            var res = await JsonSerializer.DeserializeAsync<ErrorResult>(req.Content.ReadAsStream());
-            dial.Close();
-            DialogService.ShowMessageBox(
-                "Info",
-                res.Errors.GeneralErrors.FirstOrDefault(),
-                yesText: "Ok");
-            return;
+            var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, true, lockoutOnFailure: false);
+            if (result.Succeeded)
+            {
+                //dial.Close();
+  
+                RedirectManager.RedirectTo(ReturnUrl);
+            }
+            else if (result.IsLockedOut)
+            {
+                RedirectManager.RedirectTo("Account/Lockout");
+            }
+            else if (result.IsNotAllowed)
+            {
+                
+            }
+            else
+            {
+                errorMessage = "Error: Invalid login attempt.";
+                //dial.Close();
+                // DialogService.ShowMessageBox(
+                //     "Info",
+                //     "Error: Invalid login attempt.",
+                //     yesText: "Ok");
+            }
         }
-        else
+        catch (Exception ex)
         {
-            var res = await JsonSerializer.DeserializeAsync<AuthResponse>(req.Content.ReadAsStream());
-            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvicder;
-            await customAuthStateProvider.UpdateAuthenticationState(res);
             
-            dial.Close();
-            navManager.NavigateTo("/", true);
         }
         
     }

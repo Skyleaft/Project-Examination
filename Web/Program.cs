@@ -1,11 +1,17 @@
 using Blazored.LocalStorage;
+using Blazored.SessionStorage;
+using Domain.Common;
+using Domain.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using MudBlazor.Extensions;
 using MudBlazor.Services;
+using Web;
+using Web.Common.Database;
 using Web.Common.Extensions;
 using Web.Components;
 using Web.Components.Features.Auth;
@@ -19,25 +25,44 @@ builder.AddServiceDefaults();
 
 builder.Services.AddMudServices();
 builder.Services.AddSystemd();
-// builder.AddRedisClient("cache");
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+builder.Services.InjectService();
+
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddHttpContextAccessor();
+builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddScoped<ProtectedSessionStorage>();
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-// builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-//     .AddCookie(options =>
-//     {
-//         options.LoginPath = "/login";
-//         options.LogoutPath = "/logout";
-//         options.Cookie.Name = "CustomAuth";
-//         options.Cookie.MaxAge = TimeSpan.FromMinutes(30);
-//     });
-// builder.Services.AddAuthorization();
-builder.Services.AddAuthentication()
-    .AddScheme<AuthenticationSchemeOptions, CustomAuthenticationHandler>("CustomSchemeName", options => { });
+
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<IdentityUserAccessor>();
+builder.Services.AddScoped<IdentityRedirectManager>();
+builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = IdentityConstants.ApplicationScheme;
+        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+    })
+    .AddIdentityCookies();
+
+var connectionString = builder.Configuration.GetConnectionString("mzserver") 
+                       ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+builder.Services.AddIdentityCore<ApplicationUser>(o =>
+        {
+            o.SignIn.RequireConfirmedAccount = true;
+            o.Password.RequireDigit = false;
+            o.Password.RequireUppercase = false;
+            o.Password.RequiredUniqueChars = 0;
+            o.Password.RequireNonAlphanumeric = false;
+        }
+    )
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IUserPreferencesService, UserPreferencesService>();
 builder.Services.AddScoped<INotificationService, InMemoryNotificationService>();
@@ -48,12 +73,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddTransient<JwtBearerHandler>();
-var apiURL = builder.Configuration.GetConnectionString("DefaultConnection") ?? "https+http://apiservice";
-builder.Services.AddHttpClient("API", (sp, cl) => { cl.BaseAddress = new Uri(apiURL); })
-    .AddHttpMessageHandler<JwtBearerHandler>();
-builder.Services.AddScoped(
-    sp => sp.GetService<IHttpClientFactory>().CreateClient("API"));
+builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
 
@@ -65,23 +85,58 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    //app.UseHsts();
 }
 else
 {
+    app.UseMigrationsEndPoint();
     app.UseWebAssemblyDebugging();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
-// app.UseAuthentication();
-// app.UseAuthorization();
 
 using (var scope = app.Services.CreateScope())
 {
     var notificationService = scope.ServiceProvider.GetService<INotificationService>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();  
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();  
+    
+    string[] roles = { "Superuser","Operator","Dosen","User" };
+    foreach (var role in roles)
+    {
+        if (!(await roleManager.RoleExistsAsync(role)))  
+        {  
+            await roleManager.CreateAsync(new IdentityRole(role));  
+        } 
+    }
+
+    var superuser = new ApplicationUser()
+    {
+        UserName = "sysadmin",
+        NormalizedUserName = "SYSADMIN",
+        NamaLengkap = "System Administrator",
+        TangalLahir = DateTime.Now,
+        Gender = Gender.LakiLaki,
+        Email = "milzan_malik@outlook.com",
+        NormalizedEmail = "MILZAN_MALIK@OUTLOOK.COM",
+        EmailConfirmed = true,
+        SecurityStamp = Guid.NewGuid().ToString("D"),
+    };
+
+    if (await userManager.FindByNameAsync(superuser.UserName) == null)
+    {
+        var created = await userManager.CreateAsync(superuser, "@superuser");
+        if (created.Succeeded)
+        {
+            await userManager.AddToRoleAsync(superuser, "Superuser");
+        }
+        //await userManager.AddToRoleAsync(superuser, "Superuser");
+    }
+    
+    
     if (notificationService is InMemoryNotificationService inMemoryService)
     {
         inMemoryService.Preload();
@@ -89,8 +144,11 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.MapRazorComponents<App>()
+    .DisableAntiforgery()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Web.Client._Imports).Assembly);
+
+app.MapAdditionalIdentityEndpoints();
 
 app.Run();

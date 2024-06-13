@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Blazored.SessionStorage;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using Web.Common.Theme;
 using Web.Services;
@@ -7,25 +9,28 @@ namespace Web.Components.Layout;
 
 public partial class MainLayout : LayoutComponentBase, IDisposable
 {
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
     [Inject] private LayoutService LayoutService { get; set; }
+    [Inject] NavigationManager navManager { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
-
+    [Inject] private ISessionStorageService _sessionStorageService { get; set; }
     private MudThemeProvider _mudThemeProvider;
     private NavMenu _navMenuRef;
     private bool _drawerOpen = true;
     private bool _topMenuOpen = false;
-    protected override void OnInitialized()
+    
+    protected override Task OnInitializedAsync()
     {
         LayoutService.SetBaseTheme(Themes.LandingPageTheme());
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
         LayoutService.MajorUpdateOccurred += LayoutServiceOnMajorUpdateOccured;
-        base.OnInitialized();
+        return base.OnInitializedAsync();
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
-
         if (firstRender)
         {
             await ApplyUserPreferences();

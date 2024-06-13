@@ -18,7 +18,6 @@ namespace Web.Components.Layout
         [Inject] private LayoutService LayoutService { get; set; }
         [Inject] NavigationManager navManager { get; set; }
         [Inject] AuthenticationStateProvider authStateProvicder { get; set; }
-        [Parameter] public UserAccount? currentAccountSession { get; set; }
 
         private async Task Logout()
         {

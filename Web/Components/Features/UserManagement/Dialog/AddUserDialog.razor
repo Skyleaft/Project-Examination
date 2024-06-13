@@ -1,6 +1,7 @@
 ﻿@using System.Net
 @using Domain.Common
 @using Mapster
+@using Web.Components.Features.Auth
 @using Domain.Users
 @inject HttpClient HttpClient
 <EditForm Model="@userModel" OnValidSubmit="OnValidSubmit">
@@ -19,17 +20,17 @@
                             <MudDatePicker Label="Tanggal Lahir" Class="mt-3" @bind-Date="userModel.TangalLahir"/>
                             <MudRadioGroup T="Gender" bind-Value="userModel.Gender" Class="mt-4">
                                 <MudRadio Value="Gender.LakiLaki"
-                                    Color="Color.Primary">
+                                          Color="Color.Primary">
                                     Laki - Laki
                                 </MudRadio>
                                 <MudRadio Value="Gender.Perempuan"
-                                    Color="Color.Primary">
+                                          Color="Color.Primary">
                                     Perempuan
                                 </MudRadio>
                             </MudRadioGroup>
-                            <MudTextField Label="Nomor Telp." HelperText="Max. 15 characters" Class="mt-3" InputType="InputType.Number"
-                                          @bind-Value="userModel.NoTelp"
-                                          For="@(() => userModel.NoTelp)"/>
+                            <MudTextField Label="Nomor Telepon" HelperText="Max. 15 characters"
+                                          @bind-Value="userModel.NomorTelp"
+                                          For="@(() => userModel.NomorTelp)"/>
                         </MudCardContent>
                     </MudCard>
 
@@ -39,28 +40,26 @@
                     <MudCard>
                         <MudCardHeader><MudText Typo="Typo.h6">Akun Login</MudText></MudCardHeader>
                         <MudCardContent>
-                            <MudSelect T="int" Label="Role" 
-                                       @bind-Value="userModel.RoleId"
+                            <MudSelect T="string" Label="Role"
+                                       @bind-Value="userModel.Role"
                                        Variant="Variant.Outlined"
                                        AnchorOrigin="Origin.BottomCenter">
-                                <MudSelectItem T="int" Value="2">Operator</MudSelectItem>
-                                <MudSelectItem T="int" Value="3">Dosen</MudSelectItem>
-                                <MudSelectItem T="int" Value="4">User</MudSelectItem>
+                                <MudSelectItem T="string" Value="@("Operator")">Operator</MudSelectItem>
+                                <MudSelectItem T="string" Value="@("Dosen")">Dosen</MudSelectItem>
+                                <MudSelectItem T="string" Value="@("User")">User</MudSelectItem>
                             </MudSelect>
-
                             <MudTextField Label="Email" Class="mt-3"
                                           Variant="Variant.Outlined"
                                           @bind-Value="userModel.Email"
                                           For="@(() => userModel.Email)"/>
                             <MudTextField Label="Username" Class="mt-3"
                                           Variant="Variant.Outlined"
-                                          @bind-Value="userModel.Username"
-                                          For="@(() => userModel.Username)"/>
+                                          @bind-Value="userModel.UserName"
+                                          For="@(() => userModel.UserName)"/>
                             <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
                                           Variant="Variant.Outlined"
                                           @bind-Value="userModel.Password"
                                           For="@(() => userModel.Password)" InputType="InputType.Password"/>
-
                         </MudCardContent>
                     </MudCard>
                 </MudItem>
@@ -76,52 +75,38 @@
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
+    [Inject] private IUser userService { get; set; }
     void Cancel() => MudDialog.Cancel();
     bool success;
 
     UserDTO userModel = new UserDTO()
     {
-        RoleId = 2,
         TangalLahir = DateTime.Now
     };
 
     private async Task OnValidSubmit(EditContext context)
     {
-        var postBody = userModel.Adapt<UserProfile>();
-        postBody.UserAccount = userModel.Adapt<UserAccount>();
-        success = true;
         var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
         var dial = await DialogService.ShowAsync<BluryDialog>("Registering...", options);
-        var res =await HttpClient.PostAsJsonAsync("api/users/register", postBody);
-        StateHasChanged();
-        if (res.IsSuccessStatusCode)
+        var createdUser = await userService.Register(userModel);
+        if (createdUser.Flag)
         {
             dial.Close();
             MudDialog.Close(DialogResult.Ok(true));
             DialogService.ShowMessageBox(
                 "Info",
-                "Data Berhasil DiTambahkan",
-                yesText: "Ok");
-        }
-        else if (res.StatusCode == HttpStatusCode.BadRequest)
-        {
-            dial.Close();
-            var data = await res.Content.ReadAsStringAsync();
-            DialogService.ShowMessageBox(
-                "Validation Error",
-                data,
+                createdUser.Message,
                 yesText: "Ok");
         }
         else
         {
             dial.Close();
+            MudDialog.Close(DialogResult.Ok(true));
             DialogService.ShowMessageBox(
                 "Error",
-                res.ReasonPhrase,
+                createdUser.Message,
                 yesText: "Ok");
         }
-            
-        
     }
 
 }

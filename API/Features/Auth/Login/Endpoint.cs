@@ -48,7 +48,6 @@ internal sealed class Endpoint : Endpoint<Request, Response>
         var res = new Response();
         res.UserProfile = repo
             .UserProfile
-            .Include(x=>x.Role)
             .AsNoTracking()
             .FirstOrDefault(x => x.UserAccountId == user.Id);
         var validto =DateTime.UtcNow.AddDays(1);

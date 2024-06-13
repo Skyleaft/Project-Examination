@@ -34,4 +34,8 @@
       <ProjectReference Include="..\ProjectExamination.ServiceDefaults\ProjectExamination.ServiceDefaults.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Common\" />
+    </ItemGroup>
+
 </Project>

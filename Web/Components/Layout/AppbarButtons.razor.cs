@@ -2,8 +2,10 @@
 // MudBlazor licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Domain.Users;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
 using MudBlazor;
 using Web.Common.Enums;
 using Web.Components.Features.Auth;
@@ -20,6 +22,7 @@ public partial class AppbarButtons
     [Inject] AuthenticationStateProvider authStateProvicder { get; set; }
     private IDictionary<NotificationMessage, bool> _messages = null;
     private bool _newNotificationsAvailable = false;
+    [Inject] SignInManager<ApplicationUser> signInManager { get; set; }
 
     public string DarkLightModeButtonText => LayoutService.CurrentDarkLightMode switch
     {
@@ -55,8 +58,7 @@ public partial class AppbarButtons
 
     private async Task Logout()
     {
-        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvicder;
-        await customAuthStateProvider.UpdateAuthenticationState(null);
-        navManager.NavigateTo("/login");
+        //await signInManager.SignOutAsync();
+        navManager.NavigateTo("/Account/Login?isLogout=true",true);
     }
 }

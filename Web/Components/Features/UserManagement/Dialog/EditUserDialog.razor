@@ -1,6 +1,7 @@
 ﻿@using System.Net
 @using Domain.Common
 @using Mapster
+@using Web.Components.Features.Auth
 @using Domain.Users
 @inject HttpClient HttpClient
 <EditForm Model="@userModel" OnValidSubmit="OnValidSubmit">
@@ -17,7 +18,7 @@
                                           @bind-Value="userModel.NamaLengkap"
                                           For="@(() => userModel.NamaLengkap)"/>
                             <MudDatePicker Label="Tanggal Lahir" Class="mt-3" @bind-Date="userModel.TangalLahir"/>
-                            <MudRadioGroup T="Gender" bind-Value="userModel.Gender" Class="mt-4">
+                            <MudRadioGroup T="Gender" @bind-Value="@userModel.Gender" Class="mt-4">
                                 <MudRadio Value="Gender.LakiLaki"
                                     Color="Color.Primary">
                                     Laki - Laki
@@ -27,9 +28,6 @@
                                     Perempuan
                                 </MudRadio>
                             </MudRadioGroup>
-                            <MudTextField Label="Nomor Telp." HelperText="Max. 15 characters" Class="mt-3" InputType="InputType.Number"
-                                          @bind-Value="userModel.NoTelp"
-                                          For="@(() => userModel.NoTelp)"/>
                         </MudCardContent>
                     </MudCard>
 
@@ -39,28 +37,20 @@
                     <MudCard>
                         <MudCardHeader><MudText Typo="Typo.h6">Akun Login</MudText></MudCardHeader>
                         <MudCardContent>
-                            <MudSelect T="int" Label="Role" 
-                                       @bind-Value="userModel.RoleId"
-                                       Variant="Variant.Outlined"
-                                       AnchorOrigin="Origin.BottomCenter">
-                                <MudSelectItem T="int" Value="2">Operator</MudSelectItem>
-                                <MudSelectItem T="int" Value="3">Dosen</MudSelectItem>
-                                <MudSelectItem T="int" Value="4">User</MudSelectItem>
-                            </MudSelect>
 
                             <MudTextField Label="Email" Class="mt-3"
                                           Variant="Variant.Outlined"
-                                          @bind-Value="userModel.UserAccount.Email"
-                                          For="@(() => userModel.UserAccount.Email)"/>
+                                          @bind-Value="userModel.Email"
+                                          For="@(() => userModel.Email)"/>
                             <MudTextField Label="Username" Class="mt-3"
                                           Variant="Variant.Outlined"
-                                          @bind-Value="userModel.UserAccount.Username"
+                                          @bind-Value="userModel.UserName"
                                           ReadOnly
-                                          For="@(() => userModel.UserAccount.Username)"/>
+                                          For="@(() => userModel.UserName)"/>
                             <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
                                           Variant="Variant.Outlined"
-                                          @bind-Value="userModel.UserAccount.Password"
-                                          For="@(() => userModel.UserAccount.Password)" InputType="InputType.Password"/>
+                                          @bind-Value="userModel.Password"
+                                          For="@(() => userModel.Password)" InputType="InputType.Password"/>
 
                         </MudCardContent>
                     </MudCard>
@@ -69,7 +59,7 @@
         </DialogContent>
         <DialogActions>
             <MudButton OnClick="Cancel">Cancel</MudButton>
-            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Register</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Edit</MudButton>
         </DialogActions>
     </MudDialog>
 </EditForm>
@@ -77,7 +67,7 @@
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
-    [Parameter] public UserProfile userModel { get; set; } = new UserProfile();
+    [Parameter] public UserDTO userModel { get; set; } = new UserDTO();
     
     void Cancel() => MudDialog.Cancel();
     bool success;
@@ -85,37 +75,37 @@
 
     private async Task OnValidSubmit(EditContext context)
     {
-        success = true;
-        var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
-        var dial = await DialogService.ShowAsync<BluryDialog>("Updating...", options);
-        var res =await HttpClient.PutAsJsonAsync($"api/users/{userModel.Id}",userModel);
-        StateHasChanged();
-        if (res.IsSuccessStatusCode)
-        {
-            dial.Close();
-            MudDialog.Close(DialogResult.Ok(true));
-            DialogService.ShowMessageBox(
-                "Info",
-                "Data Berhasil Diubah",
-                yesText: "Ok");
-        }
-        else if (res.StatusCode == HttpStatusCode.BadRequest)
-        {
-            dial.Close();
-            var data = await res.Content.ReadAsStringAsync();
-            DialogService.ShowMessageBox(
-                "Validation Error",
-                data,
-                yesText: "Ok");
-        }
-        else
-        {
-            dial.Close();
-            DialogService.ShowMessageBox(
-                "Error",
-                res.ReasonPhrase,
-                yesText: "Ok");
-        }
+        // success = true;
+        // var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
+        // var dial = await DialogService.ShowAsync<BluryDialog>("Updating...", options);
+        // var res =await HttpClient.PutAsJsonAsync($"api/users/{userModel.Id}",userModel);
+        // StateHasChanged();
+        // if (res.IsSuccessStatusCode)
+        // {
+        //     dial.Close();
+        //     MudDialog.Close(DialogResult.Ok(true));
+        //     DialogService.ShowMessageBox(
+        //         "Info",
+        //         "Data Berhasil Diubah",
+        //         yesText: "Ok");
+        // }
+        // else if (res.StatusCode == HttpStatusCode.BadRequest)
+        // {
+        //     dial.Close();
+        //     var data = await res.Content.ReadAsStringAsync();
+        //     DialogService.ShowMessageBox(
+        //         "Validation Error",
+        //         data,
+        //         yesText: "Ok");
+        // }
+        // else
+        // {
+        //     dial.Close();
+        //     DialogService.ShowMessageBox(
+        //         "Error",
+        //         res.ReasonPhrase,
+        //         yesText: "Ok");
+        // }
             
         
     }

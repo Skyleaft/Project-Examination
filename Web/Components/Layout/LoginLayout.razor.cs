@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Blazored.SessionStorage;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using Web.Common.Theme;
@@ -13,20 +14,23 @@ public partial class LoginLayout : LayoutComponentBase, IDisposable
     [Inject] private LayoutService LayoutService { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] NavigationManager navManager { get; set; }
-
+    [Inject] private ISessionStorageService _sessionStorageService { get; set; }
+    [Inject] private NavigationManager NavigationManager { get; set; }
     private MudThemeProvider _mudThemeProvider;
+    [CascadingParameter] private HttpContext? HttpContext { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (HttpContext is null)
+        {
+            // If this code runs, we're currently rendering in interactive mode, so there is no HttpContext.
+            // The identity pages need to set cookies, so they require an HttpContext. To achieve this we
+            // must transition back from interactive mode to a server-rendered page.
+            NavigationManager.Refresh(forceReload: true);
+        }
+    }
     protected override async Task  OnInitializedAsync()
     {
-        if (authenticationState is not null)
-        {
-            var authState = await authenticationState;
-            var user = authState?.User;
-
-            if (user?.Identity is not null && user.Identity.IsAuthenticated)
-            {
-                navManager.NavigateTo("/");
-            }
-        }
         LayoutService.SetBaseTheme(Themes.LandingPageTheme());
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
         LayoutService.MajorUpdateOccurred += LayoutServiceOnMajorUpdateOccured;

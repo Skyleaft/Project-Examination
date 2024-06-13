@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace API.Common;
+namespace Domain.Common;
 
 public static class FilterExtension
 {

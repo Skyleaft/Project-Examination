@@ -27,11 +27,18 @@
 
     <ItemGroup>
       <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+      <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
       <PackageReference Include="FuzzySharp" Version="2.0.2" />
       <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.6" />
+      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.5" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.5">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.0" />
       <PackageReference Include="MudBlazor" Version="7.0.0-preview.3" />
       <PackageReference Include="MudBlazor.ThemeManager" Version="1.0.9" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
     </ItemGroup>
 
     <ItemGroup>
@@ -42,10 +49,6 @@
       <_ContentIncludedByDefault Remove="Shared\NotFoundPage.razor" />
       <_ContentIncludedByDefault Remove="Features\Auth\Pages\AuthPage.razor" />
       <_ContentIncludedByDefault Remove="Features\Dashboards\Pages\Dashboard.razor" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Common\" />
     </ItemGroup>
 
     <ItemGroup>

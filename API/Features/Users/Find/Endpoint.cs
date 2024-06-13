@@ -1,5 +1,4 @@
-﻿using API.Common;
-using API.Database;
+﻿using API.Database;
 using Domain.Common;
 using Domain.Users;
 using Mapster;
