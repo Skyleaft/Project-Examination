@@ -1,4 +1,7 @@
 ﻿@inherits LayoutComponentBase
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 <MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="LayoutService.SetDarkMode"/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
@@ -7,7 +10,7 @@
 <MudLayout>
     <MudAppBar Class="docs-appbar-filter" Color="Color.Transparent" Elevation="0"></MudAppBar>
     <MudAppBar Class="docs-appbar" Elevation="0">
-        <Appbar DrawerToggleCallback="ToggleDrawer"/>
+        <Appbar DrawerToggleCallback="ToggleDrawer" avaSource="@avatarSource"/>
     </MudAppBar>
     <MudDrawer Open="@_drawerOpen" OpenChanged="OnDrawerOpenChanged" ClipMode="DrawerClipMode.Docked" Elevation="0" Breakpoint="Breakpoint.Md" aria-label="Navigation Drawer">
         <div class="d-block d-md-none">
@@ -20,8 +23,17 @@
         <NavMenu/>
     </MudDrawer>
     <MudMainContent >
-        <MudContainer Class="mt-8 px-8" MaxWidth="MaxWidth.False">
-            @Body
-        </MudContainer>
+        @{
+            if (isLoaded)
+            {
+                <MudContainer Class="mt-8 px-8" MaxWidth="MaxWidth.False">
+                    @Body
+                </MudContainer>
+            }
+            else
+            {
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+            }
+        }
     </MudMainContent>
 </MudLayout>

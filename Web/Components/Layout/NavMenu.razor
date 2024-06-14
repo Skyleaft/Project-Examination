@@ -1,7 +1,15 @@
 ﻿<MudNavMenu>
-    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
-    <MudNavLink Href="UserManagement" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AccountBox">UserManagement</MudNavLink>
-    <MudNavLink Href="counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Counter</MudNavLink>
-    <MudNavLink Href="weather" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Weather</MudNavLink>
-
+    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Beranda</MudNavLink>
+    <AuthorizeView Roles="Superuser,Operator">
+        <MudNavLink Href="UserManagement" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AccountBox">UserManagement</MudNavLink>
+    </AuthorizeView>
+    <MudNavLink Href="BankSoal" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Bank Soal</MudNavLink>
+    <MudNavGroup Title="Manajemen Ruangan" Icon="@Icons.Material.Filled.Settings" Expanded="true">
+        <MudNavLink Href="/room/view">Ruangan Ujian</MudNavLink>
+        <MudNavLink Href="/room/manage">Kelola Ruangan Ujian</MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="Manajemen Laporan" Icon="@Icons.Material.Filled.Settings" Expanded="true">
+        <MudNavLink Href="/report/view">Hasil Ujian</MudNavLink>
+        <MudNavLink Href="/report/manage">Kelola Hasil Ujian</MudNavLink>
+    </MudNavGroup>
 </MudNavMenu>

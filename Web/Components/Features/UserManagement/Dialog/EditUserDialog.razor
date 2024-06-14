@@ -84,6 +84,19 @@
                             <MudText Typo="Typo.h6">Akun Login</MudText>
                         </MudCardHeader>
                         <MudCardContent>
+                            <MudFileUpload T="IBrowserFile"
+                                           Accept=".png, .jpg"
+                                           MaximumFileCount="1"
+                                           @bind-Files="fileModel.File"
+                                           OnFilesChanged="UploadFiles">
+                                <ButtonTemplate>
+                                    <MudFab HtmlTag="label"
+                                            Color="Color.Secondary"
+                                            Icon="@Icons.Material.Filled.Image"
+                                            Label="Load picture"
+                                            For="@(() => fileModel.File)" />
+                                </ButtonTemplate>
+                            </MudFileUpload>
                             <MudSelect T="string" Label="Role"
                                        @bind-Value="userModel.Role"
                                        Variant="Variant.Outlined"
@@ -125,7 +138,7 @@
     List<Provinsi> dataProv = new List<Provinsi>();
     List<Kota> dataKota = new List<Kota>();
     List<Kota> filterKota = new List<Kota>();
-    
+    private FileModel fileModel = new();
     void Cancel() => MudDialog.Cancel();
     bool success;
     
@@ -138,6 +151,18 @@
             dataKota = await _appDbContext.Kota.ToListAsync();
             StateHasChanged();
         }
+    }
+    
+    
+    private void UploadFiles(InputFileChangeEventArgs  e)
+    {
+        var stream = fileModel.File.OpenReadStream();
+        using (var memstream = new MemoryStream())
+        {
+            stream.CopyTo(memstream);
+            userModel.Photo = memstream.ToArray();
+        }
+        
     }
     
     public async Task FilterKota(string ProvID)
@@ -192,5 +217,10 @@
                 .Contains(search, StringComparison.CurrentCultureIgnoreCase))
             .ToList();
     }
-
+    
+    public class FileModel
+    {
+        public string Name { get; set; }
+        public IBrowserFile File { get; set; }
+    }
 }

@@ -49,6 +49,9 @@
       <_ContentIncludedByDefault Remove="Shared\NotFoundPage.razor" />
       <_ContentIncludedByDefault Remove="Features\Auth\Pages\AuthPage.razor" />
       <_ContentIncludedByDefault Remove="Features\Dashboards\Pages\Dashboard.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Counter.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Error.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Weather.razor" />
     </ItemGroup>
 
     <ItemGroup>
@@ -59,6 +62,10 @@
       <None Include="compilerconfig.json" />
       <None Include="wwwroot\css\Layout\_mainlayout.css" />
       <None Include="wwwroot\css\Layout\_mainlayout.min.css" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Components\Features\BankSoal\" />
     </ItemGroup>
 
 </Project>

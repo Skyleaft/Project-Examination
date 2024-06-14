@@ -18,13 +18,13 @@ public class UserService:IUser
         _userManager = userManager;
         _appDbContext = appDbContext;
     }
-    public async Task<PaginatedResponse<ApplicationUser>> Find(FindRequest r)
+    public async Task<PaginatedResponse<ApplicationUser>> Find(FindRequest r,CancellationToken ct)
     {
         var data =await _appDbContext.Users.WhereIf(!string.IsNullOrEmpty(r.Search),
                 x => x.NamaLengkap.ToLower()
                     .Contains(r.Search.ToLower()))
             .OrderBy(x=>x.UserName)
-            .ToPaginatedListAsync(r.Page, r.PageSize,r.OrderBy,r.Direction);
+            .ToPaginatedListAsync(r.Page, r.PageSize,r.OrderBy,r.Direction,ct);
         return data;
     }
 

@@ -27,11 +27,11 @@ public static class PaginatedListHelper
     public const int DefaultPageSize = 15;
     public const int DefaultCurrentPage = 1;
 
-    public static async Task<PaginatedResponse<T>> ToPaginatedListAsync<T>(this IQueryable<T> source, int currentPage, int pageSize, string orderBy, int direction)
+    public static async Task<PaginatedResponse<T>> ToPaginatedListAsync<T>(this IQueryable<T> source, int currentPage, int pageSize, string orderBy, int direction,CancellationToken ct)
     {
         currentPage = currentPage > 0 ? currentPage : DefaultCurrentPage;
         pageSize = pageSize > 0 ? pageSize : DefaultPageSize;
-        var count = await source.CountAsync();
+        var count = await source.CountAsync(ct);
         var items = new List<T>();
         if (!string.IsNullOrEmpty(orderBy))
         {
@@ -39,13 +39,13 @@ public static class PaginatedListHelper
             items = await source.Skip((currentPage - 1) * pageSize)
                 .Take(pageSize)
                 .OrderBy(orderBy + dir)
-                .ToListAsync();
+                .ToListAsync(ct);
         }
         else
         {
             items = await source.Skip((currentPage - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToListAsync(ct);
         }
         
         return new PaginatedResponse<T>(items, count, currentPage, pageSize);

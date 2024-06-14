@@ -1,6 +1,8 @@
 ﻿using Blazored.SessionStorage;
+using Domain.Users;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
 using MudBlazor;
 using Web.Common.Theme;
 using Web.Services;
@@ -15,10 +17,14 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
     [Inject] NavigationManager navManager { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] private ISessionStorageService _sessionStorageService { get; set; }
+    [Inject] private UserManager<ApplicationUser> _userManager { get; set; }
     private MudThemeProvider _mudThemeProvider;
     private NavMenu _navMenuRef;
     private bool _drawerOpen = true;
     private bool _topMenuOpen = false;
+    private ApplicationUser CurrentUser;
+    private string avatarSource = "";
+    private bool isLoaded;
     
     protected override Task OnInitializedAsync()
     {
@@ -33,8 +39,21 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
+            isLoaded = false;
             await ApplyUserPreferences();
             await _mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
+            
+            var authState = await AuthenticationStateProvider
+                .GetAuthenticationStateAsync();
+            var user = authState.User;
+            if (user.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                var userid = _userManager.GetUserId(user);
+                CurrentUser = await _userManager.FindByIdAsync(userid);
+                if(CurrentUser.Photo!=null)
+                    avatarSource = $"data:image;base64,{Convert.ToBase64String(CurrentUser.Photo)}";
+            }
+            isLoaded = true;
             StateHasChanged();
         }
     }

@@ -19,10 +19,11 @@ public partial class AppbarButtons
     [Inject] private INotificationService NotificationService { get; set; }
     [Inject] private LayoutService LayoutService { get; set; }
     [Inject] NavigationManager navManager { get; set; }
-    [Inject] AuthenticationStateProvider authStateProvicder { get; set; }
     private IDictionary<NotificationMessage, bool> _messages = null;
     private bool _newNotificationsAvailable = false;
     [Inject] SignInManager<ApplicationUser> signInManager { get; set; }
+    
+    [Parameter] public string _avaSource { get; set; }
 
     public string DarkLightModeButtonText => LayoutService.CurrentDarkLightMode switch
     {
@@ -43,13 +44,14 @@ public partial class AppbarButtons
         await NotificationService.MarkNotificationsAsRead();
         _newNotificationsAvailable = false;
     }
-
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             _newNotificationsAvailable = await NotificationService.AreNewNotificationsAvailable();
             _messages = await NotificationService.GetNotifications();
+
             StateHasChanged();
         }
 

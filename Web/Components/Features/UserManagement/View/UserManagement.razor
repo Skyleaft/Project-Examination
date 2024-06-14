@@ -74,7 +74,8 @@
     private string searchString = "";
 
     DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
-
+    
+    
     private string setGender(Gender gender)
     {
         return gender == Gender.LakiLaki ? "Laki - Laki" : "Perempuan";
@@ -87,6 +88,8 @@
             await table.ReloadServerData();
     }
 
+    
+
     private async Task<TableData<ApplicationUser>> ServerReload(TableState state, CancellationToken token)
     {
         var req = new FindRequest();
@@ -95,7 +98,7 @@
         req.Search = searchString;
         req.OrderBy = state.SortLabel;
         req.Direction = (int)state.SortDirection;
-        var data = await UserService.Find(req);
+        var data = await UserService.Find(req,token);
         if (data == null)
         {
             return new TableData<ApplicationUser>() { TotalItems = 0, Items = new List<ApplicationUser>() };

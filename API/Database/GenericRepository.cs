@@ -1,4 +1,5 @@
-﻿using Domain.RoomSet;
+﻿using Domain.BankSoal;
+using Domain.RoomSet;
 using Domain.TakeExam;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;

@@ -47,8 +47,8 @@ builder.Services.AddAuthentication(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("mzserver") 
                        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+builder.Services.AddDbContext<AppDbContext>(o =>
+    o.UseNpgsql(connectionString),optionsLifetime:ServiceLifetime.Scoped);
 
 builder.Services.AddIdentityCore<ApplicationUser>(o =>
         {
@@ -141,6 +141,7 @@ using (var scope = app.Services.CreateScope())
         inMemoryService.Preload();
     }
 }
+app.UseStatusCodePagesWithRedirects("/StatusCode/{0}");
 
 app.MapRazorComponents<App>()
     .DisableAntiforgery()

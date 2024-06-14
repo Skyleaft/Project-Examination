@@ -1,4 +1,4 @@
-﻿namespace Domain.RoomSet;
+﻿namespace Domain.BankSoal;
 
 public class Soal
 {
@@ -7,4 +7,6 @@ public class Soal
     public string Pertanyaan { get; set; }
     public List<string> Pilihan { get; set; }
     public string KunciJawaban { get; set; }
+    public byte[]? Gambar { get; set; }
+    public int Point { get; set; }
 }
