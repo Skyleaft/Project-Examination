@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Domain.Common;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace Web.Components.Features.UserManagement;
 
@@ -18,4 +19,5 @@ public class UserEditDTO
     public string? PhoneNumber { get; set; }
     public string Role { get; set; }
     public string KotaId { get; set; }
+    public IBrowserFile ImageFile { get; set; }
 }

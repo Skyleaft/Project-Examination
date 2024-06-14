@@ -6,10 +6,12 @@
 @using Web.Common.Database
 @using Domain.Users
 @inject HttpClient HttpClient
+
 <EditForm Model="@userModel" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator/>
     <MudDialog>
         <DialogContent>
+
             <MudGrid>
                 <MudItem xs="12" sm="6">
                     <MudCard>
@@ -17,7 +19,6 @@
                             <MudText Typo="Typo.h6">Profile User</MudText>
                         </MudCardHeader>
                         <MudCardContent>
-                            <MudText>@userModel.Gender</MudText>
                             <MudTextField Label="Nama Lengkap" HelperText="Max. 40 characters"
                                           Variant="Variant.Outlined"
                                           MaxLength="40"
@@ -84,19 +85,27 @@
                             <MudText Typo="Typo.h6">Akun Login</MudText>
                         </MudCardHeader>
                         <MudCardContent>
-                            <MudFileUpload T="IBrowserFile"
-                                           Accept=".png, .jpg"
-                                           MaximumFileCount="1"
-                                           @bind-Files="fileModel.File"
-                                           OnFilesChanged="UploadFiles">
-                                <ButtonTemplate>
-                                    <MudFab HtmlTag="label"
-                                            Color="Color.Secondary"
-                                            Icon="@Icons.Material.Filled.Image"
-                                            Label="Load picture"
-                                            For="@(() => fileModel.File)" />
-                                </ButtonTemplate>
-                            </MudFileUpload>
+                            <MudCard>
+                                <MudCardMedia Image="/images/blazor.png" Height="100"/>
+                                <MudCardContent>
+                                    
+                                </MudCardContent>
+                                <MudCardActions>
+                                    <MudFileUpload T="IBrowserFile"
+                                                   Hidden="@false"
+                                                   Accept=".png, .jpg"
+                                                   @bind-Files="userModel.ImageFile"
+                                                   OnFilesChanged="UploadFiles">
+                                        <ButtonTemplate>
+                                            <MudFab HtmlTag="label"
+                                                    Color="Color.Primary"
+                                                    Icon="@Icons.Material.Filled.Image"
+                                                    Label="Upload Foto"
+                                                    for="@(() => userModel.ImageFile)"/>
+                                        </ButtonTemplate>
+                                    </MudFileUpload>
+                                </MudCardActions>
+                            </MudCard>
                             <MudSelect T="string" Label="Role"
                                        @bind-Value="userModel.Role"
                                        Variant="Variant.Outlined"
@@ -105,6 +114,7 @@
                                 <MudSelectItem T="string" Value="@("Dosen")">Dosen</MudSelectItem>
                                 <MudSelectItem T="string" Value="@("User")">User</MudSelectItem>
                             </MudSelect>
+
                             <MudTextField Label="Email" Class="mt-3"
                                           Variant="Variant.Outlined"
                                           @bind-Value="userModel.Email"
@@ -117,7 +127,11 @@
                         </MudCardContent>
                     </MudCard>
                 </MudItem>
+
+
             </MudGrid>
+
+            
         </DialogContent>
         <DialogActions>
             <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -132,16 +146,17 @@
     [Parameter] public UserEditDTO userModel { get; set; } = new UserEditDTO();
     [Inject] AppDbContext _appDbContext { get; set; }
     [Inject] private IUser userService { get; set; }
-    
+
     Provinsi SelectedProv = null;
     Kota SelectedKota = null;
     List<Provinsi> dataProv = new List<Provinsi>();
     List<Kota> dataKota = new List<Kota>();
     List<Kota> filterKota = new List<Kota>();
-    private FileModel fileModel = new();
     void Cancel() => MudDialog.Cancel();
     bool success;
-    
+
+    string fotostring;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
@@ -152,19 +167,19 @@
             StateHasChanged();
         }
     }
-    
-    
-    private void UploadFiles(InputFileChangeEventArgs  e)
+
+
+    private async Task UploadFiles(InputFileChangeEventArgs e)
     {
-        var stream = fileModel.File.OpenReadStream();
+        var stream = userModel.ImageFile.OpenReadStream();
         using (var memstream = new MemoryStream())
         {
-            stream.CopyTo(memstream);
+            await stream.CopyToAsync(memstream);
             userModel.Photo = memstream.ToArray();
         }
-        
+        StateHasChanged();
     }
-    
+
     public async Task FilterKota(string ProvID)
     {
         filterKota = dataKota
@@ -195,9 +210,8 @@
                 res.Message,
                 yesText: "Ok");
         }
-
     }
-    
+
     private async Task<IEnumerable<Provinsi>> SearchProv(string search, CancellationToken ct)
     {
         if (string.IsNullOrEmpty(search))
@@ -217,10 +231,5 @@
                 .Contains(search, StringComparison.CurrentCultureIgnoreCase))
             .ToList();
     }
-    
-    public class FileModel
-    {
-        public string Name { get; set; }
-        public IBrowserFile File { get; set; }
-    }
+
 }

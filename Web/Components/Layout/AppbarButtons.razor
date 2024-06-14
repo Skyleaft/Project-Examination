@@ -37,13 +37,20 @@
         @{
             if (string.IsNullOrEmpty(_avaSource))
             {
-                <MudAvatar Style="height:35px; width:35px;" Color="Color.Primary" Class="mr-3">
-                    @context.User.Identity.Name[0]
-                </MudAvatar>
+                <MudBadge Color="Color.Success" Overlap="true" Bordered="true" Class="mr-3">
+                    <MudAvatar Style="height:35px; width:35px;" Color="Color.Primary" >
+                        @context.User.Identity.Name[0]
+                    </MudAvatar>
+                </MudBadge>
             }
             else
             {
-                <MudAvatar Style="height:35px; width:35px;" Src="@_avaSource"></MudAvatar>
+                <MudBadge Color="Color.Success" Overlap="true" Bordered="true" Class="mr-3">
+                    <MudAvatar Style="height:35px; width:35px;">
+                        <MudImage Src="@_avaSource"></MudImage>
+                    </MudAvatar>
+                </MudBadge>
+                
             }
         }
         <MudText Class="mr-2">@context.User.Identity.Name</MudText>
