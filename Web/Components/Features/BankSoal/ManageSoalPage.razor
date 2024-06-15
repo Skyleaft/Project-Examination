@@ -1,0 +1,12 @@
+﻿@page "/BankSoal";
+<h3>ManageSoalPage</h3>
+
+<MudButton OnClick="CreateSoalClient">Buat Soal Baru</MudButton>
+@code {
+    [Inject] NavigationManager _navigationManager { get; set; }
+    private void CreateSoalClient(MouseEventArgs obj)
+    {
+        _navigationManager.NavigateTo("/client/BankSoal/Create",true);
+    }
+
+}

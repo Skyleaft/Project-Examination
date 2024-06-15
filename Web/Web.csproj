@@ -36,8 +36,6 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.0" />
-      <PackageReference Include="MudBlazor" Version="7.0.0-preview.3" />
-      <PackageReference Include="MudBlazor.ThemeManager" Version="1.0.9" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
     </ItemGroup>
 
@@ -52,6 +50,7 @@
       <_ContentIncludedByDefault Remove="Components\Pages\Counter.razor" />
       <_ContentIncludedByDefault Remove="Components\Pages\Error.razor" />
       <_ContentIncludedByDefault Remove="Components\Pages\Weather.razor" />
+      <_ContentIncludedByDefault Remove="Components\Features\BankSoal\Page.razor" />
     </ItemGroup>
 
     <ItemGroup>
@@ -62,10 +61,6 @@
       <None Include="compilerconfig.json" />
       <None Include="wwwroot\css\Layout\_mainlayout.css" />
       <None Include="wwwroot\css\Layout\_mainlayout.min.css" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Components\Features\BankSoal\" />
     </ItemGroup>
 
 </Project>

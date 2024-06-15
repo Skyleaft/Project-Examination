@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Web.Common.Database;
@@ -11,9 +12,11 @@ using Web.Common.Database;
 namespace Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240615200055_v1.3")]
+    partial class v13
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,7 +68,7 @@ namespace Web.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("Exam", (string)null);
+                    b.ToTable("Exam");
                 });
 
             modelBuilder.Entity("Domain.BankSoal.Soal", b =>
@@ -90,7 +93,7 @@ namespace Web.Migrations
 
                     b.HasIndex("ExamId");
 
-                    b.ToTable("Soal", (string)null);
+                    b.ToTable("Soal");
                 });
 
             modelBuilder.Entity("Domain.BankSoal.SoalJawaban", b =>
@@ -118,7 +121,7 @@ namespace Web.Migrations
 
                     b.HasIndex("SoalId");
 
-                    b.ToTable("SoalJawaban", (string)null);
+                    b.ToTable("SoalJawaban");
                 });
 
             modelBuilder.Entity("Domain.RoomSet.Room", b =>
@@ -163,7 +166,7 @@ namespace Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Room", (string)null);
+                    b.ToTable("Room");
                 });
 
             modelBuilder.Entity("Domain.TakeExam.UserAnswer", b =>
@@ -191,7 +194,7 @@ namespace Web.Migrations
 
                     b.HasIndex("UserExamId");
 
-                    b.ToTable("UserAnswer", (string)null);
+                    b.ToTable("UserAnswer");
                 });
 
             modelBuilder.Entity("Domain.TakeExam.UserExam", b =>
@@ -238,7 +241,7 @@ namespace Web.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserExam", (string)null);
+                    b.ToTable("UserExam");
                 });
 
             modelBuilder.Entity("Domain.Users.ApplicationUser", b =>

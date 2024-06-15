@@ -26,12 +26,12 @@ public class Exam :IGenericModifier
         private set
         {
             if (Soals != null)
-                TotalPoint = Soals.Sum(x => x.Point);
+                TotalPoint = Soals.Sum(x => x.BobotPoint);
             else TotalPoint = 0;
         }
     }
     
-    public byte[] Thumbnail { get; set; }
+    public byte[]? Thumbnail { get; set; }
 
     public string? CreatedBy { get; set; }
     public DateTime? CreatedOn { get; set; }
