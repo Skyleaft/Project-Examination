@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -13,6 +12,9 @@ namespace Web.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "reference");
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -28,46 +30,35 @@ namespace Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    NamaLengkap = table.Column<string>(type: "text", nullable: false),
-                    TangalLahir = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    Gender = table.Column<int>(type: "integer", nullable: false),
-                    Photo = table.Column<byte[]>(type: "bytea", nullable: true),
-                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Exam",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Nama = table.Column<string>(type: "text", nullable: false),
                     IsRandomize = table.Column<bool>(type: "boolean", nullable: false),
-                    TotalSoal = table.Column<int>(type: "integer", nullable: false)
+                    Thumbnail = table.Column<byte[]>(type: "bytea", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    LastModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Exam", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Provinsi",
+                schema: "reference",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    NamaProvinsi = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Provinsi", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -89,6 +80,132 @@ namespace Web.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Room",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Nama = table.Column<string>(type: "text", nullable: false),
+                    Kode = table.Column<string>(type: "text", nullable: false),
+                    JadwalStart = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    JadwalEnd = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Durasi = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    ExamId = table.Column<int>(type: "integer", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "text", nullable: true),
+                    LastModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Room", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Room_Exam_ExamId",
+                        column: x => x.ExamId,
+                        principalTable: "Exam",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Soal",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExamId = table.Column<int>(type: "integer", nullable: false),
+                    Nomor = table.Column<int>(type: "integer", nullable: false),
+                    Pertanyaan = table.Column<string>(type: "text", nullable: false),
+                    BobotPoint = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Soal", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Soal_Exam_ExamId",
+                        column: x => x.ExamId,
+                        principalTable: "Exam",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Kota",
+                schema: "reference",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    ProvinsiId = table.Column<string>(type: "character varying(100)", nullable: false),
+                    NamaKota = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Kota", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Kota_Provinsi_ProvinsiId",
+                        column: x => x.ProvinsiId,
+                        principalSchema: "reference",
+                        principalTable: "Provinsi",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SoalJawaban",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    SoalId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Jawaban = table.Column<string>(type: "text", nullable: false),
+                    IsBenar = table.Column<bool>(type: "boolean", nullable: false),
+                    Point = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SoalJawaban", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SoalJawaban_Soal_SoalId",
+                        column: x => x.SoalId,
+                        principalTable: "Soal",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    NamaLengkap = table.Column<string>(type: "text", nullable: false),
+                    Gender = table.Column<int>(type: "integer", nullable: false),
+                    Photo = table.Column<byte[]>(type: "bytea", nullable: true),
+                    Pekerjaan = table.Column<string>(type: "text", nullable: true),
+                    KotaId = table.Column<string>(type: "character varying(100)", nullable: true),
+                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Kota_KotaId",
+                        column: x => x.KotaId,
+                        principalSchema: "reference",
+                        principalTable: "Kota",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -177,64 +294,16 @@ namespace Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Room",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Nama = table.Column<string>(type: "text", nullable: false),
-                    Kode = table.Column<string>(type: "text", nullable: false),
-                    Jadwal = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    ExamId = table.Column<int>(type: "integer", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "text", nullable: true),
-                    LastModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Room", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Room_Exam_ExamId",
-                        column: x => x.ExamId,
-                        principalTable: "Exam",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Soal",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ExamId = table.Column<int>(type: "integer", nullable: false),
-                    Pertanyaan = table.Column<string>(type: "text", nullable: false),
-                    Pilihan = table.Column<List<string>>(type: "text[]", nullable: false),
-                    KunciJawaban = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Soal", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Soal_Exam_ExamId",
-                        column: x => x.ExamId,
-                        principalTable: "Exam",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UserExam",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: true),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
                     IsOngoing = table.Column<bool>(type: "boolean", nullable: false),
-                    RoomId = table.Column<int>(type: "integer", nullable: true),
+                    RoomId = table.Column<Guid>(type: "uuid", nullable: false),
                     StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    TimeLeft = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -243,33 +312,38 @@ namespace Web.Migrations
                         name: "FK_UserExam_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserExam_Room_RoomId",
                         column: x => x.RoomId,
                         principalTable: "Room",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "UserAnswer",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserExamId = table.Column<int>(type: "integer", nullable: false),
-                    SoalId = table.Column<int>(type: "integer", nullable: false),
-                    Answer = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserExamId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SoalId = table.Column<Guid>(type: "uuid", nullable: true),
+                    SoalJawabanId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserAnswer", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_UserAnswer_SoalJawaban_SoalJawabanId",
+                        column: x => x.SoalJawabanId,
+                        principalTable: "SoalJawaban",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_UserAnswer_Soal_SoalId",
                         column: x => x.SoalId,
                         principalTable: "Soal",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserAnswer_UserExam_UserExamId",
                         column: x => x.UserExamId,
@@ -310,10 +384,21 @@ namespace Web.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_KotaId",
+                table: "AspNetUsers",
+                column: "KotaId");
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Kota_ProvinsiId",
+                schema: "reference",
+                table: "Kota",
+                column: "ProvinsiId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Room_ExamId",
@@ -326,9 +411,19 @@ namespace Web.Migrations
                 column: "ExamId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SoalJawaban_SoalId",
+                table: "SoalJawaban",
+                column: "SoalId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserAnswer_SoalId",
                 table: "UserAnswer",
                 column: "SoalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAnswer_SoalJawabanId",
+                table: "UserAnswer",
+                column: "SoalJawabanId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserAnswer_UserExamId",
@@ -371,10 +466,13 @@ namespace Web.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Soal");
+                name: "SoalJawaban");
 
             migrationBuilder.DropTable(
                 name: "UserExam");
+
+            migrationBuilder.DropTable(
+                name: "Soal");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
@@ -383,7 +481,15 @@ namespace Web.Migrations
                 name: "Room");
 
             migrationBuilder.DropTable(
+                name: "Kota",
+                schema: "reference");
+
+            migrationBuilder.DropTable(
                 name: "Exam");
+
+            migrationBuilder.DropTable(
+                name: "Provinsi",
+                schema: "reference");
         }
     }
 }

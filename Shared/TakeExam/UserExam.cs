@@ -5,45 +5,38 @@ namespace Shared.TakeExam;
 
 public class UserExam
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public ApplicationUser? User { get; set; }
     public string UserId { get; set; }
     public bool IsOngoing { get; set; }
     public Room? Room { get; set; }
-    public int RoomId { get; set; }
+    public Guid RoomId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public int TimeLeft { get; set; }
     public List<UserAnswer>? UserAnswers { get; set; }
-    
+
     public int? Score
     {
         get
         {
-            return Score;
-        }
-        set
-        {
             if (UserAnswers != null)
-                Score = UserAnswers.Sum(x => x.Jawaban.Point);
-            else Score = 0;
+                return UserAnswers.Sum(x => x.SoalJawaban.Point);
+            return 0;
         }
     }
 
     public double? ScoreNormalize
     {
-        get{
-            return ScoreNormalize;
-        }
-        set
+        get
         {
             if (UserAnswers != null)
             {
-                var score = (double)UserAnswers.Sum(x => x.Jawaban.Point * x.Soal.BobotPoint);
-                ScoreNormalize =  score/ (double)Room.Exam.TotalPoint * 100;
+                var score = (double)UserAnswers.Sum(x => x.SoalJawaban.Point * x.Soal.BobotPoint);
+                return score / (double)Room.Exam.TotalPoint * 100;
             }
-                
-            else ScoreNormalize = 0;
+
+            return 0;
         }
     }
 }

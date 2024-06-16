@@ -2,7 +2,7 @@
 
 namespace Shared.BankSoal;
 
-public class Exam :IGenericModifier
+public class Exam : IGenericModifier
 {
     public int Id { get; set; }
     public string Nama { get; set; }
@@ -11,26 +11,19 @@ public class Exam :IGenericModifier
 
     public int TotalSoal
     {
-        get { return TotalSoal; }
-        private set
-        {
-            if (Soals != null)
-                TotalSoal = Soals.Count;
-            else TotalSoal = 0;
-        }
+        get { return Soals?.Count ?? 0; }
     }
 
     public int TotalPoint
     {
-        get { return TotalPoint; }
-        private set
+        get
         {
             if (Soals != null)
-                TotalPoint = Soals.Sum(x => x.BobotPoint);
-            else TotalPoint = 0;
+                return Soals.Sum(x => x.BobotPoint);
+            return 0;
         }
     }
-    
+
     public byte[]? Thumbnail { get; set; }
 
     public string? CreatedBy { get; set; }

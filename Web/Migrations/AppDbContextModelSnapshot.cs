@@ -22,341 +22,6 @@ namespace Web.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.BankSoal.Exam", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("IsRandomize")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Nama")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<byte[]>("Thumbnail")
-                        .HasColumnType("bytea");
-
-                    b.Property<int>("TotalPoint")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TotalSoal")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Exam");
-                });
-
-            modelBuilder.Entity("Domain.BankSoal.Soal", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BobotPoint")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ExamId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Pertanyaan")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExamId");
-
-                    b.ToTable("Soal");
-                });
-
-            modelBuilder.Entity("Domain.BankSoal.SoalJawaban", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsBenar")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Jawaban")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Point")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SoalId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SoalId");
-
-                    b.ToTable("SoalJawaban");
-                });
-
-            modelBuilder.Entity("Domain.RoomSet.Room", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("Durasi")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ExamId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("JadwalEnd")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime>("JadwalStart")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Kode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("LastModifiedOn")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Nama")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("TotalPeserta")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExamId");
-
-                    b.ToTable("Room");
-                });
-
-            modelBuilder.Entity("Domain.TakeExam.UserAnswer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("SoalId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("SoalJawabanId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserExamId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SoalId");
-
-                    b.HasIndex("SoalJawabanId");
-
-                    b.HasIndex("UserExamId");
-
-                    b.ToTable("UserAnswer");
-                });
-
-            modelBuilder.Entity("Domain.TakeExam.UserExam", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("IsOngoing")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("RoomId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Score")
-                        .HasColumnType("integer");
-
-                    b.Property<double?>("ScoreNormalize")
-                        .HasColumnType("double precision");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("TimeLeft")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoomId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserExam");
-                });
-
-            modelBuilder.Entity("Domain.Users.ApplicationUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("Gender")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("KotaId")
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("NamaLengkap")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Pekerjaan")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<byte[]>("Photo")
-                        .HasColumnType("bytea");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("KotaId");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
-
-                    b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Users.Kota", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("NamaKota")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProvinsiId")
-                        .IsRequired()
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProvinsiId");
-
-                    b.ToTable("Kota", "reference");
-                });
-
-            modelBuilder.Entity("Domain.Users.Provinsi", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("NamaProvinsi")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Provinsi", "reference");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -489,91 +154,317 @@ namespace Web.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.BankSoal.Soal", b =>
+            modelBuilder.Entity("Shared.BankSoal.Exam", b =>
                 {
-                    b.HasOne("Domain.BankSoal.Exam", null)
-                        .WithMany("Soals")
-                        .HasForeignKey("ExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsRandomize")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Nama")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("Thumbnail")
+                        .HasColumnType("bytea");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Exam");
                 });
 
-            modelBuilder.Entity("Domain.BankSoal.SoalJawaban", b =>
+            modelBuilder.Entity("Shared.BankSoal.Soal", b =>
                 {
-                    b.HasOne("Domain.BankSoal.Soal", null)
-                        .WithMany("PilihanJawaban")
-                        .HasForeignKey("SoalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("BobotPoint")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ExamId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Nomor")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Pertanyaan")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamId");
+
+                    b.ToTable("Soal");
                 });
 
-            modelBuilder.Entity("Domain.RoomSet.Room", b =>
+            modelBuilder.Entity("Shared.BankSoal.SoalJawaban", b =>
                 {
-                    b.HasOne("Domain.BankSoal.Exam", "Exam")
-                        .WithMany()
-                        .HasForeignKey("ExamId");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                    b.Navigation("Exam");
+                    b.Property<bool>("IsBenar")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Jawaban")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Point")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("SoalId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SoalId");
+
+                    b.ToTable("SoalJawaban");
                 });
 
-            modelBuilder.Entity("Domain.TakeExam.UserAnswer", b =>
+            modelBuilder.Entity("Shared.RoomSet.Room", b =>
                 {
-                    b.HasOne("Domain.BankSoal.Soal", "Soal")
-                        .WithMany()
-                        .HasForeignKey("SoalId");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                    b.HasOne("Domain.BankSoal.SoalJawaban", "Jawaban")
-                        .WithMany()
-                        .HasForeignKey("SoalJawabanId");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
 
-                    b.HasOne("Domain.TakeExam.UserExam", null)
-                        .WithMany("UserAnswers")
-                        .HasForeignKey("UserExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Navigation("Jawaban");
+                    b.Property<int>("Durasi")
+                        .HasColumnType("integer");
 
-                    b.Navigation("Soal");
+                    b.Property<int?>("ExamId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("JadwalEnd")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("JadwalStart")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Kode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastModifiedOn")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Nama")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamId");
+
+                    b.ToTable("Room");
                 });
 
-            modelBuilder.Entity("Domain.TakeExam.UserExam", b =>
+            modelBuilder.Entity("Shared.TakeExam.UserAnswer", b =>
                 {
-                    b.HasOne("Domain.RoomSet.Room", "Room")
-                        .WithMany("ListPeserta")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                    b.HasOne("Domain.Users.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<Guid?>("SoalId")
+                        .HasColumnType("uuid");
 
-                    b.Navigation("Room");
+                    b.Property<Guid?>("SoalJawabanId")
+                        .HasColumnType("uuid");
 
-                    b.Navigation("User");
+                    b.Property<Guid>("UserExamId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SoalId");
+
+                    b.HasIndex("SoalJawabanId");
+
+                    b.HasIndex("UserExamId");
+
+                    b.ToTable("UserAnswer");
                 });
 
-            modelBuilder.Entity("Domain.Users.ApplicationUser", b =>
+            modelBuilder.Entity("Shared.TakeExam.UserExam", b =>
                 {
-                    b.HasOne("Domain.Users.Kota", "Kota")
-                        .WithMany()
-                        .HasForeignKey("KotaId");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                    b.Navigation("Kota");
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsOngoing")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("TimeLeft")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoomId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserExam");
                 });
 
-            modelBuilder.Entity("Domain.Users.Kota", b =>
+            modelBuilder.Entity("Shared.Users.ApplicationUser", b =>
                 {
-                    b.HasOne("Domain.Users.Provinsi", "Provinsi")
-                        .WithMany()
-                        .HasForeignKey("ProvinsiId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
-                    b.Navigation("Provinsi");
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("KotaId")
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NamaLengkap")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Pekerjaan")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<byte[]>("Photo")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KotaId");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Shared.Users.Kota", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("NamaKota")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProvinsiId")
+                        .IsRequired()
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProvinsiId");
+
+                    b.ToTable("Kota", "reference");
+                });
+
+            modelBuilder.Entity("Shared.Users.Provinsi", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("NamaProvinsi")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Provinsi", "reference");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -587,7 +478,7 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Domain.Users.ApplicationUser", null)
+                    b.HasOne("Shared.Users.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -596,7 +487,7 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Domain.Users.ApplicationUser", null)
+                    b.HasOne("Shared.Users.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -611,7 +502,7 @@ namespace Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Users.ApplicationUser", null)
+                    b.HasOne("Shared.Users.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -620,29 +511,116 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Domain.Users.ApplicationUser", null)
+                    b.HasOne("Shared.Users.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.BankSoal.Exam", b =>
+            modelBuilder.Entity("Shared.BankSoal.Soal", b =>
+                {
+                    b.HasOne("Shared.BankSoal.Exam", null)
+                        .WithMany("Soals")
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Shared.BankSoal.SoalJawaban", b =>
+                {
+                    b.HasOne("Shared.BankSoal.Soal", null)
+                        .WithMany("PilihanJawaban")
+                        .HasForeignKey("SoalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Shared.RoomSet.Room", b =>
+                {
+                    b.HasOne("Shared.BankSoal.Exam", "Exam")
+                        .WithMany()
+                        .HasForeignKey("ExamId");
+
+                    b.Navigation("Exam");
+                });
+
+            modelBuilder.Entity("Shared.TakeExam.UserAnswer", b =>
+                {
+                    b.HasOne("Shared.BankSoal.Soal", "Soal")
+                        .WithMany()
+                        .HasForeignKey("SoalId");
+
+                    b.HasOne("Shared.BankSoal.SoalJawaban", "SoalJawaban")
+                        .WithMany()
+                        .HasForeignKey("SoalJawabanId");
+
+                    b.HasOne("Shared.TakeExam.UserExam", null)
+                        .WithMany("UserAnswers")
+                        .HasForeignKey("UserExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Soal");
+
+                    b.Navigation("SoalJawaban");
+                });
+
+            modelBuilder.Entity("Shared.TakeExam.UserExam", b =>
+                {
+                    b.HasOne("Shared.RoomSet.Room", "Room")
+                        .WithMany("ListPeserta")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shared.Users.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Room");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Shared.Users.ApplicationUser", b =>
+                {
+                    b.HasOne("Shared.Users.Kota", "Kota")
+                        .WithMany()
+                        .HasForeignKey("KotaId");
+
+                    b.Navigation("Kota");
+                });
+
+            modelBuilder.Entity("Shared.Users.Kota", b =>
+                {
+                    b.HasOne("Shared.Users.Provinsi", "Provinsi")
+                        .WithMany()
+                        .HasForeignKey("ProvinsiId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Provinsi");
+                });
+
+            modelBuilder.Entity("Shared.BankSoal.Exam", b =>
                 {
                     b.Navigation("Soals");
                 });
 
-            modelBuilder.Entity("Domain.BankSoal.Soal", b =>
+            modelBuilder.Entity("Shared.BankSoal.Soal", b =>
                 {
                     b.Navigation("PilihanJawaban");
                 });
 
-            modelBuilder.Entity("Domain.RoomSet.Room", b =>
+            modelBuilder.Entity("Shared.RoomSet.Room", b =>
                 {
                     b.Navigation("ListPeserta");
                 });
 
-            modelBuilder.Entity("Domain.TakeExam.UserExam", b =>
+            modelBuilder.Entity("Shared.TakeExam.UserExam", b =>
                 {
                     b.Navigation("UserAnswers");
                 });

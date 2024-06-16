@@ -4,9 +4,9 @@ using Shared.TakeExam;
 
 namespace Shared.RoomSet;
 
-public class Room: IGenericModifier
+public class Room : IGenericModifier
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Nama { get; set; }
     public string Kode { get; set; }
     public DateTime JadwalStart { get; set; }
@@ -19,15 +19,7 @@ public class Room: IGenericModifier
 
     public int TotalPeserta
     {
-        get
-        {
-            return TotalPeserta;
-        }
-        set
-        {
-            if (ListPeserta != null)
-                TotalPeserta = ListPeserta.Count();
-        }
+        get { return ListPeserta?.Count ?? 0; }
     }
 
     public string? CreatedBy { get; set; }
