@@ -14,9 +14,10 @@
     <MudAppBar Class="docs-appbar" Elevation="0">
         <MudButton OnClick="Back" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ArrowBack">Kembali ke Menu</MudButton>
         <MudDivider FlexItem="true" Vertical="true" DividerType="DividerType.Middle" Class="mx-4 my-4"/>
+        <MudText>Form Pembuatan Soal</MudText>
     </MudAppBar>
     <MudMainContent >
-        <MudContainer MaxWidth="MaxWidth.False">
+        <MudContainer MaxWidth="MaxWidth.False" Class="px-xs-8 px-md-14 pb-14">
             @Body
         </MudContainer>
     </MudMainContent>
@@ -28,7 +29,7 @@
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
     
-    private void Back(MouseEventArgs obj)
+    private void Back()
     {
         _navigationManager.NavigateTo("/BankSoal",true);
     }

@@ -4,12 +4,12 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Web.Client.Shared.Layout
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveAuto
 @layout WASMLayout
 @attribute [Authorize]
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<h3>Buat Ujian </h3>
+
 
 <MudGrid>
     <MudItem xs="12" md="6">
@@ -30,9 +30,28 @@
                               Required
                               Label="Nama Ujian"/>
                 <MudText Class="mt-3">Pengaturan Soal</MudText>
-                <MudSwitch @bind-Value="@model.IsRandomize"
-                           Label="Acak Soal?"
-                           Color="Color.Success"/>
+                <div class="d-flex flex-row flex-grow-1 gap-4">
+                    <MudSwitch @bind-Value="@model.IsRandomize"
+                               Label="Acak Soal?" Color="Color.Success"/>
+                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg">
+                        <ActivatorContent>
+                            <MudFab Color="Color.Primary"
+                                    StartIcon="@Icons.Material.Filled.Image"
+                                    Label="Unggah Pratinjau" />
+                        </ActivatorContent>
+                        <SelectedTemplate>
+                            @if (context != null)
+                            {
+                            <MudText>@context.Name</MudText>
+                            }
+                            else
+                            {
+                            <MudText>No File</MudText>
+                            }
+                        </SelectedTemplate>
+                    </MudFileUpload>
+                </div>
+                
                 <MudTextField Variant="Variant.Outlined"
                               T="int"
                               Class="mt-4"
@@ -63,7 +82,7 @@
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
-                <div id="unique_id_scroll_section" class="ma-0" style="height:300px;overflow: auto;">
+                <div id="unique_id_scroll_section" class="ma-0" style="height:275px;overflow: auto;">
                     <MudStack Wrap="Wrap.Wrap" Spacing="4" Row="@true" AlignItems="AlignItems.Start">
                         @{
                             foreach (var item in model.Soals)
@@ -96,18 +115,29 @@
 @{
     if (model.Soals != null && model.Soals.Count > 0)
     {
-        <MudGrid>
+        <MudGrid Class="mt-3">
 
-            <MudItem xs="12" md="6">
-                <MudPaper Elevation="2" Class="pa-4">
-                    <MudText Class="mt-4">Pertanyaan Nomor : @currentSoal.Nomor</MudText>
-                    <MudNumericField Label="Bobot Point"
-                                     Max="5"
-                                     Min="0"
-                                     Class="mt-3 mb-4"
-                                     Variant="Variant.Outlined"
-                                     @bind-Value="@currentSoal.BobotPoint"/>
-                </MudPaper>
+            <MudItem xs="12" md="5">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Pertanyaan Nomor : @currentSoal.Nomor</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="OnDelete"/>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudNumericField Label="Bobot Point"
+                                         Max="5"
+                                         Min="0"
+                                         Class="mt-3 mb-4"
+                                         Variant="Variant.Outlined"
+                                         @bind-Value="@currentSoal.BobotPoint"/>
+                    </MudCardContent>
+                    <MudCardActions >
+                    </MudCardActions>
+                </MudCard>
 
             </MudItem>
 
@@ -115,9 +145,9 @@
 
         <MudExRichTextEdit @ref="@Editor"
                            ReadOnly="@_readOnly"
-                           Height="400"
+                           Height="300"
                            Immediate="true"
-                           Class="m-2 mt-3"
+                           Class="m-2 mt-4"
                            @bind-Value="@currentSoal.Pertanyaan"
                            Placeholder="Edit html">
             <ToolbarContent>
@@ -126,16 +156,6 @@
         </MudExRichTextEdit>
     }
 }
-
-@{
-    foreach (var item in model.Soals)
-    {
-        <MudText>@item.Nomor</MudText>
-        <MudText>@item.BobotPoint</MudText>
-        <MudText>@item.Pertanyaan</MudText>
-    }
-}
-
 
 
 @code {
@@ -156,7 +176,32 @@
     
     private int testint;
 
-    private Soal currentSoal;
+    private Soal? currentSoal;
+    
+    private async Task UploadFiles(IBrowserFile file)
+    {
+        var stream = file.OpenReadStream();
+        using (var memstream = new MemoryStream())
+        {
+            await stream.CopyToAsync(memstream);
+            model.Thumbnail = memstream.ToArray();
+        }
+    }
+
+    private void OnDelete()
+    {
+        if (currentSoal != null)
+        {
+            model.Soals.Remove(currentSoal);
+
+            for (int i = 0; i < model.Soals.Count; i++)
+            {
+                model.Soals[i].Nomor = i+1;
+            }
+            currentSoal = model.Soals.FirstOrDefault();
+        }
+        StateHasChanged();
+    }
     
     private void AddSoal()
     {
