@@ -1,6 +1,6 @@
 ﻿using Shared.BankSoal;
 using Shared.Common;
-using Web.Common.Models;
+using Web.Client.Shared.Models;
 using Web.Components.Features.UserManagement;
 
 namespace Web.Services.ExamService;

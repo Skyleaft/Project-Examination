@@ -1,5 +1,6 @@
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
+using FastEndpoints;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -11,13 +12,14 @@ using MudBlazor.Services;
 using Shared.Common;
 using Shared.Users;
 using Web;
+using Web.Client.Services;
+using Web.Client.Services.Notifications;
+using Web.Client.Services.UserPreferences;
+using Web.Client.Shared.Extensions;
 using Web.Common.Database;
-using Web.Common.Extensions;
 using Web.Components;
 using Web.Components.Features.Auth;
 using Web.Services;
-using Web.Services.Notifications;
-using Web.Services.UserPreferences;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,12 +76,17 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+builder.Services.AddFastEndpoints();
+
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
-
+app.UseFastEndpoints(c =>
+{
+    c.Endpoints.RoutePrefix = "api";
+}); 
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -1,7 +1,7 @@
 ﻿using Shared.BankSoal;
 using Shared.Common;
+using Web.Client.Shared.Models;
 using Web.Common.Database;
-using Web.Common.Models;
 
 namespace Web.Services.ExamService;
 

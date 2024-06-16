@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
+using Web.Client.Services;
 using Web.Services;
 
 namespace Web.Components.Layout

@@ -12,12 +12,12 @@
 <MudButton OnClick="checkauth">CheckAuth</MudButton>
 @if (claims.Count() > 0)
 {
-<ul>
-    @foreach (var claim in claims)
-    {
-    <li>@claim.Type: @claim.Value</li>
-    }
-</ul>
+    <ul>
+        @foreach (var claim in claims)
+        {
+            <li>@claim.Type: @claim.Value</li>
+        }
+    </ul>
 }
 <AuthorizeView>
     <Authorized>
@@ -27,10 +27,10 @@
         <p>You're not authorized.</p>
     </NotAuthorized>
 </AuthorizeView>
-<MudButton OnClick="Back" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ArrowBack">Kembali ke Menu</MudButton>
+
 <MudToolBar>
-    <MudCheckBox Label="Read only" @bind-Value="_readOnly" />
-    <MudCheckBox Label="Update Value on change" @bind-Value="_updateValueOnChange" />
+    <MudCheckBox Label="Read only" @bind-Value="_readOnly"/>
+    <MudCheckBox Label="Update Value on change" @bind-Value="_updateValueOnChange"/>
 </MudToolBar>
 
 <MudExRichTextEdit @ref="@Editor"
@@ -50,44 +50,51 @@
             <option value="5"></option>
         </select>
         <span class="ql-formats">
-					<button class="ql-bold"></button>
-					<button class="ql-italic"></button>
-					<button class="ql-underline"></button>
-					<button class="ql-strike"></button>
-				</span>
+            <button class="ql-bold"></button>
+            <button class="ql-italic"></button>
+            <button class="ql-underline"></button>
+            <button class="ql-strike"></button>
+        </span>
         <span class="ql-formats">
-					<select class="ql-color"></select>
-					<select class="ql-background"></select>
-				</span>
+            <select class="ql-color"></select>
+            <select class="ql-background"></select>
+        </span>
         <span class="ql-formats">
-					<button class="ql-list" value="ordered"></button>
-					<button class="ql-list" value="bullet"></button>
-				</span>
+            <button class="ql-script" value="sub"></button>
+            <button class="ql-script" value="super"></button>
+        </span>
         <span class="ql-formats">
-					<button class="ql-link"></button>
-				</span>
+            <button class="ql-blockquote"></button>
+            <button class="ql-code-block"></button>
+            <button class="ql-list" value="ordered"></button>
+            <button class="ql-list" value="bullet"></button>
+            <button class="ql-indent" value="-1"></button>
+            <button class="ql-indent" value="+1"></button>
+        </span>
+        <span class="ql-formats">
+            <button class="ql-image"></button>
+            <button class="ql-video"></button>
+            <button class="ql-link"></button>
+            <button class="ql-formula"></button>
+        </span>
     </ToolbarContent>
 </MudExRichTextEdit>
 
 <textarea class="m-2" style="width: 100%; height: 400px;" readonly="readonly">@pertanyaan</textarea>
+
 @code {
-    
+
     [Inject] NavigationManager _navigationManager { get; set; }
     bool _readOnly = false;
     bool _updateValueOnChange;
     MudExRichTextEdit Editor;
-    private string pertanyaan="<b>This</b> initial value will change in 2 seconds";
-    
+    private string pertanyaan;
+
     private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
 
-    private void Back(MouseEventArgs obj)
-    {
-        _navigationManager.NavigateTo("/BankSoal",true);
-    }
 
     public async Task checkauth()
     {
-        
         var authState = await AuthenticationStateProvider
             .GetAuthenticationStateAsync();
         var user = authState.User;
@@ -96,7 +103,6 @@
         {
             claims = user.Claims;
         }
-
     }
 
 }

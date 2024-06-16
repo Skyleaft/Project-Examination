@@ -1,6 +1,6 @@
 ﻿using Shared.Common;
 using Shared.Users;
-using Web.Common.Models;
+using Web.Client.Shared.Models;
 using Web.Components.Features.Auth;
 
 namespace Web.Components.Features.UserManagement;

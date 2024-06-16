@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
-using Web.Common.Theme;
+using Web.Client.Services;
+using Web.Client.Shared.Theme;
 using Web.Services;
 
 namespace Web.Components.Layout;

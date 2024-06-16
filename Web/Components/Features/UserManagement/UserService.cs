@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Shared.Common;
 using Shared.Users;
+using Web.Client.Shared.Models;
 using Web.Common.Database;
-using Web.Common.Models;
 
 namespace Web.Components.Features.UserManagement;
 

@@ -7,10 +7,11 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
 using Shared.Users;
-using Web.Common.Enums;
+using Web.Client.Services;
+using Web.Client.Services.Notifications;
+using Web.Client.Shared.Enums;
 using Web.Components.Features.Auth;
 using Web.Services;
-using Web.Services.Notifications;
 
 namespace Web.Components.Layout;
 

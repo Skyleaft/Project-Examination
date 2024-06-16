@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
 using Shared.Users;
-using Web.Common.Theme;
+using Web.Client.Services;
+using Web.Client.Shared.Theme;
 using Web.Services;
 
 namespace Web.Components.Layout;
