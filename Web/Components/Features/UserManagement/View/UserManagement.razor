@@ -1,10 +1,10 @@
 ﻿@page "/UserManagement"
 @using System.Text.Json
-@using Domain.Common
+@using global::Shared.Common
+@using global::Shared.Users
 @using Web.Components.Features.UserManagement.Dialog
 @using Mapster
 @using Web.Components.Features.Auth
-@using Domain.Users
 @inject HttpClient httpClient
 @inject IDialogService Dialog
 @attribute [Authorize]

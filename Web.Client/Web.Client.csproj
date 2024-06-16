@@ -24,13 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Feature\BankSoal\Page.razor" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="Microsoft.AspNetCore.Components.Authorization">
-        <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.5\Microsoft.AspNetCore.Components.Authorization.dll</HintPath>
-      </Reference>
+      <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 
 </Project>

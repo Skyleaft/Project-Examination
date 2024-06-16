@@ -1,5 +1,5 @@
-﻿using Domain.Common;
-using Domain.Users;
+﻿using Shared.Common;
+using Shared.Users;
 using Web.Common.Models;
 using Web.Components.Features.Auth;
 

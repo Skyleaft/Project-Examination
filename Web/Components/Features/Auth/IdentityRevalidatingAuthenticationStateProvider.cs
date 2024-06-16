@@ -1,9 +1,9 @@
 using System.Security.Claims;
-using Domain.Users;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using Shared.Users;
 
 namespace Web.Components.Features.Auth;
 

@@ -1,9 +1,9 @@
 ﻿using Blazored.SessionStorage;
-using Domain.Users;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
+using Shared.Users;
 using Web.Common.Theme;
 using Web.Services;
 

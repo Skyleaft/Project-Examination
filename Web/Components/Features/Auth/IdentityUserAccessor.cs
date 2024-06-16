@@ -1,5 +1,5 @@
-using Domain.Users;
 using Microsoft.AspNetCore.Identity;
+using Shared.Users;
 
 namespace Web.Components.Features.Auth;
 

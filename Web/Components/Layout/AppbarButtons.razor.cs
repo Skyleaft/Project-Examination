@@ -2,11 +2,11 @@
 // MudBlazor licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Domain.Users;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
+using Shared.Users;
 using Web.Common.Enums;
 using Web.Components.Features.Auth;
 using Web.Services;

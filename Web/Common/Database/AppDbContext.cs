@@ -1,9 +1,9 @@
-using Domain.BankSoal;
-using Domain.RoomSet;
-using Domain.TakeExam;
-using Domain.Users;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Shared.BankSoal;
+using Shared.RoomSet;
+using Shared.TakeExam;
+using Shared.Users;
 
 namespace Web.Common.Database;
 

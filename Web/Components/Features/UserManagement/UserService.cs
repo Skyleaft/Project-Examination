@@ -1,8 +1,8 @@
-﻿using Domain.Common;
-using Domain.Users;
-using Mapster;
+﻿using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Shared.Common;
+using Shared.Users;
 using Web.Common.Database;
 using Web.Common.Models;
 

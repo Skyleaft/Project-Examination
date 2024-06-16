@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Domain.Common;
 using Microsoft.AspNetCore.Components.Forms;
+using Shared.Common;
 
 namespace Web.Components.Features.UserManagement;
 

@@ -1,7 +1,5 @@
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
-using Domain.Common;
-using Domain.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -10,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Extensions;
 using MudBlazor.Services;
+using Shared.Common;
+using Shared.Users;
 using Web;
 using Web.Common.Database;
 using Web.Common.Extensions;
@@ -90,7 +90,7 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseMigrationsEndPoint();
+    //app.UseMigrationsEndPoint();
     app.UseWebAssemblyDebugging();
 }
 

@@ -1,10 +1,10 @@
 ﻿@using System.Net
-@using Domain.Common
+@using global::Shared.Common
+@using global::Shared.Users
 @using Mapster
 @using Web.Components.Features.Auth
 @using Web.Common.Database
 @using Microsoft.EntityFrameworkCore
-@using Domain.Users
 @inject HttpClient HttpClient
 <EditForm Model="@userModel" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator/>

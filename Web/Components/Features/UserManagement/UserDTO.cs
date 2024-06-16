@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Domain.Common;
+using Shared.Common;
 using Web.Components.Features.Auth;
 
 namespace Web.Components.Features.UserManagement;
