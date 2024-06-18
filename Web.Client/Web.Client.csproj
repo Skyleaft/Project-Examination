@@ -33,6 +33,16 @@
     </ItemGroup>
 
     <ItemGroup>
+      <AdditionalFiles Include="Feature\Dashboards\Pages\Dashboard.razor" />
+      <AdditionalFiles Include="Feature\Register\Page.razor" />
+      <AdditionalFiles Include="Feature\UserManagements\Dialog\AddUserDialog.razor" />
+      <AdditionalFiles Include="Feature\UserManagements\Dialog\EditUserDialog.razor" />
+      <AdditionalFiles Include="Feature\UserManagements\Page\UserManagement.razor" />
+      <AdditionalFiles Include="Layout\Appbar.razor" />
+      <AdditionalFiles Include="Layout\AppbarButtons.razor" />
+      <AdditionalFiles Include="Layout\BlankLayout.razor" />
+      <AdditionalFiles Include="Layout\MainLayout.razor" />
+      <AdditionalFiles Include="Layout\NavMenu.razor" />
       <AdditionalFiles Include="Shared\NotificationContent\Announcement_v7_In_Development.razor" />
     </ItemGroup>
 

@@ -19,9 +19,13 @@ public class PersistentAuthenticationStateProvider : AuthenticationStateProvider
             return;
         }
 
-        Claim[] claims = [
+        Claim[] claims =
+        [
             new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),
-            new Claim(ClaimTypes.Name, userInfo.Name) ];
+            new Claim(ClaimTypes.Name, userInfo.Name),
+            new Claim(ClaimTypes.Role, userInfo.Role),
+            new Claim(ClaimTypes.Email, userInfo.Email),
+        ];
 
         _authenticationStateTask = Task.FromResult(
             new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,

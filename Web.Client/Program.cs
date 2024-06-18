@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Extensions;
 using MudBlazor.Services;
+using Web.Client;
 using Web.Client.Services;
 using Web.Client.Services.Notifications;
 using Web.Client.Services.UserPreferences;
@@ -24,6 +25,7 @@ builder.Services.AddHttpClient("ServerAPI",
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
     .CreateClient("ServerAPI"));
 
+builder.Services.InjectService();
 builder.Services.AddScoped<IUserPreferencesService, UserPreferencesService>();
 builder.Services.AddScoped<INotificationService, InMemoryNotificationService>();
 builder.Services.AddScoped<LayoutService>();

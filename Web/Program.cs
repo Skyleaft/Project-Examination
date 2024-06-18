@@ -12,6 +12,7 @@ using MudBlazor.Services;
 using Shared.Common;
 using Shared.Users;
 using Web;
+using Web.Client.Feature.BankSoal;
 using Web.Client.Services;
 using Web.Client.Services.Notifications;
 using Web.Client.Services.UserPreferences;
@@ -156,7 +157,7 @@ app.MapRazorComponents<App>()
     .DisableAntiforgery()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(Web.Client._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(CreateSoalPage).Assembly);
 
 app.MapAdditionalIdentityEndpoints();
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Web.Client.Shared.Models;
+using ZstdSharp.Unsafe;
 
 namespace Web.Components.Features.Auth;
 
@@ -35,18 +36,24 @@ public class PersistingAuthenticationStateProvider : ServerAuthenticationStatePr
 
         var authenticationState = await _authenticationStateTask;
         var principal = authenticationState.User;
+        
 
         if (principal.Identity?.IsAuthenticated == true)
         {
             var userId = principal.FindFirst(_options.ClaimsIdentity.UserIdClaimType)?.Value;
-            var name = principal.Identity.Name;
-
+            var name = principal.Identity.Name; 
+            var email = principal.FindFirst(_options.ClaimsIdentity.EmailClaimType)?.Value;
+            var role = principal.FindFirst(_options.ClaimsIdentity.RoleClaimType)?.Value;
+            var secstamp = principal.FindFirst(_options.ClaimsIdentity.SecurityStampClaimType)?.Value;
             if (userId != null && name != null)
             {
                 _state.PersistAsJson(nameof(UserInfo), new UserInfo
                 {
                     UserId = userId,
                     Name = name,
+                    Email = email,
+                    Role = role,
+                    SecurityStamp = secstamp
                 });
             }
         }

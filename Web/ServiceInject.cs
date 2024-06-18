@@ -1,5 +1,7 @@
-﻿using Web.Components.Features.UserManagement;
-using Web.Services.ExamService;
+﻿using Web.Client.Interfaces;
+using Web.Services.ExamServices;
+using Web.Services.ReferenceServices;
+using Web.Services.UserServices;
 
 namespace Web;
 
@@ -9,6 +11,7 @@ public static class ServiceInject
     {
         services.AddScoped<IUser, UserService>();
         services.AddScoped<IExam, ExamService>();
+        services.AddScoped<IReferences, ReferenceService>();
         return services;
     }
 }

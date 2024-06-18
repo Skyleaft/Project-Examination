@@ -41,11 +41,11 @@
             }
             else if (HttpContext.Request.Path.StartsWithSegments("/client"))
             {
-                return null;
+                return InteractiveWebAssembly;
             }
             else
             {
-                return new InteractiveServerRenderMode(false);
+                return new InteractiveAutoRenderMode(false);
             }
         }
         // HttpContext.Request.Path.StartsWithSegments("/Account")

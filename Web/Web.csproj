@@ -49,6 +49,16 @@
       <_ContentIncludedByDefault Remove="Components\Pages\Weather.razor" />
       <_ContentIncludedByDefault Remove="Components\Features\BankSoal\Page.razor" />
       <_ContentIncludedByDefault Remove="Common\NotificationContent\Announcement_v7_In_Development.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\Appbar.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\AppbarButtons.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\BlankLayout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\LoginLayout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\NavMenu.razor" />
+      <_ContentIncludedByDefault Remove="Components\Features\UserManagement\Dialog\AddUserDialog.razor" />
+      <_ContentIncludedByDefault Remove="Components\Features\UserManagement\Dialog\EditUserDialog.razor" />
+      <_ContentIncludedByDefault Remove="Components\Features\UserManagement\View\UserManagement.razor" />
+      <_ContentIncludedByDefault Remove="Components\Features\Register\Page.razor" />
     </ItemGroup>
 
     <ItemGroup>
@@ -63,6 +73,7 @@
 
     <ItemGroup>
       <Folder Include="Common\Extensions\" />
+      <Folder Include="Components\Shared\" />
       <Folder Include="Migrations\" />
     </ItemGroup>
 
