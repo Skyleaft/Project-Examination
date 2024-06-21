@@ -13,6 +13,7 @@ using Shared.Common;
 using Shared.Users;
 using Web;
 using Web.Client.Feature.BankSoal;
+using Web.Client.Feature.BankSoal.Page;
 using Web.Client.Services;
 using Web.Client.Services.Notifications;
 using Web.Client.Services.UserPreferences;

@@ -48,6 +48,6 @@ public static class PaginatedListHelper
                 .ToListAsync(ct);
         }
         
-        return new PaginatedResponse<T>(items, count, currentPage, pageSize);
+        return new PaginatedResponse<T>(items, currentPage, count, pageSize);
     }
 }

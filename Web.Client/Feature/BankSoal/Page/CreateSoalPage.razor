@@ -1,12 +1,12 @@
 ﻿@page "/client/BankSoal/Create"
 @using global::Shared.BankSoal
 @using Microsoft.AspNetCore.Authorization
+@using Web.Client.Feature.BankSoal.Component
+@using Web.Client.Interfaces
 @rendermode InteractiveWebAssembly
 @layout WASMLayout
 @attribute [Authorize]
 @inject AuthenticationStateProvider AuthenticationStateProvider
-
-
 
 <MudGrid>
     <MudItem xs="12" md="6">
@@ -106,6 +106,9 @@
             </MudCardActions>
         </MudCard>
     </MudItem>
+    <MudItem xs="12" md="6">
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="OnSaveExam">Simpan</MudButton>
+    </MudItem>
 
 </MudGrid>
 
@@ -158,13 +161,28 @@
 @code {
 
     [Inject] NavigationManager _navigationManager { get; set; }
+    [Inject] IExam examRepo { get; set; }
+    
     bool _readOnly = false;
     bool _updateValueOnChange;
     MudExRichTextEdit Editor;
     private string pertanyaan;
-
-
-    private string testasd;
+    private string curentUser;
+    
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (auth is not null)
+            {
+                model.CreatedBy = auth.User.Identity.Name;
+            }
+            StateHasChanged();
+        }
+    }
 
     private Exam model = new Exam()
     {
@@ -218,6 +236,14 @@
     {
         currentSoal = model.Soals.FirstOrDefault(x => x.Id == Id);
         StateHasChanged();
+    }
+
+    private async Task OnSaveExam()
+    {
+        if (!string.IsNullOrEmpty(model.Nama))
+        {
+            await examRepo.Create(model);
+        }
     }
 
 }

@@ -1,0 +1,17 @@
+﻿@using global::Shared.BankSoal
+
+<MudCard Style="width: 280px; min-width: 280px">
+    <MudCardMedia Image="@strImage" Height="100"/>
+    <MudCardContent>
+        <MudText Typo="Typo.h6">@data.Nama</MudText>
+        <MudText Typo="Typo.body2">Dibuat Oleh : @data.CreatedBy</MudText>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Variant="Variant.Text" Color="Color.Primary">Lihat</MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    [Parameter]public Exam data { get; set; }
+    [Parameter]public string strImage { get; set; }
+}

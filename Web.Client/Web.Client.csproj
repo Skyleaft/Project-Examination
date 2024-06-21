@@ -22,6 +22,8 @@
 
     <ItemGroup>
       <_ContentIncludedByDefault Remove="wwwroot\css\app.css" />
+      <_ContentIncludedByDefault Remove="Feature\BankSoal\Page\Component\ExamCard.razor" />
+      <_ContentIncludedByDefault Remove="Feature\BankSoal\Page\Component\RichToolBarContent.razor" />
     </ItemGroup>
 
     <ItemGroup>
@@ -33,6 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <AdditionalFiles Include="Feature\BankSoal\Component\RichToolBarContent.razor" />
       <AdditionalFiles Include="Feature\Dashboards\Pages\Dashboard.razor" />
       <AdditionalFiles Include="Feature\Register\Page.razor" />
       <AdditionalFiles Include="Feature\UserManagements\Dialog\AddUserDialog.razor" />
