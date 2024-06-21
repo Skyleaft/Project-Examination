@@ -1,4 +1,5 @@
 ﻿using FastEndpoints;
+using FluentValidation;
 using Shared.BankSoal;
 using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
@@ -18,6 +19,7 @@ public class Endpoint : Endpoint<Exam,ServiceResponse>
     {
         Put("/exam/{Id}");
     }
+    
 
     public override async Task HandleAsync(Exam r,CancellationToken ct)
     {
@@ -25,3 +27,4 @@ public class Endpoint : Endpoint<Exam,ServiceResponse>
         await SendAsync(res, cancellation: ct);
     }
 }
+

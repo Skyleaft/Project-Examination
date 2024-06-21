@@ -1,160 +1,248 @@
-﻿@page "/client/BankSoal/Create"
+﻿@page "/client/BankSoal/Create/{Id:int?}"
 @using global::Shared.BankSoal
 @using Microsoft.AspNetCore.Authorization
+@using MudExRichTextEditor.Extensibility
 @using Web.Client.Feature.BankSoal.Component
 @using Web.Client.Interfaces
+@using Web.Client.Shared.Extensions
 @rendermode InteractiveWebAssembly
 @layout WASMLayout
 @attribute [Authorize]
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<MudGrid>
-    <MudItem xs="12" md="6">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Ujian @model.Nama</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default"/>
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudTextField Variant="Variant.Outlined"
-                              T="string"
-                              @bind-Value="@model.Nama"
-                              Immediate
-                              Required
-                              Label="Nama Ujian"/>
-                <MudText Class="mt-3">Pengaturan Soal</MudText>
-                <div class="d-flex flex-row flex-grow-1 gap-4">
-                    <MudSwitch @bind-Value="@model.IsRandomize"
-                               Label="Acak Soal?" Color="Color.Success"/>
-                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg">
-                        <ActivatorContent>
-                            <MudFab Color="Color.Primary"
-                                    StartIcon="@Icons.Material.Filled.Image"
-                                    Label="Unggah Pratinjau" />
-                        </ActivatorContent>
-                        <SelectedTemplate>
-                            @if (context != null)
-                            {
-                            <MudText>@context.Name</MudText>
-                            }
-                            else
-                            {
-                            <MudText>No File</MudText>
-                            }
-                        </SelectedTemplate>
-                    </MudFileUpload>
-                </div>
-                
-                <MudTextField Variant="Variant.Outlined"
-                              T="int"
-                              Class="mt-4"
-                              Value="model.TotalSoal"
-                              ReadOnly
-                              Label="Total Soal"/>
-                <MudTextField Variant="Variant.Outlined"
-                              T="int"
-                              Class="mt-3"
-                              Value="@model.TotalPoint"
-                              ReadOnly
-                              Label="Total Point"/>
-            </MudCardContent>
-            <MudCardActions >
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
+@if (isLoading)
+{
+    <div class="d-none d-flex align-center flex-grow-1 ma-8">
+        <MudSpacer/>
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+        <MudSpacer/>
+    </div>
+}
+else
+{
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Ujian @model.Nama</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default"/>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTextField Variant="Variant.Outlined"
+                                  T="string"
+                                  @bind-Value="@model.Nama"
+                                  Immediate
+                                  Required
+                                  Label="Nama Ujian"/>
+                    <MudText Class="mt-3">Pengaturan Soal</MudText>
+                    <div class="d-flex flex-row flex-grow-1 gap-4">
+                        <MudSwitch @bind-Value="@model.IsRandomize"
+                                   Label="Acak Soal?" Color="Color.Success"/>
+                        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg">
+                            <ActivatorContent>
+                                <MudFab Color="Color.Primary"
+                                        StartIcon="@Icons.Material.Filled.Image"
+                                        Label="Unggah Pratinjau"/>
+                            </ActivatorContent>
+                            <SelectedTemplate>
+                                @if (context != null)
+                                {
+                                    <MudText>@context.Name</MudText>
+                                }
+                                else
+                                {
+                                    <MudText>No File</MudText>
+                                }
+                            </SelectedTemplate>
+                        </MudFileUpload>
+                    </div>
 
-    <MudItem xs="12" md="6">
+                    <MudTextField Variant="Variant.Outlined"
+                                  T="int"
+                                  Class="mt-4"
+                                  Value="model.TotalSoal"
+                                  ReadOnly
+                                  Label="Total Soal"/>
+                    <MudTextField Variant="Variant.Outlined"
+                                  T="int"
+                                  Class="mt-3"
+                                  Value="@model.TotalPoint"
+                                  ReadOnly
+                                  Label="Total Point"/>
+                </MudCardContent>
+                <MudCardActions >
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
 
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Soal</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default"/>
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <div id="unique_id_scroll_section" class="ma-0" style="height:275px;overflow: auto;">
-                    <MudStack Wrap="Wrap.Wrap" Spacing="4" Row="@true" AlignItems="AlignItems.Start">
-                        @{
-                            foreach (var item in model.Soals)
-                            {
-                                <MudButton Variant="item==currentSoal?Variant.Filled:Variant.Outlined "
+        <MudItem xs="12" md="6">
+        </MudItem>
+
+        <MudItem xs="12" md="6">
+            <MudSpacer/>
+            <MudIconButton
+                Icon="@Icons.Material.Filled.Delete"
+                aria-label="Delete"
+                Color="Color.Error"/>
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="OnSaveExam">Simpan</MudButton>
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Class="mt-2">
+        <MudItem xs="12" md="7">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Soal</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default"/>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <div id="unique_id_scroll_section" class="ma-0" style="height:200px;overflow: auto;">
+                        <MudStack Wrap="Wrap.Wrap" Spacing="4" Row="@true" AlignItems="AlignItems.Start">
+                            @{
+                                foreach (var item in model.Soals)
+                                {
+                                    <MudButton Variant="item == currentSoal ? Variant.Filled : Variant.Outlined"
+                                               Color="Color.Primary"
+
+                                               OnClick="() => OnSoalClick(item.Id)"
+                                               Style="width: 50px; height: 50px;">
+                                        @item.Nomor
+                                    </MudButton>
+                                }
+                            }
+
+                            <MudIconButton Icon="@Icons.Material.Filled.Add"
+                                           Variant="Variant.Outlined"
                                            Color="Color.Primary"
+                                           OnClick="() => AddSoal()"
+                                           Size="Size.Large"/>
+                        </MudStack>
+                    </div>
+                </MudCardContent>
+                <MudCardActions >
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
 
-                                           OnClick="() => OnSoalClick(item.Id)"
-                                           Style="width: 50px; height: 50px;">
-                                    @item.Nomor
-                                </MudButton>
+        @{
+            if (model.Soals != null && model.Soals.Count > 0)
+            {
+                <MudItem xs="12" md="5">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Pertanyaan Nomor : @currentSoal.Nomor</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="OnDelete"/>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudNumericField Label="Bobot Point"
+                                             Max="5"
+                                             Min="0"
+                                             Class="mt-3 mb-4"
+                                             Variant="Variant.Outlined"
+                                             @bind-Value="@currentSoal.BobotPoint"/>
+                        </MudCardContent>
+                        <MudCardActions >
+                        </MudCardActions>
+                    </MudCard>
+
+                </MudItem>
+                <MudItem xs="12" md="7">
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudToolBar>
+                        <MudTextField  Variant="Variant.Outlined" Label="URL Foto" @bind-Value="imageUrl"></MudTextField>
+                        <MudButton  OnClick="InsertImage" StartIcon="@Icons.Material.Filled.Send"></MudButton>
+                    </MudToolBar>
+
+                    <MudExRichTextEdit @ref="@Editor"
+                                       ReadOnly="@_readOnly"
+                                       Height="350"
+                                       Class="m-2"
+                                       @bind-Value="@currentSoal.Pertanyaan"
+                                       Placeholder="Buat Pertanyaan">
+                        <ToolbarContent>
+                            <RichToolBarContent/>
+                        </ToolbarContent>
+                    </MudExRichTextEdit>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h5">Jawaban</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            @{
+                                int i = 0;
+                                foreach (var jawaban in currentSoal.PilihanJawaban)
+                                {
+                                    string urutan = $"Jawaban {alpha[i]}";
+
+                                    <div class="d-flex flex-grow-1 align-content-center gap-2">
+                                        <MudNumericField @bind-Value="@jawaban.Point"
+                                                         Max="5"
+                                                         Min="0"
+                                                         Class="flex-grow-0"
+                                                         Style="width: 60px;max-width: 60px"
+                                                         Label="Point"
+                                                         Variant="Variant.Outlined"/>
+                                        <MudTextField Label="@urutan"
+                                                      MaxLength="30"
+                                                      Class="flex-grow-1"
+                                                      Variant="Variant.Outlined"
+                                                      @bind-Value="@jawaban.Jawaban"/>
+                                        <div class="d-flex align-content-center flex-wrap flex-grow-0">
+                                            <MudSwitch
+                                                @bind-Value="@jawaban.IsBenar"
+                                                Label="Benar"
+                                                Color="Color.Success"/>
+                                        </div>
+
+                                        <MudIconButton
+                                            Icon="@Icons.Material.Filled.Delete"
+                                            aria-label="Delete"
+                                            OnClick="() => { currentSoal.PilihanJawaban.Remove(jawaban); }"
+                                            Color="Color.Error"/>
+
+                                    </div>
+
+                                    i += 1;
+                                }
                             }
-                        }
-
-                        <MudIconButton Icon="@Icons.Material.Filled.Add"
+                            <MudButton OnClick="AddJawaban"
+                                       FullWidth="true"
                                        Variant="Variant.Outlined"
                                        Color="Color.Primary"
-                                       OnClick="() => AddSoal()"
-                                       Size="Size.Large"/>
-                    </MudStack>
-                </div>
-            </MudCardContent>
-            <MudCardActions >
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
-    <MudItem xs="12" md="6">
-        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="OnSaveExam">Simpan</MudButton>
-    </MudItem>
+                                       Class="mx-2 py-2 mt-4"
+                                       StartIcon="@Icons.Material.Filled.Add">
+                                Tambah Jawaban
+                            </MudButton>
 
-</MudGrid>
+                        </MudCardContent>
+                        <MudCardActions >
+                        </MudCardActions>
+                    </MudCard>
 
-@{
-    if (model.Soals != null && model.Soals.Count > 0)
-    {
-        <MudGrid Class="mt-3">
 
-            <MudItem xs="12" md="5">
-                <MudCard>
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6">Pertanyaan Nomor : @currentSoal.Nomor</MudText>
-                        </CardHeaderContent>
-                        <CardHeaderActions>
-                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="OnDelete"/>
-                        </CardHeaderActions>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudNumericField Label="Bobot Point"
-                                         Max="5"
-                                         Min="0"
-                                         Class="mt-3 mb-4"
-                                         Variant="Variant.Outlined"
-                                         @bind-Value="@currentSoal.BobotPoint"/>
-                    </MudCardContent>
-                    <MudCardActions >
-                    </MudCardActions>
-                </MudCard>
-
-            </MudItem>
-
-        </MudGrid>
-
-        <MudExRichTextEdit @ref="@Editor"
-                           ReadOnly="@_readOnly"
-                           Height="300"
-                           Immediate="true"
-                           Class="m-2 mt-4"
-                           @bind-Value="@currentSoal.Pertanyaan"
-                           Placeholder="Edit html">
-            <ToolbarContent>
-                <RichToolBarContent/>
-            </ToolbarContent>
-        </MudExRichTextEdit>
-    }
+                </MudItem>
+            }
+        }
+    </MudGrid>
 }
 
 
@@ -162,14 +250,36 @@
 
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IExam examRepo { get; set; }
-    
+    [Inject] private IDialogService DialogService { get; set; }
+    [Parameter] public int Id { get; set; }
+
+    bool isLoading = true;
     bool _readOnly = false;
     bool _updateValueOnChange;
     MudExRichTextEdit Editor;
     private string pertanyaan;
     private string curentUser;
-    
-    
+    private string[] alpha = { "A", "B", "C", "D", "E", "F", "G" };
+    private string imageUrl;
+
+    private IQuillModule[] _modules = new[]
+    {
+        new QuilImageCompress()
+    };
+
+    private Exam model = new Exam()
+    {
+        Soals = new List<Soal>()
+    };
+
+    private int testint;
+
+    private Soal? currentSoal;
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
@@ -180,19 +290,18 @@
             {
                 model.CreatedBy = auth.User.Identity.Name;
             }
+
+            if (Id != null && Id != 0)
+            {
+                var exam = await examRepo.Get(Id);
+                model = exam;
+            }
+
+            isLoading = false;
             StateHasChanged();
         }
     }
 
-    private Exam model = new Exam()
-    {
-        Soals = new List<Soal>()
-    };
-    
-    private int testint;
-
-    private Soal? currentSoal;
-    
     private async Task UploadFiles(IBrowserFile file)
     {
         var stream = file.OpenReadStream();
@@ -211,13 +320,15 @@
 
             for (int i = 0; i < model.Soals.Count; i++)
             {
-                model.Soals[i].Nomor = i+1;
+                model.Soals[i].Nomor = i + 1;
             }
+
             currentSoal = model.Soals.FirstOrDefault();
         }
+
         StateHasChanged();
     }
-    
+
     private void AddSoal()
     {
         var totalSoal = model.Soals.Count;
@@ -225,6 +336,7 @@
         {
             Id = Guid.NewGuid(),
             Nomor = totalSoal + 1,
+            ExamId = model.Id,
             PilihanJawaban = new List<SoalJawaban>()
         };
         currentSoal = createdSoal;
@@ -242,8 +354,76 @@
     {
         if (!string.IsNullOrEmpty(model.Nama))
         {
-            await examRepo.Create(model);
+            if (model.Id == 0)
+            {
+                var created = await examRepo.Create(model);
+                if (created.isSuccess)
+                {
+                    model = created.Data;
+                }
+
+                DialogService.ShowMessageBox(
+                    "Info",
+                    "Soal Berhasil di Simpan",
+                    yesText: "Ok");
+            }
+            else
+            {
+                var edited = await examRepo.Update(model);
+                if (edited.Flag)
+                {
+                    DialogService.ShowMessageBox(
+                        "Info",
+                        "Soal Berhasil di Update",
+                        yesText: "Ok");
+                }
+                else
+                {
+                    DialogService.ShowMessageBox(
+                        "Error",
+                        edited.Message,
+                        yesText: "Ok");
+                }
+            }
         }
+        else
+        {
+            DialogService.ShowMessageBox(
+                "Info",
+                "Nama Ujian Tidak Boleh Kosong",
+                yesText: "Ok");
+        }
+    }
+
+    private void AddJawaban()
+    {
+        if (currentSoal.PilihanJawaban.Count < 6)
+        {
+            currentSoal.PilihanJawaban.Add(new SoalJawaban()
+            {
+                Id = Guid.NewGuid(),
+                SoalId = currentSoal.Id
+            });
+        }
+        else
+        {
+            DialogService.ShowMessageBox(
+                "Info",
+                "Jawaban Melebihi Kapasitas",
+                yesText: "Ok");
+        }
+
+        StateHasChanged();
+    }
+
+    public async void InsertImage()
+    {
+        if (!string.IsNullOrEmpty(imageUrl))
+        {
+            await this.Editor.InsertImage(imageUrl);
+        }
+        
+        StateHasChanged();
     }
 
 }

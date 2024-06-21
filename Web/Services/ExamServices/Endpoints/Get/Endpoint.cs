@@ -4,7 +4,7 @@ using Web.Client.Interfaces;
 
 namespace Web.Services.ExamServices.Endpoints.Get;
 
-public class Endpoint : Endpoint<int,Exam>
+public class Endpoint : EndpointWithoutRequest<Exam>
 {
     private readonly IExam _examService;
 
@@ -18,9 +18,9 @@ public class Endpoint : Endpoint<int,Exam>
         Get("/exam/{Id}");
     }
 
-    public override async Task HandleAsync(int Id,CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
-        var res = await _examService.Get(Id);
+        var res = await _examService.Get(Route<int>("Id"));
         await SendAsync(res, cancellation: ct);
     }
 }

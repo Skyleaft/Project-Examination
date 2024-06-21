@@ -7,11 +7,18 @@
         <MudText Typo="Typo.body2">Dibuat Oleh : @data.CreatedBy</MudText>
     </MudCardContent>
     <MudCardActions>
-        <MudButton Variant="Variant.Text" Color="Color.Primary">Lihat</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnEdit">Lihat</MudButton>
     </MudCardActions>
 </MudCard>
 
 @code {
     [Parameter]public Exam data { get; set; }
     [Parameter]public string strImage { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+
+    private void OnEdit()
+    {
+        _navigationManager.NavigateTo($"/client/BankSoal/Create/{data.Id}", true);
+    }
+
 }
