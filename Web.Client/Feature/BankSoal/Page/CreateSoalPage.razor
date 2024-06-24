@@ -151,7 +151,12 @@ else
                                              Min="0"
                                              Class="mt-3 mb-4"
                                              Variant="Variant.Outlined"
-                                             @bind-Value="@currentSoal.BobotPoint"/>
+                                             Value="@currentSoal.BobotPoint"/>
+                            <MudField Label="Lebih Dari Satu Jawaban Benar?" Variant="Variant.Outlined" InnerPadding="false">
+                                <MudSwitch T="bool" @bind-Value="@currentSoal.isMultipleJawaban">
+                                    @(currentSoal.isMultipleJawaban == true ? "Ya" : "Tidak")
+                                </MudSwitch>
+                            </MudField>
                         </MudCardContent>
                         <MudCardActions >
                         </MudCardActions>
@@ -209,8 +214,9 @@ else
                                         <div class="d-flex align-content-center flex-wrap flex-grow-0">
                                             <MudSwitch
                                                 @bind-Value="@jawaban.IsBenar"
-                                                Label="Benar"
-                                                Color="Color.Success"/>
+                                                Color="Color.Success">
+                                                @(jawaban.IsBenar == true ? "Benar" : "Salah")
+                                            </MudSwitch>
                                         </div>
 
                                         <MudIconButton
