@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Users;
 
-namespace Web.Components.Features.Auth;
+namespace Web.Components.Auth;
 
 internal static class IdentityComponentsEndpointRouteBuilderExtensions
 {

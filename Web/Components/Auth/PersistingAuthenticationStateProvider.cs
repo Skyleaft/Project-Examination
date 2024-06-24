@@ -6,9 +6,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Web.Client.Shared.Models;
-using ZstdSharp.Unsafe;
 
-namespace Web.Components.Features.Auth;
+namespace Web.Components.Auth;
 
 public class PersistingAuthenticationStateProvider : ServerAuthenticationStateProvider, IDisposable
 {

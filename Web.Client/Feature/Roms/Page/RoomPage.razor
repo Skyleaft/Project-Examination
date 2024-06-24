@@ -1,18 +1,14 @@
-﻿@page "/BankSoal";
-@using global::Shared.BankSoal
+﻿@page "/room/manage"
 @using global::Shared.Common
+@using global::Shared.RoomSet
 @using Web.Client.Interfaces
-@using Web.Client.Feature.BankSoal.Component
+@using Web.Client.Feature.Roms.Component
 @implements IBrowserViewportObserver
 @implements IAsyncDisposable
 
-<h3>Kumpulan Soal</h3>
-
-
-
 <MudPaper Class="pa-8">
     <div class="d-none d-flex align-center flex-grow-1 mr-2 mb-6">
-        
+
         <MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
             <MudSpacer/>
         </MudHidden>
@@ -22,12 +18,11 @@
         <MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
             <MudSpacer/>
         </MudHidden>
-        <MudButton Variant="Variant.Filled" 
+        <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
-                   Class="mr-3 py-3"
-                   StartIcon="@Icons.Material.Filled.Add" 
-                   OnClick="CreateSoalClient">Buat Soal Baru</MudButton>
-        <MudTextField Label="Cari Soal"
+                   Class="mr-3 py-3" 
+                   StartIcon="@Icons.Material.Filled.Add">Buat Baru</MudButton>
+        <MudTextField Label="Cari Ruangan"
                       @bind-Value="request.Search"
                       Variant="Variant.Outlined"
                       Adornment="Adornment.End"
@@ -35,33 +30,33 @@
     </div>
     <MudPaper Class="d-flex flex-wrap justify-xs-center justify-md-start gap-4" Elevation="0">
         @{
-            if (isLoading)
-            {
-                <div class="d-none d-flex align-center flex-grow-1 ma-8">
-                    <MudSpacer/>
-                    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
-                    <MudSpacer/>
-                </div>
-                
-            }
-            else
-            {
-                foreach (var item in dataExam.Items)
-                {
-                    var strImage = "/images/exam-bg.jpg";
-                    if (item.Thumbnail != null)
-                    {
-                        strImage = $"data:image;base64,{Convert.ToBase64String(item.Thumbnail)}";
-                    }
-                    <ExamCard data="@item" strImage="@strImage"/>
-                }
-            }
-            
+        if (isLoading)
+        {
+        <div class="d-none d-flex align-center flex-grow-1 ma-8">
+            <MudSpacer/>
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+            <MudSpacer/>
+        </div>
+
+        }
+        else
+        {
+        foreach (var item in dataRoom.Items)
+        {
+        var strImage = "/images/room-bg.jpg";
+        if (item.Thumbnail != null)
+        {
+        strImage = $"data:image;base64,{Convert.ToBase64String(item.Thumbnail)}";
+        }
+        <RoomCard data="@item" strImage="@strImage"/>
+        }
+        }
+
         }
     </MudPaper>
     <div class="d-none d-flex align-center flex-grow-1 mt-8">
         <MudSpacer/>
-        <MudPagination Color="Color.Primary" Count="@dataExam.TotalPage" SelectedChanged="PageChanged"/>
+        <MudPagination Color="Color.Primary" Count="@dataRoom.TotalPage" SelectedChanged="PageChanged"/>
         <MudSpacer/>
     </div>
 
@@ -69,7 +64,7 @@
 
 @code {
     [Inject] NavigationManager _navigationManager { get; set; }
-    [Inject] IExam examRepo { get; set; }
+    [Inject] IRoom _repo { get; set; }
     [Inject]
     private IBrowserViewportService BrowserViewportService { get; set; }
 
@@ -84,7 +79,7 @@
         PageSize=15
     };
 
-    PaginatedResponse<Exam> dataExam=new PaginatedResponse<Exam>();
+    PaginatedResponse<Room> dataRoom=new PaginatedResponse<Room>();
     
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -92,7 +87,7 @@
         if (firstRender)
         {
             await BrowserViewportService.SubscribeAsync(this, fireImmediately: true);
-            dataExam = await examRepo.Find(request, new CancellationToken());
+            dataRoom = await _repo.Find(request, new CancellationToken());
             isLoading = false;
             StateHasChanged();
         }
@@ -100,16 +95,16 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private void CreateSoalClient(MouseEventArgs obj)
+    private void manageSoal(MouseEventArgs obj)
     {
-        _navigationManager.NavigateTo("/client/BankSoal/Create", true);
+        
     }
     
     private async Task PageChanged(int page)
     {
         isLoading = true;
         request.Page = page;
-        dataExam = await examRepo.Find(request, new CancellationToken());
+        dataRoom = await _repo.Find(request, new CancellationToken());
         isLoading = false;
         StateHasChanged();
     }

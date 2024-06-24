@@ -147,13 +147,20 @@ else
                         </MudCardHeader>
                         <MudCardContent>
                             <MudNumericField Label="Bobot Point"
+                                             ReadOnly
                                              Max="5"
                                              Min="0"
                                              Class="mt-3 mb-4"
                                              Variant="Variant.Outlined"
                                              Value="@currentSoal.BobotPoint"/>
                             <MudField Label="Lebih Dari Satu Jawaban Benar?" Variant="Variant.Outlined" InnerPadding="false">
-                                <MudSwitch T="bool" @bind-Value="@currentSoal.isMultipleJawaban">
+                                @{
+                                    if (currentSoal.PilihanJawaban.Count(x => x.IsBenar) > 1)
+                                        currentSoal.isMultipleJawaban = true;
+                                    else
+                                        currentSoal.isMultipleJawaban = false;
+                                }
+                                <MudSwitch T="bool" @bind-Value="@currentSoal.isMultipleJawaban" Color="Color.Success">
                                     @(currentSoal.isMultipleJawaban == true ? "Ya" : "Tidak")
                                 </MudSwitch>
                             </MudField>
@@ -168,8 +175,8 @@ else
 
                 <MudItem xs="12" md="6">
                     <MudToolBar>
-                        <MudTextField  Variant="Variant.Outlined" Label="URL Foto" @bind-Value="imageUrl"></MudTextField>
-                        <MudButton  OnClick="InsertImage" StartIcon="@Icons.Material.Filled.Send"></MudButton>
+                        <MudTextField Variant="Variant.Outlined" Label="URL Foto" @bind-Value="imageUrl"></MudTextField>
+                        <MudButton OnClick="InsertImage" StartIcon="@Icons.Material.Filled.Send"></MudButton>
                     </MudToolBar>
 
                     <MudExRichTextEdit @ref="@Editor"
@@ -211,6 +218,12 @@ else
                                                       Class="flex-grow-1"
                                                       Variant="Variant.Outlined"
                                                       @bind-Value="@jawaban.Jawaban"/>
+                                        @{
+                                            if (jawaban.Point > 0)
+                                                jawaban.IsBenar = true;
+                                            if (jawaban.Point == 0)
+                                                jawaban.IsBenar = false;
+                                        }
                                         <div class="d-flex align-content-center flex-wrap flex-grow-0">
                                             <MudSwitch
                                                 @bind-Value="@jawaban.IsBenar"
@@ -428,7 +441,7 @@ else
         {
             await this.Editor.InsertImage(imageUrl);
         }
-        
+
         StateHasChanged();
     }
 

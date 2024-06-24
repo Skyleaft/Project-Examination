@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Shared.Users;
 
-namespace Web.Components.Features.Auth;
+namespace Web.Components.Auth;
 
 internal sealed class IdentityUserAccessor(
     UserManager<ApplicationUser> userManager,

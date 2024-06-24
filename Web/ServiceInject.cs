@@ -1,6 +1,7 @@
 ﻿using Web.Client.Interfaces;
 using Web.Services.ExamServices;
 using Web.Services.ReferenceServices;
+using Web.Services.RoomServices;
 using Web.Services.UserServices;
 
 namespace Web;
@@ -12,6 +13,7 @@ public static class ServiceInject
         services.AddScoped<IUser, UserService>();
         services.AddScoped<IExam, ExamService>();
         services.AddScoped<IReferences, ReferenceService>();
+        services.AddScoped<IRoom, RoomService>();
         return services;
     }
 }

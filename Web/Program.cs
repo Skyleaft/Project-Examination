@@ -20,7 +20,7 @@ using Web.Client.Services.UserPreferences;
 using Web.Client.Shared.Extensions;
 using Web.Common.Database;
 using Web.Components;
-using Web.Components.Features.Auth;
+using Web.Components.Auth;
 using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);

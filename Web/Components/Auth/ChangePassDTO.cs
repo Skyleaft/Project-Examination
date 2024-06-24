@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Web.Components.Features.Auth;
+namespace Web.Components.Auth;
 
 public class ChangePassDTO
 {

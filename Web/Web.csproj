@@ -62,10 +62,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Components\Features\Auth\Pages\AuthPage.razor" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Include="compilerconfig.json" />
       <None Include="wwwroot\css\Layout\_mainlayout.css" />
       <None Include="wwwroot\css\Layout\_mainlayout.min.css" />
@@ -75,6 +71,12 @@
       <Folder Include="Common\Extensions\" />
       <Folder Include="Components\Shared\" />
       <Folder Include="Migrations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Components\Auth\Components\StatusMessage.razor" />
+      <AdditionalFiles Include="Components\Auth\Pages\ChangePassword.razor" />
+      <AdditionalFiles Include="Components\Auth\Pages\Lockout.razor" />
     </ItemGroup>
 
 </Project>
