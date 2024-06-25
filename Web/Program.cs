@@ -1,18 +1,14 @@
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using FastEndpoints;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using MudBlazor.Extensions;
 using MudBlazor.Services;
 using Shared.Common;
 using Shared.Users;
 using Web;
-using Web.Client.Feature.BankSoal;
 using Web.Client.Feature.BankSoal.Page;
 using Web.Client.Services;
 using Web.Client.Services.Notifications;
@@ -21,14 +17,15 @@ using Web.Client.Shared.Extensions;
 using Web.Common.Database;
 using Web.Components;
 using Web.Components.Auth;
-using Web.Services;
+using MudExtensions.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
 builder.Services.AddMudServices();
-builder.Services.AddMudServicesWithExtensions();
+builder.Services.AddMudExtensions();
 builder.Services.AddSystemd();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -107,7 +104,6 @@ else
 
 app.UseStaticFiles();
 app.UseAntiforgery();
-app.UseMudExtensions();
 
 using (var scope = app.Services.CreateScope())
 {

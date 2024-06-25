@@ -9,13 +9,13 @@
     <ItemGroup>
         <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
         <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
+        <PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="7.0.0-rc.1" />
         <PackageReference Include="FuzzySharp" Version="2.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.6" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.6" />
         <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.6" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-        <PackageReference Include="MudBlazor" Version="7.0.0-rc.1" />
-        <PackageReference Include="MudBlazor.Extensions" Version="1.7.88-prev-2406051024-main" />
+        <PackageReference Include="MudBlazor" Version="7.0.0-rc.2" />
         <PackageReference Include="MudBlazor.ThemeManager" Version="1.1.0" />
         <PackageReference Include="MudExRichTextEditor" Version="1.0.9" />
     </ItemGroup>
@@ -47,6 +47,10 @@
       <AdditionalFiles Include="Layout\MainLayout.razor" />
       <AdditionalFiles Include="Layout\NavMenu.razor" />
       <AdditionalFiles Include="Shared\NotificationContent\Announcement_v7_In_Development.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Feature\Exams\Component\" />
     </ItemGroup>
 
 </Project>

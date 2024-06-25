@@ -1,0 +1,141 @@
+﻿@page "/client/UserExam"
+@using global::Shared.BankSoal
+@using global::Shared.TakeExam
+@using Microsoft.AspNetCore.Authorization
+@using MudBlazor.Extensions.Core
+@using Web.Client.Interfaces
+@layout UserExamLayout
+@rendermode InteractiveWebAssembly
+@attribute [Authorize]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@if (isLoading)
+{
+    <div class="d-none d-flex align-center flex-grow-1 ma-8">
+        <MudSpacer/>
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+        <MudSpacer/>
+    </div>
+}
+else
+{
+    <MudGrid>
+        <MudItem md="9">
+
+            <div id="scroll_soal" class="ma-0" style="height:85vh;overflow: auto;">
+                @{
+                    foreach (var item in model.Soals)
+                    {
+                        var answer = new UserAnswer();
+                        answer.Soal = item;
+                        answer.Id = Guid.NewGuid();
+                        answer.SoalId = item.Id;
+                        <MudPaper Class="pa-4 ma-2 my-3">
+                            <div class="d-flex flex-grow-1 gap-1">
+                                <MudPaper Class="flex-none d-flex py-3" Width="25px" Elevation="0">
+                                    <MudText Typo="Typo.body1">@item.Nomor.</MudText>
+                                </MudPaper>
+                                <MudPaper Class="flex-1 d-flex flex-column" Elevation="0">
+                                    <MudExRichTextEdit
+                                        @ref="@Editor"
+                                        BorderColor="MudExColor.Transparent"
+                                        ReadOnly
+                                        Class="m-2"
+                                        @bind-Value="@item.Pertanyaan">
+                                    </MudExRichTextEdit>
+                                    <MudRadioGroup T="SoalJawaban" Class="ml-3">
+                                        @{
+                                            foreach (var jawaban in item.PilihanJawaban)
+                                            {
+                                                <MudRadio Value="jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
+                                            }
+                                        }
+                                    </MudRadioGroup>
+                                </MudPaper>
+                            </div>
+
+                        </MudPaper>
+
+                        _userExam.UserAnswers.Add(answer);
+                    }
+                }
+            </div>
+            <div class="d-none d-flex align-center flex-grow-1 mt-8">
+                <MudSpacer/>
+                <MudPagination Color="Color.Primary" Count="1"/>
+                <MudSpacer/>
+            </div>
+
+        </MudItem>
+        <MudItem md="3">
+            <MudPaper Class="pa-4">
+                <div id="unique_id_scroll_section" class="ma-0" style="height:200px;overflow: auto;">
+                    <MudStack Wrap="Wrap.Wrap" Spacing="4" Row="@true" AlignItems="AlignItems.Start">
+                        @{
+                            foreach (var item in model.Soals)
+                            {
+                                <MudButton Variant="Variant.Outlined"
+                                           Color="Color.Primary"
+                                           Style="width: 50px; height: 50px;">
+                                    @item.Nomor
+                                </MudButton>
+                            }
+                        }
+
+                    </MudStack>
+                </div>
+            </MudPaper>
+
+            <MudPaper Class="my-3">
+                <MudWatch @ref="_watch" Interval="TimeSpan.FromMilliseconds(1)" Mode="WatchMode.Watch"
+                          ShowHour="true" ShowMinute="true" ShowSecond="true" ShowMillisecond="false"
+                          Delimiter="@(":")" Typo="Typo.h5" Color="Color.Default"/>
+
+
+            </MudPaper>
+
+        </MudItem>
+    </MudGrid>
+}
+
+
+@code {
+
+    [Inject] IExam examRepo { get; set; }
+
+    private Exam model = new Exam()
+    {
+        Soals = new List<Soal>()
+    };
+
+    private UserExam _userExam = new UserExam()
+    {
+        UserAnswers = new List<UserAnswer>()
+    };
+
+    MudExRichTextEdit Editor;
+    MudWatch _watch = new();
+
+    bool isLoading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (auth is not null)
+            {
+                model.CreatedBy = auth.User.Identity.Name;
+            }
+
+            var exam = await examRepo.Get(1);
+            model = exam;
+
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+
+}

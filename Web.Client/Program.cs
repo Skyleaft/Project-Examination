@@ -3,7 +3,6 @@ using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using MudBlazor.Extensions;
 using MudBlazor.Services;
 using Web.Client;
 using Web.Client.Services;
@@ -11,6 +10,7 @@ using Web.Client.Services.Notifications;
 using Web.Client.Services.UserPreferences;
 using Web.Client.Shared.Auth;
 using Web.Client.Shared.Extensions;
+using MudExtensions.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Services.AddAuthorizationCore();
@@ -32,6 +32,6 @@ builder.Services.AddScoped<LayoutService>();
 builder.Services.AddScoped<Navigation>();
 
 builder.Services.AddMudServices();
-builder.Services.AddMudServicesWithExtensions();
+builder.Services.AddMudExtensions();
 
 await builder.Build().RunAsync();
