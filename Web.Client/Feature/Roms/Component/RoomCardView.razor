@@ -1,0 +1,59 @@
+﻿@using global::Shared.Common
+@using global::Shared.RoomSet
+@using Web.Client.Interfaces
+@inject IDialogService Dialog
+<MudCard Style="width: 350px; min-width: 350px">
+    <MudCardMedia Image="@strImage" Height="100"/>
+    <MudCardHeader>
+        <MudSpacer/>
+        <MudIcon Icon="@Icons.Material.Filled.Circle"
+                 Color="data.IsActive == true ? Color.Success : Color.Error"/>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudText Typo="Typo.h6">@data.Nama</MudText>
+        <MudText Typo="Typo.body2">Kode Ruangan :<b>@data.Kode</b></MudText>
+        <MudStack Row="true" Spacing="2">
+            <MudText Typo="Typo.body2">Mulai : @data.JadwalStart.ToString("dd/MM/yyyy hh:mm")</MudText>
+            <MudText Typo="Typo.body2">Selesai : @data.JadwalEnd.ToString("dd/MM/yyyy hh:mm")</MudText>
+        </MudStack>
+        <MudText Typo="Typo.body2"> Jumlah Peserta :@data.TotalPeserta</MudText>
+
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Variant="Variant.Text" Color="Color.Primary">Lihat</MudButton>
+        <MudSpacer/>
+        @{
+            if (data.IsActive)
+            {
+                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="OnDeactive">Non-Aktifkan</MudButton>
+            }
+            else
+            {
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnActivate">Aktifkan</MudButton>
+            }
+        }
+
+        
+    </MudCardActions>
+</MudCard>
+
+@code {
+    [Parameter] public Room data { get; set; }
+    [Parameter] public string strImage { get; set; }
+    [Parameter] public EventCallback<int> RefreshData { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+    [Inject] IRoom _roomRepo { get; set; }
+
+    DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
+
+    private void OnActivate()
+    {
+        data.IsActive = true;
+    }
+    private void OnDeactive()
+    {
+        data.IsActive = false;
+    }
+    
+
+}
