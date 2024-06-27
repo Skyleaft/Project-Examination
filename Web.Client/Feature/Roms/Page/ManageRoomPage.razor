@@ -5,6 +5,7 @@
 @using Web.Client.Feature.Roms.Component
 @implements IBrowserViewportObserver
 @implements IAsyncDisposable
+@inject IDialogService Dialog
 
 <MudPaper Class="pa-8">
     <div class="d-none d-flex align-center flex-grow-1 mr-2 mb-6">
@@ -21,6 +22,7 @@
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
                    Class="mr-3 py-3" 
+                   OnClick="AddRoomDialog"
                    StartIcon="@Icons.Material.Filled.Add">Buat Baru</MudButton>
         <MudTextField Label="Cari Ruangan"
                       @bind-Value="request.Search"
@@ -67,6 +69,9 @@
     [Inject] IRoom _repo { get; set; }
     [Inject]
     private IBrowserViewportService BrowserViewportService { get; set; }
+    
+    DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
+
 
     string search;
     private Breakpoint curentBreak;
@@ -107,6 +112,14 @@
         dataRoom = await _repo.Find(request, new CancellationToken());
         isLoading = false;
         StateHasChanged();
+    }
+    
+    private async Task AddRoomDialog()
+    {
+        var form =await Dialog.ShowAsync<RoomDialog>("Buat Room", maxWidth);
+        var result = await form.Result;
+        if(!result.Canceled)
+            await PageChanged(1);
     }
 
     public async ValueTask DisposeAsync() => await BrowserViewportService.UnsubscribeAsync(this);

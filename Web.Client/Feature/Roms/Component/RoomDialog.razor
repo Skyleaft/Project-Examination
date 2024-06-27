@@ -1,0 +1,128 @@
+﻿@using global::Shared.BankSoal
+@using global::Shared.Common
+@using global::Shared.RoomSet
+@using Web.Client.Interfaces
+<EditForm Model="room" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator/>
+    <MudDialog>
+        <DialogContent>
+            <MudGrid>
+                <MudItem>
+                    <MudCard>
+                        <MudCardContent Class="pa-4">
+                            <MudTextField Label="Nama Ruangan" HelperText="Max. 40 characters"
+                                          Variant="Variant.Outlined"
+                                          MaxLength="40"
+                                          @bind-Value="room.Nama"
+                                          For="@(() => room.Nama)"/>
+                            <MudTextField Label="Kode Ruangan" HelperText="Max. 20 characters"
+                                          Variant="Variant.Outlined"
+                                          MaxLength="40"
+                                          @bind-Value="room.Kode"
+                                          For="@(() => room.Kode)"/>
+                            <MudSelect Label="Soal" T="int" @bind-Value="room.ExamId">
+                                @{
+                                    foreach (var item in _exams)
+                                    {
+                                        <MudSelectItem T="int" Value="item.Id">@item.Nama</MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+                            <MudNumericField @bind-Value="room.Durasi"  Label="Durasi Ujian" Variant="Variant.Outlined" Min="0" Max="600" />
+                            <MudToolBar Class="pa-2">
+                                <MudDatePicker Variant="Variant.Outlined" Label="Jadwal Mulai" MinDate="DateTime.Now.AddDays(-1)" MaxDate="DateTime.Now.AddMonths(2)" Class="ml-3"  />
+                                <MudDatePicker Variant="Variant.Outlined" Label="Jadwal Selesai" MinDate="DateTime.Now.AddDays(-1)" MaxDate="DateTime.Now.AddMonths(2)" />
+                            </MudToolBar>
+                            <MudToolBar Class="pa-2">
+                                <MudTimePicker Variant="Variant.Outlined" Label="Waktu Mulai" AmPm="true" Class="ml-3" />
+                                <MudTimePicker Variant="Variant.Outlined" Label="Waktu Selesai" AmPm="true" />
+                            </MudToolBar>
+
+                            <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg">
+                                <ActivatorContent>
+                                    <MudFab Color="Color.Primary"
+                                            StartIcon="@Icons.Material.Filled.Image"
+                                            Label="Unggah Pratinjau"/>
+                                </ActivatorContent>
+                                @* <SelectedTemplate> *@
+                                @*     @if (context != null) *@
+                                @*     { *@
+                                @*     <MudText>@context.Name</MudText> *@
+                                @*     } *@
+                                @*     else *@
+                                @*     { *@
+                                @*     <MudText>No File</MudText> *@
+                                @*     } *@
+                                @* </SelectedTemplate> *@
+                            </MudFileUpload>
+                        </MudCardContent>
+                    </MudCard>
+
+                </MudItem>
+
+               
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="Cancel">Cancel</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Simpan</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] private IExam _examRepo { get; set; }
+    [Inject] private IRoom _roomRepo { get; set; }
+    
+    void Cancel() => MudDialog.Cancel();
+    int examid;
+    Room room = new Room();
+    List<Exam> _exams = new List<Exam>();
+    protected override async Task OnInitializedAsync()
+    {
+        var data = await _examRepo.Find(new FindRequest()
+        {
+            Page = 1,
+            PageSize = 200
+        }, new CancellationToken());
+        _exams = data.Items;
+    }
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+        var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
+        var dial = await DialogService.ShowAsync<BluryDialog>("Registering...", options);
+        var data = await _roomRepo.Create(room);
+        if (data.isSuccess)
+        {
+            dial.Close();
+            MudDialog.Close(DialogResult.Ok(true));
+            DialogService.ShowMessageBox(
+                "Info",
+                data.Message,
+                yesText: "Ok");
+        }
+        else
+        {
+            dial.Close();
+            DialogService.ShowMessageBox(
+                "Error",
+                data.Message,
+                yesText: "Ok");
+        }
+        
+    }
+    
+    private async Task UploadFiles(IBrowserFile file)
+    {
+        var stream = file.OpenReadStream();
+        using (var memstream = new MemoryStream())
+        {
+            await stream.CopyToAsync(memstream);
+            room.Thumbnail = memstream.ToArray();
+        }
+    }
+}

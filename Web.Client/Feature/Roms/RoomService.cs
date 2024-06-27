@@ -9,9 +9,18 @@ namespace Web.Client.Feature.Roms;
 
 public class RoomService(HttpClient _httpClient) : IRoom
 {
-    public Task<CreatedResponse<Room>> Create(Room r)
+    public async Task<CreatedResponse<Room>> Create(Room r)
     {
-        throw new NotImplementedException();
+        var res = await _httpClient.PostAsJsonAsync("api/room/",r);
+        if (res.IsSuccessStatusCode)
+        {
+            var created = await res.Content.ReadFromJsonAsync<CreatedResponse<Room>>();
+            return created;
+        }
+        else
+        {
+            return new CreatedResponse<Room>(false, res.ReasonPhrase);
+        }
     }
 
     public Task<ServiceResponse> Update(Room r)

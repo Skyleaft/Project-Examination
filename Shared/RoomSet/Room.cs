@@ -19,7 +19,7 @@ public class Room : IGenericModifier
     public int Durasi { get; set; }
     public bool IsActive { get; set; }
     public Exam? Exam { get; set; }
-    public int? ExamId { get; set; }
+    public int ExamId { get; set; }
     public byte[]? Thumbnail { get; set; }
     public List<UserExam>? ListPeserta { get; set; }
     public int TotalPeserta
