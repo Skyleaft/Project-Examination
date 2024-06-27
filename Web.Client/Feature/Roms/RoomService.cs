@@ -1,4 +1,6 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Shared.BankSoal;
 using Shared.Common;
 using Shared.RoomSet;
@@ -23,14 +25,29 @@ public class RoomService(HttpClient _httpClient) : IRoom
         }
     }
 
-    public Task<ServiceResponse> Update(Room r)
+    public async Task<ServiceResponse> Update(Room r)
     {
-        throw new NotImplementedException();
+        var res = await _httpClient.PutAsJsonAsync($"api/room/{r.Id}",r);
+        if (res.IsSuccessStatusCode)
+        {
+            var content = await res.Content.ReadFromJsonAsync<ServiceResponse>();
+            return content;
+        }
+        else if (res.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var content = await res.Content.ReadFromJsonAsync<BadResponse>();
+            return new ServiceResponse(false, JsonSerializer.Serialize(content.Errors));
+        }
+        else
+        {
+            return new ServiceResponse(false, res.ReasonPhrase);
+        }
     }
 
-    public Task<ServiceResponse> Delete(Guid Id)
+    public async Task<ServiceResponse> Delete(Guid Id)
     {
-        throw new NotImplementedException();
+        var res = await _httpClient.DeleteFromJsonAsync<ServiceResponse>($"api/room/{Id}");
+        return res;
     }
 
     public async Task<Room> Get(Guid Id)

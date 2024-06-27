@@ -44,9 +44,10 @@ public class ExamService(HttpClient _httpClient) :IExam
         }
     }
 
-    public Task<ServiceResponse> Delete(int Id)
+    public async Task<ServiceResponse> Delete(int Id)
     {
-        throw new NotImplementedException();
+        var res = await _httpClient.DeleteFromJsonAsync<ServiceResponse>($"api/room/{Id}");
+        return res;
     }
 
     public async Task<Exam> Get(int Id)

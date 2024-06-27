@@ -1,11 +1,14 @@
 ﻿@page "/room/manage"
 @using global::Shared.Common
 @using global::Shared.RoomSet
+@using Microsoft.AspNetCore.Authorization
 @using Web.Client.Interfaces
 @using Web.Client.Feature.Roms.Component
 @implements IBrowserViewportObserver
 @implements IAsyncDisposable
 @inject IDialogService Dialog
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
 
 <MudPaper Class="pa-8">
     <div class="d-none d-flex align-center flex-grow-1 mr-2 mb-6">
@@ -21,9 +24,11 @@
         </MudHidden>
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
-                   Class="mr-3 py-3" 
+                   Class="mr-3 py-3"
                    OnClick="AddRoomDialog"
-                   StartIcon="@Icons.Material.Filled.Add">Buat Baru</MudButton>
+                   StartIcon="@Icons.Material.Filled.Add">
+            Buat Baru
+        </MudButton>
         <MudTextField Label="Cari Ruangan"
                       @bind-Value="request.Search"
                       Variant="Variant.Outlined"
@@ -32,28 +37,27 @@
     </div>
     <MudPaper Class="d-flex flex-wrap justify-xs-center justify-md-start gap-4" Elevation="0">
         @{
-        if (isLoading)
-        {
-        <div class="d-none d-flex align-center flex-grow-1 ma-8">
-            <MudSpacer/>
-            <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
-            <MudSpacer/>
-        </div>
+            if (isLoading)
+            {
+                <div class="d-none d-flex align-center flex-grow-1 ma-8">
+                    <MudSpacer/>
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+                    <MudSpacer/>
+                </div>
+            }
+            else
+            {
+                foreach (var item in dataRoom.Items)
+                {
+                    var strImage = "/images/room-bg.jpg";
+                    if (item.Thumbnail != null)
+                    {
+                        strImage = $"data:image;base64,{Convert.ToBase64String(item.Thumbnail)}";
+                    }
 
-        }
-        else
-        {
-        foreach (var item in dataRoom.Items)
-        {
-        var strImage = "/images/room-bg.jpg";
-        if (item.Thumbnail != null)
-        {
-        strImage = $"data:image;base64,{Convert.ToBase64String(item.Thumbnail)}";
-        }
-        <RoomCard data="@item" strImage="@strImage"/>
-        }
-        }
-
+                    <RoomCard data="@item" strImage="@strImage" RefreshData="@PageChanged"/>
+                }
+            }
         }
     </MudPaper>
     <div class="d-none d-flex align-center flex-grow-1 mt-8">
@@ -67,26 +71,24 @@
 @code {
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IRoom _repo { get; set; }
-    [Inject]
-    private IBrowserViewportService BrowserViewportService { get; set; }
-    
-    DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
+    [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
+
+    DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 
 
     string search;
     private Breakpoint curentBreak;
-    private bool isLoading=true;
-    
+    private bool isLoading = true;
     
     private FindRequest request = new FindRequest()
     {
         Page = 1,
-        PageSize=15
+        PageSize = 15
     };
 
-    PaginatedResponse<Room> dataRoom=new PaginatedResponse<Room>();
-    
-    
+    PaginatedResponse<Room> dataRoom = new PaginatedResponse<Room>();
+
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -102,9 +104,8 @@
 
     private void manageSoal(MouseEventArgs obj)
     {
-        
     }
-    
+
     private async Task PageChanged(int page)
     {
         isLoading = true;
@@ -113,17 +114,17 @@
         isLoading = false;
         StateHasChanged();
     }
-    
+
     private async Task AddRoomDialog()
     {
-        var form =await Dialog.ShowAsync<RoomDialog>("Buat Room", maxWidth);
+        var form = await Dialog.ShowAsync<RoomDialog>("Buat Room", maxWidth);
         var result = await form.Result;
-        if(!result.Canceled)
+        if (!result.Canceled)
             await PageChanged(1);
     }
 
     public async ValueTask DisposeAsync() => await BrowserViewportService.UnsubscribeAsync(this);
-    
+
     public Task NotifyBrowserViewportChangeAsync(BrowserViewportEventArgs browserViewportEventArgs)
     {
         if (browserViewportEventArgs.IsImmediate)

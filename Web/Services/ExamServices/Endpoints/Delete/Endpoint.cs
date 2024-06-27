@@ -4,7 +4,7 @@ using Web.Client.Shared.Models;
 
 namespace Web.Services.ExamServices.Endpoints.Delete;
 
-public class Endpoint : Endpoint<int,ServiceResponse>
+public class Endpoint : EndpointWithoutRequest<ServiceResponse>
 {
     private readonly IExam _examService;
 
@@ -18,9 +18,9 @@ public class Endpoint : Endpoint<int,ServiceResponse>
         Delete("/exam/{Id}");
     }
 
-    public override async Task HandleAsync(int Id,CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
-        var res = await _examService.Delete(Id);
+        var res = await _examService.Delete(Route<int>("Id"));
         await SendAsync(res, cancellation: ct);
     }
 }
