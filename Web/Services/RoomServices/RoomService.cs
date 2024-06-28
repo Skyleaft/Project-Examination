@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Shared.BankSoal;
 using Shared.Common;
 using Shared.RoomSet;
@@ -11,10 +13,12 @@ namespace Web.Services.RoomServices;
 public class RoomService:IRoom
 {
     private readonly AppDbContext _dbContext;
+    private readonly AuthenticationStateProvider _authenticationStateProvider;
 
-    public RoomService(AppDbContext dbContext)
+    public RoomService(AppDbContext dbContext, AuthenticationStateProvider authenticationStateProvider)
     {
         _dbContext = dbContext;
+        _authenticationStateProvider = authenticationStateProvider;
     }
 
     public async Task<CreatedResponse<Room>> Create(Room r)
@@ -74,14 +78,21 @@ public class RoomService:IRoom
         return find;
     }
 
-    public async Task<PaginatedResponse<Room>> Find(FindRequest r, CancellationToken ct)
+    public async Task<PaginatedResponse<Room>> Find(FindRequest r, CancellationToken ct,string? Username="")
     {
+        if (string.IsNullOrEmpty(Username))
+        {
+            var auth = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            var user = auth.User;
+            Username = user.Identity.Name;
+        }
         var data = await _dbContext
             .Room
             .WhereIf(!string.IsNullOrEmpty(r.Search),
                 x => x.Nama.ToLower().Contains(r.Search.ToLower()))
             .WhereIf(!string.IsNullOrEmpty(r.Search),
                 x => x.Kode.ToLower().Contains(r.Search.ToLower()))
+            .Where(x=>x.CreatedBy == Username)
             .OrderBy(x => x.CreatedOn)
             .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;

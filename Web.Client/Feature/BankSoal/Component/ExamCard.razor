@@ -1,24 +1,66 @@
 ﻿@using global::Shared.BankSoal
+@using Web.Client.Interfaces
+@inject IDialogService Dialog
 
 <MudCard Style="width: 280px; min-width: 280px">
     <MudCardMedia Image="@strImage" Height="100"/>
     <MudCardContent>
         <MudText Typo="Typo.h6">@data.Nama</MudText>
         <MudText Typo="Typo.body2">Dibuat Oleh : @data.CreatedBy</MudText>
+        @{
+            if (!string.IsNullOrEmpty(data.LastModifiedBy))
+            {
+                <MudText Typo="Typo.caption"><i>*@data.LastModifiedBy @(data.LastModifiedOn.Value.ToString("dd/MM/yyyy HH:mm "))</i></MudText>
+            }
+        }
     </MudCardContent>
-    <MudCardActions>
+    <MudCardActions Class="mt-n4">
+        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="OnDelete"></MudIconButton>
+        <MudSpacer/>
         <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnEdit">Lihat</MudButton>
     </MudCardActions>
 </MudCard>
 
 @code {
-    [Parameter]public Exam data { get; set; }
-    [Parameter]public string strImage { get; set; }
+    [Parameter] public Exam data { get; set; }
+    [Parameter] public string strImage { get; set; }
+    [Parameter] public EventCallback<int> RefreshData { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
+    [Inject] IExam _examRepo { get; set; }
 
     private void OnEdit()
     {
         _navigationManager.NavigateTo($"/client/BankSoal/Create/{data.Id}", true);
+    }
+
+    private async Task OnDelete()
+    {
+        var result = await Dialog.ShowMessageBox(
+            "Warning",
+            $"Yakin Mau Dihapus Data :{data.Nama}",
+            yesText: "Delete",cancelText:"Cancel");
+        StateHasChanged();
+        if (result!=null)
+        {
+            var res = await _examRepo.Delete(data.Id);
+            if (res.Flag)
+            {
+                await Dialog.ShowMessageBox(
+                    "Info",
+                    res.Message,
+                    yesText: "Ok");
+                await RefreshData.InvokeAsync(1);
+                StateHasChanged();
+            }
+            else
+            {
+                await Dialog.ShowMessageBox(
+                    "Error",
+                    res.Message,
+                    yesText: "Ok");
+            }
+                
+        }
     }
 
 }

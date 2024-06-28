@@ -56,7 +56,7 @@ public class RoomService(HttpClient _httpClient) : IRoom
         return data;
     }
 
-    public async Task<PaginatedResponse<Room>> Find(FindRequest r, CancellationToken ct)
+    public async Task<PaginatedResponse<Room>> Find(FindRequest r, CancellationToken ct, string? Username)
     {
         var res = await _httpClient.PostAsJsonAsync("api/room/find", r, ct);
         var data = new PaginatedResponse<Room>();

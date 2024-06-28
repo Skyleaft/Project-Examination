@@ -4,8 +4,10 @@
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Interfaces
 @using Web.Client.Feature.Roms.Component
+@using Web.Client.Shared.Models
 @implements IBrowserViewportObserver
 @implements IAsyncDisposable
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @attribute [Authorize]
 
 <MudPaper Class="pa-8">
@@ -88,6 +90,11 @@
         }
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authstate.User;
     }
 
     private void manageSoal(MouseEventArgs obj)

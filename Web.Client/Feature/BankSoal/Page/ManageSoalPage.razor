@@ -53,7 +53,7 @@
                     {
                         strImage = $"data:image;base64,{Convert.ToBase64String(item.Thumbnail)}";
                     }
-                    <ExamCard data="@item" strImage="@strImage"/>
+                    <ExamCard data="@item" strImage="@strImage" RefreshData="@PageChanged"/>
                 }
             }
             
