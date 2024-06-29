@@ -1,5 +1,6 @@
 ﻿@page "/client/UserExam/{Id:Guid}"
 @using global::Shared.BankSoal
+@using global::Shared.RoomSet
 @using global::Shared.TakeExam
 @using Microsoft.AspNetCore.Authorization
 @using MudBlazor.Extensions.Core
@@ -25,12 +26,8 @@ else
 
             <div id="scroll_soal" class="ma-0" style="height:85vh;overflow: auto;">
                 @{
-                    foreach (var item in model.Soals)
+                    foreach (var item in room.Exam.Soals)
                     {
-                        var answer = new UserAnswer();
-                        answer.Soal = item;
-                        answer.Id = Guid.NewGuid();
-                        answer.SoalId = item.Id;
                         <MudPaper Class="pa-4 ma-2 my-3">
                             <div class="d-flex flex-grow-1 gap-1">
                                 <MudPaper Class="flex-none d-flex py-3" Width="25px" Elevation="0">
@@ -44,11 +41,11 @@ else
                                         Class="m-2"
                                         @bind-Value="@item.Pertanyaan">
                                     </MudExRichTextEdit>
-                                    <MudRadioGroup T="SoalJawaban" Class="ml-3">
+                                    <MudRadioGroup T="Guid?" Class="ml-3" @bind-Value="@userExam.UserAnswers.Find(x=>x.SoalId==item.Id).SoalJawabanId">
                                         @{
                                             foreach (var jawaban in item.PilihanJawaban)
                                             {
-                                                <MudRadio Value="jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
+                                                <MudRadio Value="jawaban?.Id" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
                                             }
                                         }
                                     </MudRadioGroup>
@@ -56,8 +53,8 @@ else
                             </div>
 
                         </MudPaper>
+                        
 
-                        _userExam.UserAnswers.Add(answer);
                     }
                 }
             </div>
@@ -73,7 +70,7 @@ else
                 <div id="unique_id_scroll_section" class="ma-0" style="height:200px;overflow: auto;">
                     <MudStack Wrap="Wrap.Wrap" Spacing="4" Row="@true" AlignItems="AlignItems.Start">
                         @{
-                            foreach (var item in model.Soals)
+                            foreach (var item in room.Exam.Soals)
                             {
                                 <MudButton Variant="Variant.Outlined"
                                            Color="Color.Primary"
@@ -111,23 +108,22 @@ else
 
 @code {
     [Parameter] public string Id { get; set; }
-    [Inject] IExam examRepo { get; set; }
+    [Inject] IUserExam _userExamRepo { get; set; }
+    [Inject] IRoom _roomRepo { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
-
-    private Exam model = new Exam()
-    {
-        Soals = new List<Soal>()
-    };
-
-    private UserExam _userExam = new UserExam()
-    {
-        UserAnswers = new List<UserAnswer>()
-    };
+    
+    private Room room;
+    private UserExam userExam;
 
     MudExRichTextEdit Editor;
     MudWatch _watch = new();
 
     bool isLoading = true;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -137,12 +133,9 @@ else
             var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             if (auth is not null)
             {
-                model.CreatedBy = auth.User.Identity.Name;
             }
-
-            var exam = await examRepo.Get(1);
-            model = exam;
-
+            userExam = await _userExamRepo.Get(new Guid(Id));
+            room = await _roomRepo.Get(userExam.RoomId);
             isLoading = false;
             StateHasChanged();
         }
@@ -158,6 +151,8 @@ else
         StateHasChanged();
         if (result!=null)
         {
+            userExam.EndDate=DateTime.Now;
+            _userExamRepo.Update(userExam);
             _navigationManager.NavigateTo($"/client/examresult/{Id}");
         }
     }

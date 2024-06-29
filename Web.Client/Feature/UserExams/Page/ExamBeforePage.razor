@@ -1,5 +1,6 @@
 ﻿@page "/client/exambefore/{Id:Guid}"
 @using global::Shared.BankSoal
+@using global::Shared.RoomSet
 @using global::Shared.TakeExam
 @using Microsoft.AspNetCore.Authorization
 @using MudBlazor.Extensions.Core
@@ -36,53 +37,122 @@
             Cras malesuada lacus in blandit iaculis. Proin non nisi nec lectus congue volutpat eget sit amet ipsum. In viverra venenatis pulvinar. Nulla ligula neque, lacinia ac vestibulum sagittis, eleifend at ex. Duis pulvinar nunc vel venenatis vestibulum. Maecenas nisl velit, gravida sit amet nisi a, placerat bibendum elit. Pellentesque venenatis volutpat efficitur. Morbi condimentum vulputate leo id tempor. In pellentesque quam odio, vel condimentum nisl tristique ac. Duis gravida massa ut nisl bibendum dictum. In risus ligula, facilisis sit amet augue id, suscipit iaculis arcu. Phasellus congue nec quam ac malesuada. Quisque facilisis in nibh nec blandit. Fusce et augue ut massa fermentum ultricies quis vel tortor.
         </MudPaper>
         <MudPaper Class="pa-3" Elevation="0">
-            <table>
-                <tr>
-                    <td><MudText Typo="Typo.body1">Nama Ujian</MudText></td>
-                    <td><MudText Typo="Typo.body1" Class="mx-2">:</MudText></td>
-                    <td><MudText Typo="Typo.body1"></MudText></td>
-                </tr>
-                <tr>
-                    <td><MudText Typo="Typo.body1">Jumlah Soal</MudText></td>
-                    <td><MudText Typo="Typo.body1" Class="mx-2">:</MudText></td>
-                    <td><MudText Typo="Typo.body1"></MudText></td>
-                </tr>
-                <tr>
-                    <td><MudText Typo="Typo.body1">Jadwal Ujian</MudText></td>
-                    <td><MudText Typo="Typo.body1" Class="mx-2">:</MudText></td>
-                    <td><MudText Typo="Typo.body1"></MudText></td>
-                </tr>
-                <tr>
-                    <td><MudText Typo="Typo.body1">Durasi Ujian</MudText></td>
-                    <td><MudText Typo="Typo.body1" Class="mx-2">:</MudText></td>
-                    <td><MudText Typo="Typo.body1"></MudText></td>
-                </tr>
-            </table>
-            
+            <div class="d-flex justify-center flex-grow-1 gap-4">
+                @{
+                    if (isLoading)
+                    {
+                        <div class="d-none d-flex align-center flex-grow-1 ma-8">
+                            <MudSpacer/>
+                            <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+                            <MudSpacer/>
+                        </div>
+                    }
+                    else
+                    {
+                        <table>
+                            <tr>
+                                <td>
+                                    <MudText Typo="Typo.body1">Nama Ujian</MudText>
+                                </td>
+                                <td>
+                                    <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
+                                </td>
+                                <td>
+                                    <MudText Typo="Typo.body1">@room.Nama</MudText>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <MudText Typo="Typo.body1">Jumlah Soal</MudText>
+                                </td>
+                                <td>
+                                    <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
+                                </td>
+                                <td>
+                                    <MudText Typo="Typo.body1">@room.Exam.TotalSoal</MudText>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <MudText Typo="Typo.body1">Jadwal Ujian</MudText>
+                                </td>
+                                <td>
+                                    <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
+                                </td>
+                                <td>
+                                    <MudText Typo="Typo.body1">@room.JadwalStart.ToString("dd/mm/yyyy HH:mm") -> @room.JadwalEnd.ToString("dd/mm/yyyy HH:mm")</MudText>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <MudText Typo="Typo.body1">Durasi Ujian</MudText>
+                                </td>
+                                <td>
+                                    <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
+                                </td>
+                                <td>
+                                    <MudText Typo="Typo.body1"><b>@userExam.TimeLeft</b> Menit</MudText>
+                                </td>
+                            </tr>
+                        </table>
+                    }
+                }
+            </div>
+
+
             <div class="d-flex justify-center flex-grow-1 gap-4">
                 <MudButton Class="pa-4 my-4 "
                            Color="Color.Primary"
                            StartIcon="@Icons.Material.Filled.Start"
                            Variant="Variant.Filled"
-                           OnClick="OnMulai">Mulai Ujian!</MudButton>
+                           OnClick="OnMulai">
+                    Mulai Ujian!
+                </MudButton>
             </div>
         </MudPaper>
-        
-        
+
+
     </MudPaper>
 </MudContainer>
 
 @code {
     [Parameter] public string Id { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
-    private Exam model = new Exam()
-    {
-        Soals = new List<Soal>()
-    };
+    [Inject] IUserExam _userExamRepo { get; set; }
+    [Inject] IRoom _roomRepo { get; set; }
+    private UserExam userExam;
+    private Room room;
+    private bool isLoading = true;
 
-    private void OnMulai()
+    protected override async Task OnInitializedAsync()
     {
-        _navigationManager.NavigateTo($"client/userexam/{Id}");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (auth is not null)
+            {
+            }
+
+            userExam = await _userExamRepo.Get(new Guid(Id));
+            room = await _roomRepo.Get(userExam.RoomId);
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnMulai()
+    {
+        userExam.StartDate = DateTime.Now;
+        var res = await _userExamRepo.Update(userExam);
+        if (res.Flag)
+        {
+            _navigationManager.NavigateTo($"client/userexam/{Id}");
+        }
     }
 
 }

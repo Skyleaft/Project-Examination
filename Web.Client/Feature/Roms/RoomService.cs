@@ -56,6 +56,12 @@ public class RoomService(HttpClient _httpClient) : IRoom
         return data;
     }
 
+    public async Task<Room> Get(string kode)
+    {
+        var data = await _httpClient.GetFromJsonAsync<Room>($"/api/room?kode={kode}");
+        return data;
+    }
+
     public async Task<PaginatedResponse<Room>> Find(FindRequest r, CancellationToken ct, string? Username)
     {
         var res = await _httpClient.PostAsJsonAsync("api/room/find", r, ct);

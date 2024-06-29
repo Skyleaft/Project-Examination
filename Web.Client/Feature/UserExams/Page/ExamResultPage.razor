@@ -1,5 +1,6 @@
 ﻿@page "/client/examresult/{Id:Guid}"
 @using global::Shared.BankSoal
+@using global::Shared.RoomSet
 @using global::Shared.TakeExam
 @using Microsoft.AspNetCore.Authorization
 @using MudBlazor.Extensions.Core
@@ -17,26 +18,96 @@
             <div id="unique_id_scroll_section" class="ma-0" style="height:200px;overflow: auto;">
                 <MudStack Wrap="Wrap.Wrap" Spacing="4" Row="@true" AlignItems="AlignItems.Start">
                     @{
-                        foreach (var item in model.Soals)
+                        if (!isLoading)
                         {
-                            <MudButton Variant="Variant.Outlined"
-                                       Color="Color.Primary"
-                                       Style="width: 50px; height: 50px;">
-                                @item.Nomor
-                            </MudButton>
+                            foreach (var item in room.Exam.Soals)
+                            {
+                                <MudButton Variant="Variant.Outlined"
+                                           Color="Color.Primary"
+                                           Style="width: 50px; height: 50px;">
+                                    @item.Nomor
+                                </MudButton>
+                            }
                         }
+                        
                     }
 
                 </MudStack>
             </div>
         </MudPaper>
 
+        @{
+            if (isLoading)
+            {
+                <div class="d-none d-flex align-center flex-grow-1 ma-8">
+                    <MudSpacer/>
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+                    <MudSpacer/>
+                </div>
+            }
+            else
+            {
+                <table>
+                    <tr>
+                        <td>
+                            <MudText Typo="Typo.body1">Nama Ujian</MudText>
+                        </td>
+                        <td>
+                            <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
+                        </td>
+                        <td>
+                            <MudText Typo="Typo.body1">@room.Nama</MudText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <MudText Typo="Typo.body1">Jumlah Soal</MudText>
+                        </td>
+                        <td>
+                            <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
+                        </td>
+                        <td>
+                            <MudText Typo="Typo.body1">@room.Exam.TotalSoal</MudText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <MudText Typo="Typo.body1">Sisa Waktu</MudText>
+                        </td>
+                        <td>
+                            <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
+                        </td>
+                        <td>
+                            <MudText Typo="Typo.body1">
+                                <b>@userExam.TimeLeft</b>
+                            </MudText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <MudText Typo="Typo.body1">Total Score</MudText>
+                        </td>
+                        <td>
+                            <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
+                        </td>
+                        <td>
+                            <MudText Typo="Typo.body1">
+                                <b>@userExam.Score</b>
+                            </MudText>
+                        </td>
+                    </tr>
+                </table>
+            }
+        }
+
         <div class="d-flex justify-center flex-grow-1 gap-4">
             <MudButton Class="pa-4 my-4 "
                        Color="Color.Primary"
                        StartIcon="@Icons.Material.Filled.Start"
                        Variant="Variant.Filled"
-                       OnClick="OnBackHome">Kembali Ke Menu!</MudButton>
+                       OnClick="OnBackHome">
+                Kembali Ke Menu!
+            </MudButton>
         </div>
     </MudPaper>
 </MudContainer>
@@ -44,10 +115,28 @@
 @code {
     [Parameter] public string Id { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
-    private Exam model = new Exam()
+    [Inject] IUserExam _userExamRepo { get; set; }
+    [Inject] IRoom _roomRepo { get; set; }
+    private UserExam userExam;
+    private Room room;
+    private bool isLoading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Soals = new List<Soal>()
-    };
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (auth is not null)
+            {
+            }
+
+            userExam = await _userExamRepo.Get(new Guid(Id));
+            room = await _roomRepo.Get(userExam.RoomId);
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
 
     private void OnBackHome()
     {

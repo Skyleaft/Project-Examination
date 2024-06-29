@@ -78,6 +78,22 @@ public class RoomService:IRoom
         return find;
     }
 
+    public async Task<Room> Get(string kode)
+    {
+        var find = await _dbContext
+            .Room
+            .AsNoTracking()
+            .Include(x=>x.Exam)
+            .ThenInclude(y=>y.Soals)
+            .FirstOrDefaultAsync(x => x.Kode == kode);
+        if (find == null)
+        {
+            return null;
+        }
+
+        return find;
+    }
+
     public async Task<PaginatedResponse<Room>> Find(FindRequest r, CancellationToken ct,string? Username="")
     {
         if (string.IsNullOrEmpty(Username))

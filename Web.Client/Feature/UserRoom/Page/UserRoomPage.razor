@@ -15,7 +15,7 @@
 
 <MudPaper Class="pa-8">
     <div class="d-none d-flex align-center flex-grow-1 mr-2 mb-6">
-        <MudText Typo="Typo.h3">Kelas Ujian Diikuti</MudText>
+        <MudText Typo="Typo.h3">Kelas Ujian yang Diikuti</MudText>
 
         <MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
             <MudSpacer/>
@@ -27,6 +27,8 @@
             <MudSpacer/>
         </MudHidden>
         <MudButton StartIcon="@Icons.Material.Filled.Search" 
+                   Class="pa-4"
+                   OnClick="OnSearchRoom"
                    Color="Color.Primary">
             Cari Ruangan Ujian
         </MudButton>
@@ -43,22 +45,16 @@
             }
             else
             {
-                foreach (var item in dataRoom.Items)
+                foreach (var item in data.Items)
                 {
-                    var strImage = "/images/room-bg.jpg";
-                    if (item.Thumbnail != null)
-                    {
-                        strImage = $"data:image;base64,{Convert.ToBase64String(item.Thumbnail)}";
-                    }
-
-                    <UserRoomCard data="@item" strImage="@strImage" RefreshData="@PageChanged"/>
+                    <UserRoomCard data="@item" RefreshData="@PageChanged"/>
                 }
             }
         }
     </MudPaper>
     <div class="d-none d-flex align-center flex-grow-1 mt-8">
         <MudSpacer/>
-        <MudPagination Color="Color.Primary" Count="@dataRoom.TotalPage" SelectedChanged="PageChanged"/>
+        <MudPagination Color="Color.Primary" Count="@data.TotalPage" SelectedChanged="PageChanged"/>
         <MudSpacer/>
     </div>
 
@@ -66,7 +62,7 @@
 
 @code {
     [Inject] NavigationManager _navigationManager { get; set; }
-    [Inject] IRoom _repo { get; set; }
+    [Inject] IUserExam _repo { get; set; }
     [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
 
     string search;
@@ -79,7 +75,7 @@
         PageSize = 15
     };
 
-    PaginatedResponse<Room> dataRoom = new PaginatedResponse<Room>();
+    PaginatedResponse<UserExam> data = new PaginatedResponse<UserExam>();
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -87,7 +83,7 @@
         if (firstRender)
         {
             await BrowserViewportService.SubscribeAsync(this, fireImmediately: true);
-            dataRoom = await _repo.Find(request, new CancellationToken());
+            data = await _repo.Find(request, new CancellationToken());
             isLoading = false;
             StateHasChanged();
         }
@@ -105,7 +101,7 @@
     {
         isLoading = true;
         request.Page = page;
-        dataRoom = await _repo.Find(request, new CancellationToken());
+        data = await _repo.Find(request, new CancellationToken());
         isLoading = false;
         StateHasChanged();
     }
@@ -141,4 +137,15 @@
     }
 
     public Guid Id { get; }
+    
+    DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
+
+    private async Task OnSearchRoom()
+    {
+        var form = await Dialog.ShowAsync<UserRoomSearchDialog>("Cari Ruangan", maxWidth);
+        var result = await form.Result;
+        if (!result.Canceled)
+            await PageChanged(1);
+    }
+
 }

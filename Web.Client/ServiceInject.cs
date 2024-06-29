@@ -1,6 +1,7 @@
 ﻿using Web.Client.Feature.BankSoal;
 using Web.Client.Feature.References;
 using Web.Client.Feature.Roms;
+using Web.Client.Feature.UserExams;
 using Web.Client.Feature.UserManagements;
 using Web.Client.Interfaces;
 
@@ -14,6 +15,7 @@ public static class ServiceInject
         services.AddScoped<IExam, ExamService>();
         services.AddScoped<IReferences,ReferenceService>();
         services.AddScoped<IRoom, RoomService>();
+        services.AddScoped<IUserExam, UserExamService>();
         return services;
     }
 }

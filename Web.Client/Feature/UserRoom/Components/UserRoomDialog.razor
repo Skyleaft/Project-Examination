@@ -1,6 +1,7 @@
 ﻿@using global::Shared.BankSoal
 @using global::Shared.Common
 @using global::Shared.RoomSet
+@using global::Shared.TakeExam
 @using Web.Client.Interfaces
 @using Web.Client.Shared.Extensions
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -69,6 +70,9 @@
 
     [Parameter]
     public
+        UserExam userExam { get; set; } = new UserExam();
+    [Parameter]
+    public
         Room room { get; set; } = new Room();
     
     void Cancel() => MudDialog.Cancel();
@@ -109,8 +113,7 @@
 
     private void CreateUserExam()
     {
-        var id = Guid.NewGuid();
-        _navigationManager.NavigateTo($"client/exambefore/{id}",true);
+        _navigationManager.NavigateTo($"client/exambefore/{userExam.Id}",true);
     }
 
 }

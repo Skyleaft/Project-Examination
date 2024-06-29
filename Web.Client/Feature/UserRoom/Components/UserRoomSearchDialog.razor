@@ -1,0 +1,157 @@
+﻿@using System.Security.Claims
+@using global::Shared.BankSoal
+@using global::Shared.Common
+@using global::Shared.RoomSet
+@using global::Shared.TakeExam
+@using Web.Client.Interfaces
+@using Web.Client.Shared.Extensions
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<MudDialog>
+    <DialogContent>
+        <MudPaper Class="pa-4 ma-2 mb-2">
+            <MudStack Spacing="4">
+                <MudStack Row="true">
+                    <MudTextField Variant="Variant.Outlined"
+                                  MaxLength="40"
+                                  @bind-Value="kodeRoom"></MudTextField>
+                    <MudButton Variant="Variant.Outlined" 
+                               OnClick="OnSearchRoom">Cari</MudButton>
+                </MudStack>
+                @{
+                    if (isLoading)
+                    {
+                        <div class="d-none d-flex align-center flex-grow-1 ma-8">
+                            <MudSpacer/>
+                            <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+                            <MudSpacer/>
+                        </div>
+                    }
+                    else
+                    {
+                        if (room != null)
+                        {
+                            <MudTextField Label="Nama Ruangan"
+                                          Variant="Variant.Outlined"
+                                          ReadOnly
+                                          MaxLength="40"
+                                          @bind-Value="room.Nama"
+                                          For="@(() => room.Nama)"/>
+                            <MudNumericField @bind-Value="room.Durasi"
+                                             Label="Durasi Ujian" ReadOnly
+                                             Variant="Variant.Outlined"
+                                             Min="0" Max="600"/>
+                        } 
+                    }
+                    
+                }
+            </MudStack>
+
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="CreateUserExam" Class="pa-2 ma-2">Daftar Ujian</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] private IUserExam _userExam { get; set; }
+    [Inject] private IRoom _roomRepo { get; set; }
+    [Inject]private NavigationManager _navigationManager { get; set; }
+
+    private Room room;
+
+    private string kodeRoom;
+    private bool isLoading;
+    
+    void Cancel() => MudDialog.Cancel();
+    int examid;
+    private string userId;
+    
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (auth is not null)
+            {
+                userId = auth.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        StateHasChanged();
+    }
+
+
+    private async Task CreateUserExam()
+    {
+        if (room!=null)
+        {
+            var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
+            var dial = await DialogService.ShowAsync<BluryDialog>("Registering...", options);
+            
+            var listSoal = new List<UserAnswer>();
+            foreach (var soal in room.Exam.Soals)
+            {
+                listSoal.Add(new UserAnswer()
+                {
+                    SoalId = soal.Id,
+                });
+            }
+            var data = new CreateUserExamDTO()
+            {
+                RoomId = room.Id,
+                UserId = userId,
+                TimeLeft = room.Durasi,
+                UserAnswers = listSoal,
+                StartDate = null,
+                EndDate = null
+            };
+            
+            var created = await _userExam.Create(data);
+            if (created.isSuccess)
+            {
+                dial.Close();
+                MudDialog.Close(DialogResult.Ok(true));
+                DialogService.ShowMessageBox(
+                    "Info",
+                    "Anda Telah Terdaftar di Kelas Ujian",
+                    yesText: "Ok");
+            }
+            else
+            {
+                dial.Close();
+                DialogService.ShowMessageBox(
+                    "Error",
+                    created.Message,
+                    yesText: "Ok");
+            }
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnSearchRoom()
+    {
+        isLoading = true;
+        if (!string.IsNullOrEmpty(kodeRoom))
+        {
+            room = await _roomRepo.Get(kodeRoom);
+        }
+
+        isLoading = false;
+        StateHasChanged();
+    }
+
+}
