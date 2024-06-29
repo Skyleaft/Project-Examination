@@ -1,4 +1,4 @@
-﻿@page "/client/UserExam"
+﻿@page "/client/UserExam/{Id:Guid}"
 @using global::Shared.BankSoal
 @using global::Shared.TakeExam
 @using Microsoft.AspNetCore.Authorization
@@ -8,6 +8,7 @@
 @rendermode InteractiveWebAssembly
 @attribute [Authorize]
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDialogService Dialog
 
 @if (isLoading)
 {
@@ -94,14 +95,24 @@ else
 
             </MudPaper>
 
+            <div class="d-flex justify-center flex-grow-1 gap-4">
+                <MudButton Class="pa-4 my-5 "
+                           Color="Color.Warning"
+                           OnClick="EndExam"
+                           StartIcon="@Icons.Material.Filled.ExitToApp"
+                           Variant="Variant.Filled"
+                           >Selesai!</MudButton>
+            </div>
+
         </MudItem>
     </MudGrid>
 }
 
 
 @code {
-
+    [Parameter] public string Id { get; set; }
     [Inject] IExam examRepo { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
 
     private Exam model = new Exam()
     {
@@ -137,5 +148,18 @@ else
         }
     }
 
+
+    private async Task EndExam()
+    {
+        var result = await Dialog.ShowMessageBox(
+            "Warning",
+            $"Yakin Jawaban anda sudah benar?",
+            yesText: "Ya",cancelText:"Tidak");
+        StateHasChanged();
+        if (result!=null)
+        {
+            _navigationManager.NavigateTo($"/client/examresult/{Id}");
+        }
+    }
 
 }

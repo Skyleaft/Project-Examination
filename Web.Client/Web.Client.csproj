@@ -50,7 +50,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Feature\Exams\Component\" />
+      <Folder Include="Feature\UserExams\Component\" />
     </ItemGroup>
 
 </Project>

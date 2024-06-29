@@ -1,0 +1,116 @@
+﻿@using global::Shared.BankSoal
+@using global::Shared.Common
+@using global::Shared.RoomSet
+@using Web.Client.Interfaces
+@using Web.Client.Shared.Extensions
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<MudDialog>
+    <DialogContent>
+        <MudPaper Class="pa-4 ma-2 mb-2">
+            <MudStack Spacing="4">
+                <MudTextField Label="Nama Ruangan"
+                              Variant="Variant.Outlined"
+                              ReadOnly
+                              MaxLength="40"
+                              @bind-Value="room.Nama"
+                              For="@(() => room.Nama)"/>
+                <MudTextField Label="Kode Ruangan"
+                              Variant="Variant.Outlined"
+                              ReadOnly
+                              MaxLength="20"
+                              @bind-Value="room.Kode"
+                              For="@(() => room.Kode)"/>
+
+                <MudNumericField @bind-Value="room.Durasi"
+                                 Label="Durasi Ujian" ReadOnly
+                                 Variant="Variant.Outlined"
+                                 Min="0" Max="600"/>
+                <MudToolBar Class="pa-2">
+                    <MudDatePicker Variant="Variant.Outlined"
+                                   Label="Jadwal Mulai"
+                                   ReadOnly
+                                   MinDate="DateTime.Now.AddDays(-1)"
+                                   MaxDate="DateTime.Now.AddMonths(2)" Class="ml-3" @bind-Date="dateStart"/>
+                    <MudDatePicker Variant="Variant.Outlined"
+                                   Label="Jadwal Selesai"
+                                   ReadOnly
+                                   MinDate="DateTime.Now.AddDays(-1)"
+                                   MaxDate="DateTime.Now.AddMonths(2)" @bind-Date="dateEnd"/>
+                </MudToolBar>
+                <MudToolBar Class="pa-2">
+                    <MudTimePicker Variant="Variant.Outlined"
+                                   Label="Waktu Mulai"
+                                   ReadOnly
+                                   AmPm="true" Class="ml-3" @bind-Time="timeStart"/>
+                    <MudTimePicker Variant="Variant.Outlined"
+                                   Label="Waktu Selesai"
+                                   ReadOnly
+                                   AmPm="true" @bind-Time="timeEnd"/>
+                </MudToolBar>
+
+            </MudStack>
+
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="CreateUserExam">Masuk Ke Ruangan</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] private IExam _examRepo { get; set; }
+    [Inject] private IRoom _roomRepo { get; set; }
+    [Inject]private NavigationManager _navigationManager { get; set; }
+
+    [Parameter]
+    public
+        Room room { get; set; } = new Room();
+    
+    void Cancel() => MudDialog.Cancel();
+    int examid;
+
+
+    List<Exam> _exams = new List<Exam>();
+    DateTime? dateStart = DateTime.Today;
+    DateTime? dateEnd = DateTime.Today;
+
+    TimeSpan? timeStart = new TimeSpan(00, 00, 00);
+    TimeSpan? timeEnd = new TimeSpan(00, 00, 00);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (auth is not null)
+            {
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        dateStart = room.JadwalStart;
+        dateEnd = room.JadwalEnd;
+        timeStart = room.JadwalStart.TimeOfDay;
+        timeEnd = room.JadwalEnd.TimeOfDay;
+
+        StateHasChanged();
+    }
+
+
+    private void CreateUserExam()
+    {
+        var id = Guid.NewGuid();
+        _navigationManager.NavigateTo($"client/exambefore/{id}",true);
+    }
+
+}

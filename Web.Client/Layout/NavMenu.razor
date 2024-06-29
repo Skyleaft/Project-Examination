@@ -12,4 +12,10 @@
         <MudNavLink Href="/report/view">Hasil Ujian</MudNavLink>
         <MudNavLink Href="/report/manage">Kelola Hasil Ujian</MudNavLink>
     </MudNavGroup>
+    <AuthorizeView Roles="User,Superuser">
+        <MudNavGroup Title="Ruangan Ujian" Icon="@Icons.Material.Filled.Settings" Expanded="true">
+            <MudNavLink Href="/userroom" Match="NavLinkMatch.All">Dashboard</MudNavLink>
+            <MudNavLink Href="/userroom/cari" Match="NavLinkMatch.All">Cari Ujian</MudNavLink>
+        </MudNavGroup>
+    </AuthorizeView>
 </MudNavMenu>

@@ -9,6 +9,7 @@ public class UserExam
     public ApplicationUser? User { get; set; }
     public string UserId { get; set; }
     public bool IsOngoing { get; set; }
+    public bool IsDone { get; set; }
     public Room? Room { get; set; }
     public Guid RoomId { get; set; }
     public DateTime StartDate { get; set; }

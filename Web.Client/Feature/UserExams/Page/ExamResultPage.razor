@@ -1,0 +1,57 @@
+﻿@page "/client/examresult/{Id:Guid}"
+@using global::Shared.BankSoal
+@using global::Shared.TakeExam
+@using Microsoft.AspNetCore.Authorization
+@using MudBlazor.Extensions.Core
+@using Web.Client.Interfaces
+@layout UserExamLayout
+@rendermode InteractiveWebAssembly
+@attribute [Authorize]
+@inject IDialogService Dialog
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<MudContainer MaxWidth="MaxWidth.Medium">
+    <MudPaper Width="100%" Class="pa-4">
+        <MudText Align="Align.Center" Typo="Typo.h3">Hasil Ujian</MudText>
+        <MudPaper Class="pa-4">
+            <div id="unique_id_scroll_section" class="ma-0" style="height:200px;overflow: auto;">
+                <MudStack Wrap="Wrap.Wrap" Spacing="4" Row="@true" AlignItems="AlignItems.Start">
+                    @{
+                        foreach (var item in model.Soals)
+                        {
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Primary"
+                                       Style="width: 50px; height: 50px;">
+                                @item.Nomor
+                            </MudButton>
+                        }
+                    }
+
+                </MudStack>
+            </div>
+        </MudPaper>
+
+        <div class="d-flex justify-center flex-grow-1 gap-4">
+            <MudButton Class="pa-4 my-4 "
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Start"
+                       Variant="Variant.Filled"
+                       OnClick="OnBackHome">Kembali Ke Menu!</MudButton>
+        </div>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    [Parameter] public string Id { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+    private Exam model = new Exam()
+    {
+        Soals = new List<Soal>()
+    };
+
+    private void OnBackHome()
+    {
+        _navigationManager.NavigateTo("/userroom");
+    }
+
+}
