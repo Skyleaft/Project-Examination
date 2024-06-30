@@ -1,5 +1,6 @@
 ﻿@page "/client/UserExam/{Id:Guid}"
 @using global::Shared.BankSoal
+@using global::Shared.Common
 @using global::Shared.RoomSet
 @using global::Shared.TakeExam
 @using Microsoft.AspNetCore.Authorization
@@ -26,7 +27,7 @@ else
 
             <div id="scroll_soal" class="ma-0" style="height:85vh;overflow: auto;">
                 @{
-                    foreach (var item in room.Exam.Soals)
+                    foreach (var item in soalPaging.Items)
                     {
                         <MudPaper Class="pa-4 ma-2 my-3">
                             <div class="d-flex flex-grow-1 gap-1">
@@ -60,7 +61,7 @@ else
             </div>
             <div class="d-none d-flex align-center flex-grow-1 mt-8">
                 <MudSpacer/>
-                <MudPagination Color="Color.Primary" Count="1"/>
+                <MudPagination Color="Color.Primary" Count="@soalPaging.TotalPage" SelectedChanged="PageChanged"/>
                 <MudSpacer/>
             </div>
 
@@ -85,7 +86,9 @@ else
             </MudPaper>
 
             <MudPaper Class="my-3">
-                <MudWatch @ref="_watch" Interval="TimeSpan.FromMilliseconds(1)" Mode="WatchMode.Watch"
+                <MudWatch @ref="_watch" Interval="TimeSpan.FromMilliseconds(1)" Mode="WatchMode.CountDown"
+                          CountdownTime="TimeSpan.FromMinutes(userExam.TimeLeft)"
+                          CountdownCompleted="() => ForceEnd()"
                           ShowHour="true" ShowMinute="true" ShowSecond="true" ShowMillisecond="false"
                           Delimiter="@(":")" Typo="Typo.h5" Color="Color.Default"/>
 
@@ -117,6 +120,7 @@ else
 
     MudExRichTextEdit Editor;
     MudWatch _watch = new();
+    PaginatedResponse<Soal> soalPaging;
 
     bool isLoading = true;
     
@@ -136,9 +140,28 @@ else
             }
             userExam = await _userExamRepo.Get(new Guid(Id));
             room = await _roomRepo.Get(userExam.RoomId);
+            soalPaging = new PaginatedResponse<Soal>(room.Exam.Soals, 1, room.Exam.TotalSoal, 10);
             isLoading = false;
+            _watch.Start();
+            
             StateHasChanged();
         }
+    }
+    
+    private async Task PageChanged(int page)
+    {
+        isLoading = true;
+        soalPaging = new PaginatedResponse<Soal>(room.Exam.Soals, page, room.Exam.TotalSoal, 10);
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task ForceEnd()
+    {
+        userExam.EndDate=DateTime.Now;
+        var res = await _userExamRepo.Update(userExam);
+        if(res.Flag)
+            _navigationManager.NavigateTo($"/client/examresult/{Id}");
     }
 
 
@@ -152,8 +175,9 @@ else
         if (result!=null)
         {
             userExam.EndDate=DateTime.Now;
-            _userExamRepo.Update(userExam);
-            _navigationManager.NavigateTo($"/client/examresult/{Id}");
+            var res = await _userExamRepo.Update(userExam);
+            if(res.Flag)
+                _navigationManager.NavigateTo($"/client/examresult/{Id}");
         }
     }
 

@@ -19,16 +19,7 @@
         <MudGrid>
             <MudItem xs="12">
                 <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
-                    <button @onclick="GetClaimsPrincipalData">Get ClaimsPrincipal Data</button>
-                    @if (claims.Count() > 0)
-                    {
-                        <ul>
-                            @foreach (var claim in claims)
-                            {
-                                <li>@claim.Type: @claim.Value</li>
-                            }
-                        </ul>
-                    }
+
                 </MudPaper>
             </MudItem>
             <MudItem xs="12">
