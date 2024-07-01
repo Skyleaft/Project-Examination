@@ -1,11 +1,12 @@
 ﻿using FastEndpoints;
+using Shared.Common;
 using Web.Client.Feature.UserManagements;
 using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
 
 namespace Web.Services.UserServices.Endpoints.Register;
 
-public class Endpoint(IUser repo) : Endpoint<UserAddDTO, ServiceResponse>
+public class Endpoint(IUser repo) : Endpoint<UserAddDTO, CreatedResponse<UserDTO>>
 {
     public override void Configure()
     {
@@ -15,6 +16,13 @@ public class Endpoint(IUser repo) : Endpoint<UserAddDTO, ServiceResponse>
     public override async Task HandleAsync(UserAddDTO r,CancellationToken ct)
     {
         var res = await repo.Register(r,ct);
-        await SendAsync(res, cancellation: ct);
+        if (res.isSuccess)
+        {
+            await SendCreatedAtAsync($"/user/{res.Data.Id}",res.Data,res,cancellation:ct);
+        }
+        else
+        {
+            ThrowError(res.Message);
+        }
     }
 }

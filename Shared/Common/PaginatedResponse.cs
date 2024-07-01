@@ -50,4 +50,18 @@ public static class PaginatedListHelper
         
         return new PaginatedResponse<T>(items, currentPage, count, pageSize);
     }
+    
+    public static async Task<PaginatedResponse<T>> ToPagingList<T>(this IEnumerable<T> source, int currentPage, int pageSize)
+    {
+        currentPage = currentPage > 0 ? currentPage : DefaultCurrentPage;
+        pageSize = pageSize > 0 ? pageSize : DefaultPageSize;
+        var count = source.Count();
+        var items = new List<T>();
+        
+        items = source.Skip((currentPage - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        
+        return new PaginatedResponse<T>(items, currentPage, count, pageSize);
+    }
 }

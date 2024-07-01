@@ -1,0 +1,346 @@
+﻿@page "/userclient/register";
+@using System.Net.Mail
+@using System.Text
+@using global::Shared.Common
+@using global::Shared.Users
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using MimeKit
+@using Web.Client.Feature.UserManagements
+@using SmtpClient = MailKit.Net.Smtp.SmtpClient
+@using Web.Client.Interfaces
+@layout BlankLayout
+@inject HttpClient HttpClient
+
+
+<EditForm Model="userModel" method="post" OnValidSubmit="OnValidSubmit" FormName="register">
+    <DataAnnotationsValidator/>
+    <MudGrid Class="align-content-center justify-center">
+        <MudItem xs=12 md=8>
+            <MudCard Class="pa-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h4">Daftar Akun Baru</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6">
+                            <MudCard>
+                                <MudCardHeader>
+                                    <MudText Typo="Typo.h6">Profile User</MudText>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudStack Spacing="3">
+                                        <MudTextField Label="Nama Lengkap" HelperText="Max. 40 characters"
+                                                      Variant="Variant.Outlined"
+                                                      MaxLength="40"
+                                                      @bind-Value="userModel.NamaLengkap"
+                                                      For="@(() => userModel.NamaLengkap)"/>
+                                        <MudField Label="Jenis Kelamin" Variant="Variant.Outlined" InnerPadding="false">
+                                            <MudRadioGroup T="int" ValueChanged="i => userModel.Gender = (Gender)i">
+                                                <MudRadio Value="1"
+                                                          Color="Color.Primary">
+                                                    Perempuan
+                                                </MudRadio>
+                                                <MudRadio Value="0"
+                                                          Color="Color.Primary">
+                                                    Laki - Laki
+                                                </MudRadio>
+
+                                            </MudRadioGroup>
+                                        </MudField>
+                                        <MudSelect T="string" Label="Pekerjaan"
+                                                   @bind-Value="userModel.Pekerjaan"
+                                                   Variant="Variant.Outlined"
+                                                   AnchorOrigin="Origin.BottomCenter">
+                                            <MudSelectItem T="string" Value="@("Dosen")">Dosen</MudSelectItem>
+                                            <MudSelectItem T="string" Value="@("Mahasiswa")">Mahasiswa</MudSelectItem>
+                                            <MudSelectItem T="string" Value="@("Alumni")">Alumni</MudSelectItem>
+                                            <MudSelectItem T="string" Value="@("Umum")">Umum</MudSelectItem>
+                                        </MudSelect>
+                                        
+                                        <MudTextField Label="Nomor Telepon" HelperText="Max. 15 characters"
+                                                      Variant="Variant.Outlined"
+                                                      MaxLength="15"
+                                                      InputType="InputType.Number"
+                                                      @bind-Value="userModel.PhoneNumber"
+                                                      For="@(() => userModel.PhoneNumber)"/>
+                                        <MudAutocomplete T="Provinsi" Label="Provinsi"
+                                                         Variant="Variant.Outlined"
+                                                         AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                                         Strict="false"
+                                                         ValueChanged="(Provinsi selected) => { SelectedProv = selected; FilterKota(SelectedProv.Id); SelectedKota = null; }"
+                                                         ToStringFunc="@(e => e == null ? null : $"{e.NamaProvinsi}")"
+                                                         SearchFunc="@SearchProv"/>
+                                        @{
+                                        if (SelectedProv != null)
+                                        {
+                                        FilterKota(SelectedProv.Id);
+                                        <MudAutocomplete T="Kota" Label="Kota"
+                                                         Variant="Variant.Outlined"
+                                                         AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                                         Strict="false"
+                                                         ValueChanged="kota => { SelectedKota = kota; userModel.KotaId = kota.Id; }"
+                                                         ToStringFunc="@(e => e == null ? null : $"{e.NamaKota}")"
+                                                         SearchFunc="@SearchKota"/>
+                                        }
+                                        }
+
+                                    </MudStack>
+
+                                </MudCardContent>
+                            </MudCard>
+
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <MudCard>
+                                <MudCardHeader>
+                                    <MudText Typo="Typo.h6">Akun Login</MudText>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudStack Spacing="3">
+                                        <MudTextField Label="Email"
+                                                      Required
+                                                      Variant="Variant.Outlined"
+                                                      @bind-Value="userModel.Email"
+                                                      For="@(() => userModel.Email)"/>
+                                        <MudTextField Label="Username"
+                                                      Variant="Variant.Outlined"
+                                                      Required
+                                                      @bind-Value="userModel.UserName"
+                                                      For="@(() => userModel.UserName)"/>
+                                        <MudTextField Label="Password" HelperText="Choose a strong password"
+                                                      Variant="Variant.Outlined"
+                                                      Required
+                                                      @bind-Value="userModel.Password"
+                                                      For="@(() => userModel.Password)" InputType="InputType.Password"/>
+                                        <MudButton FullWidth
+                                                   StartIcon="@Icons.Material.Filled.AppRegistration"
+                                                   Color="Color.Primary"
+                                                   Variant="Variant.Filled" Class="py-4"
+                                                   ButtonType="ButtonType.Submit">
+                                            Daftar!
+                                        </MudButton>
+                                        <MudButton FullWidth
+                                                   Variant="Variant.Text" Class="py-2"
+                                                   ButtonType="ButtonType.Reset">
+                                            Batal
+                                        </MudButton>
+                                    </MudStack>
+
+                                </MudCardContent>
+                            </MudCard>
+                        </MudItem >
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+</EditForm>
+
+@code {
+    [Inject] IUser _userService { get; set; }
+    [Inject]UserManager<ApplicationUser> _userManager { get; set; }
+    [Inject] IReferences _reference { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+    [Inject] private IDialogService DialogService { get; set; }
+
+    private UserAddDTO userModel = new UserAddDTO()
+    {
+        Role = "User"
+    };
+
+
+    Provinsi SelectedProv = null;
+    Kota SelectedKota = null;
+
+    List<Provinsi> dataProv = new List<Provinsi>();
+    List<Kota> dataKota = new List<Kota>();
+    List<Kota> filterKota = new List<Kota>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            dataProv = await _reference.GetAllprovinsi();
+            dataKota = await _reference.GetAllKota();
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnValidSubmit(EditContext obj)
+    {
+        var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
+        var dial = await DialogService.ShowAsync<BluryDialog>("Registering...", options);
+
+        var created = await _userService.Register(userModel, new CancellationToken());
+        if (created.isSuccess)
+        {
+            await SendEmail(created.Data.Id.ToString());
+            dial.Close();
+            userModel = null;
+            DialogService.ShowMessageBox(
+                "Info",
+                "Akun Berhasil Didaftarkan, Silahkan Cek Email Anda",
+                yesText: "Ok");
+            
+        }
+        else
+        {
+            dial.Close();
+            DialogService.ShowMessageBox(
+                "Error",
+                created.Message,
+                yesText: "Ok");
+        }
+    }
+
+    private async Task SendEmail(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        var emailConfirmationLink = _navigationManager.GetUriWithQueryParameters(
+            _navigationManager.ToAbsoluteUri("userclient/confirmEmail").AbsoluteUri,
+            new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code });
+        
+        var email = new MimeMessage();
+        email.From.Add(MailboxAddress.Parse("makayla.kemmer91@ethereal.email"));
+        email.To.Add(MailboxAddress.Parse(userModel.Email));
+        email.Subject = "Konfirmasi Email Aplikasi Ujian Online";
+        email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+        {
+            Text = $@"
+<!DOCTYPE html>
+<html lang=""en"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>Email Confirmation</title>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            background-color: #f6f6f6;
+            margin: 0;
+            padding: 0;
+        }}
+        .container {{
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }}
+        .header {{
+            text-align: center;
+            padding-bottom: 20px;
+        }}
+        .header h1 {{
+            margin: 0;
+            font-size: 24px;
+            color: #333333;
+        }}
+        .image {{
+            text-align: center;
+            margin-bottom: 20px;
+        }}
+        .image img {{
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }}
+        .content {{
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+            color: #555555;
+        }}
+        .button {{
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #007bff;
+            text-decoration: none;
+            border-radius: 5px;
+        }}
+        .footer {{
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999999;
+        }}
+    </style>
+</head>
+<body>
+    <div class=""container"">
+        <div class=""header"">
+            <h1>Confirm Your Email</h1>
+        </div>
+        <div class=""image"">
+            <img src=""https://via.placeholder.com/600x200"" alt=""Confirmation Image"">
+        </div>
+        <div class=""content"">
+            <p>Halo, {user.NamaLengkap}</>
+            <p>Terima kasih sudah mendaftar, silahkan klik tombol di bawah ini untuk melanjutkan</p>
+            <a href=""{emailConfirmationLink}"" class=""button"">Konfirmasi Email</a>
+        </div>
+        <div class=""footer"">
+            <p>If you did not sign up for this account, please ignore this email.</p>
+        </div>
+    </div>
+</body>
+</html>
+"
+        };
+
+        try
+        {
+            using var smtp = new SmtpClient();
+             await smtp.ConnectAsync("smtp.ethereal.email", 587,true);
+             await smtp.AuthenticateAsync("makayla.kemmer91@ethereal.email", "Mgt4R8WCpgwZ6v5hhH");
+             await smtp.SendAsync(email);
+             await smtp.DisconnectAsync(true);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        
+
+    }
+
+    public async Task FilterKota(string ProvID)
+    {
+        filterKota = dataKota
+            .Where(x => x.ProvinsiId == ProvID)
+            .ToList();
+    }
+
+    private async Task<IEnumerable<Provinsi>> SearchProv(string search, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(search))
+            return dataProv;
+        return dataProv
+            .Where(x => x.NamaProvinsi
+                .Contains(search, StringComparison.CurrentCultureIgnoreCase))
+            .ToList();
+    }
+
+    private async Task<IEnumerable<Kota>> SearchKota(string search, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(search))
+            return filterKota;
+        return filterKota
+            .Where(x => x.NamaKota
+                .Contains(search, StringComparison.CurrentCultureIgnoreCase))
+            .ToList();
+    }
+
+}

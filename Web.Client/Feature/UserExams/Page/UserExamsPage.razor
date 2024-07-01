@@ -1,4 +1,4 @@
-﻿@page "/client/UserExam/{Id:Guid}"
+﻿@page "/exam/userexam/{Id:Guid}"
 @using global::Shared.BankSoal
 @using global::Shared.Common
 @using global::Shared.RoomSet
@@ -7,10 +7,12 @@
 @using MudBlazor.Extensions.Core
 @using Web.Client.Interfaces
 @layout UserExamLayout
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveServer
 @attribute [Authorize]
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IDialogService Dialog
+
+<NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="OnBeforeNavBack"/>
 
 @if (isLoading)
 {
@@ -91,8 +93,7 @@ else
                           CountdownCompleted="() => ForceEnd()"
                           ShowHour="true" ShowMinute="true" ShowSecond="true" ShowMillisecond="false"
                           Delimiter="@(":")" Typo="Typo.h5" Color="Color.Default"/>
-
-
+                
             </MudPaper>
 
             <div class="d-flex justify-center flex-grow-1 gap-4">
@@ -140,18 +141,19 @@ else
             }
             userExam = await _userExamRepo.Get(new Guid(Id));
             room = await _roomRepo.Get(userExam.RoomId);
-            soalPaging = new PaginatedResponse<Soal>(room.Exam.Soals, 1, room.Exam.TotalSoal, 10);
+            soalPaging = await room.Exam.Soals.ToPagingList(1, 10);
             isLoading = false;
-            _watch.Start();
+            
             
             StateHasChanged();
         }
+        _watch.Start();
     }
     
     private async Task PageChanged(int page)
     {
         isLoading = true;
-        soalPaging = new PaginatedResponse<Soal>(room.Exam.Soals, page, room.Exam.TotalSoal, 10);
+        soalPaging = await room.Exam.Soals.ToPagingList(page, 10);
         isLoading = false;
         StateHasChanged();
     }
@@ -159,9 +161,12 @@ else
     private async Task ForceEnd()
     {
         userExam.EndDate=DateTime.Now;
+        userExam.IsOngoing = false;
+        userExam.IsDone = true;
+        userExam.TimeLeft = _watch.CountdownTime.Minutes;
         var res = await _userExamRepo.Update(userExam);
         if(res.Flag)
-            _navigationManager.NavigateTo($"/client/examresult/{Id}");
+            _navigationManager.NavigateTo($"/exam/examresult/{Id}");
     }
 
 
@@ -174,11 +179,26 @@ else
         StateHasChanged();
         if (result!=null)
         {
+            _watch.Stop();
+            userExam.IsDone = true;
+            userExam.IsOngoing = false;
             userExam.EndDate=DateTime.Now;
+            userExam.TimeLeft = _watch.Value.Minutes;
             var res = await _userExamRepo.Update(userExam);
             if(res.Flag)
-                _navigationManager.NavigateTo($"/client/examresult/{Id}");
+                _navigationManager.NavigateTo($"/exam/examresult/{Id}");
         }
     }
+    
+    
+    private async Task OnBeforeNavBack(LocationChangingContext locationChangingContext)
+    {
+        if (locationChangingContext.TargetLocation.Contains( $"/exam/exambefore/{Id}"))
+        {
+            locationChangingContext.PreventNavigation();
+        }
+        
+    }
+    
 
 }

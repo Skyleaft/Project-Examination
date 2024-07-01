@@ -1,4 +1,4 @@
-﻿@page "/client/examresult/{Id:Guid}"
+﻿@page "/exam/examresult/{Id:Guid}"
 @using global::Shared.BankSoal
 @using global::Shared.RoomSet
 @using global::Shared.TakeExam
@@ -6,10 +6,12 @@
 @using MudBlazor.Extensions.Core
 @using Web.Client.Interfaces
 @layout UserExamLayout
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveServer
 @attribute [Authorize]
 @inject IDialogService Dialog
 @inject AuthenticationStateProvider AuthenticationStateProvider
+
+<NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="OnBeforeNavBack"/>
 
 <MudContainer MaxWidth="MaxWidth.Medium">
     <MudPaper Width="100%" Class="pa-4">
@@ -47,56 +49,74 @@
             }
             else
             {
-                <table>
-                    <tr>
-                        <td>
-                            <MudText Typo="Typo.body1">Nama Ujian</MudText>
-                        </td>
-                        <td>
-                            <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
-                        </td>
-                        <td>
-                            <MudText Typo="Typo.body1">@room.Nama</MudText>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <MudText Typo="Typo.body1">Jumlah Soal</MudText>
-                        </td>
-                        <td>
-                            <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
-                        </td>
-                        <td>
-                            <MudText Typo="Typo.body1">@room.Exam.TotalSoal</MudText>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <MudText Typo="Typo.body1">Sisa Waktu</MudText>
-                        </td>
-                        <td>
-                            <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
-                        </td>
-                        <td>
-                            <MudText Typo="Typo.body1">
-                                <b>@userExam.TimeLeft</b>
-                            </MudText>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <MudText Typo="Typo.body1">Total Score</MudText>
-                        </td>
-                        <td>
-                            <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
-                        </td>
-                        <td>
-                            <MudText Typo="Typo.body1">
-                                <b>@userExam.Score</b>
-                            </MudText>
-                        </td>
-                    </tr>
-                </table>
+                <div class="d-none d-flex align-center flex-grow-1 ma-8">
+                    <MudSpacer/>
+                    <table>
+                        <tr>
+                            <td>
+                                <MudText Typo="Typo.body1">Nama Ujian</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body1">@room.Nama</MudText>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <MudText Typo="Typo.body1">Jumlah Soal</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body1">@room.Exam.TotalSoal</MudText>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <MudText Typo="Typo.body1">Waktu Selesai</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body1">
+                                    @userExam.EndDate.Value.ToString("dd/MM/yyyy - HH:mm")
+                                </MudText>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <MudText Typo="Typo.body1">Sisa Waktu</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body1">
+                                    <b>@userExam.TimeLeft Menit</b>
+                                </MudText>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <MudText Typo="Typo.body1">Total Score</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body1">
+                                    <b>@userExam.Score</b>
+                                </MudText>
+                            </td>
+                        </tr>
+                    </table>
+                    <MudSpacer/>
+                </div>
+                
             }
         }
 
@@ -140,7 +160,15 @@
 
     private void OnBackHome()
     {
-        _navigationManager.NavigateTo("/userroom");
+        _navigationManager.NavigateTo("/userroom",true);
+    }
+
+    private async Task OnBeforeNavBack(LocationChangingContext locationChangingContext)
+    {
+        if (locationChangingContext.TargetLocation.Contains($"/exam/userexam/{Id}",StringComparison.OrdinalIgnoreCase))
+        {
+            locationChangingContext.PreventNavigation();
+        }
     }
 
 }

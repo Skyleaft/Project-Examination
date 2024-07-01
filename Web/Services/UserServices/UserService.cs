@@ -29,10 +29,10 @@ public class UserService:IUser
         return data;
     }
     
-    public async Task<ServiceResponse> Register(UserAddDTO r, CancellationToken? ct)
+    public async Task<CreatedResponse<UserDTO>> Register(UserAddDTO r, CancellationToken? ct)
     {
         var finduser = await _userManager.FindByNameAsync(r.UserName);
-        if(finduser!=null) return new ServiceResponse(false,"Username sudah ada");
+        if(finduser!=null) return new CreatedResponse<UserDTO>(false,"Username sudah ada");
         var user = new ApplicationUser()
         {
             NamaLengkap = r.NamaLengkap,
@@ -48,9 +48,9 @@ public class UserService:IUser
         if (createUser.Succeeded)
         {
             await _userManager.AddToRoleAsync(user, r.Role);
-            return new ServiceResponse(true, "Berhasil membuat user");
+            return new CreatedResponse<UserDTO>(true, "Berhasil membuat user",user.Adapt<UserDTO>());
         }
-        return new ServiceResponse(false, createUser.Errors.First().Description);
+        return new CreatedResponse<UserDTO>(false, createUser.Errors.First().Description);
     }
 
     public async Task<ServiceResponse> Update(UserEditDTO r, CancellationToken ct)

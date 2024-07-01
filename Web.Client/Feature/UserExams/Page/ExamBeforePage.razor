@@ -1,4 +1,4 @@
-﻿@page "/client/exambefore/{Id:Guid}"
+﻿@page "/exam/exambefore/{Id:Guid}"
 @using global::Shared.BankSoal
 @using global::Shared.RoomSet
 @using global::Shared.TakeExam
@@ -6,7 +6,7 @@
 @using MudBlazor.Extensions.Core
 @using Web.Client.Interfaces
 @layout UserExamLayout
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveServer
 @attribute [Authorize]
 @inject IDialogService Dialog
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -148,11 +148,14 @@
     private async Task OnMulai()
     {
         userExam.StartDate = DateTime.Now;
+        userExam.IsOngoing = true;
         var res = await _userExamRepo.Update(userExam);
         if (res.Flag)
         {
-            _navigationManager.NavigateTo($"client/userexam/{Id}");
+            _navigationManager.NavigateTo($"exam/userexam/{Id}");
         }
     }
+    
+    
 
 }

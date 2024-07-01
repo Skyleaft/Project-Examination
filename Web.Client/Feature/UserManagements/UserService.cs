@@ -26,17 +26,17 @@ public class UserService :IUser
         return data;
     }
 
-    public async Task<ServiceResponse> Register(UserAddDTO r, CancellationToken? ct)
+    public async Task<CreatedResponse<UserDTO>> Register(UserAddDTO r, CancellationToken? ct)
     {
         var res = await _httpClient.PostAsJsonAsync("api/user/register",r);
         if (res.IsSuccessStatusCode)
         {
-            var createdUser = await res.Content.ReadFromJsonAsync<ServiceResponse>();
+            var createdUser = await res.Content.ReadFromJsonAsync<CreatedResponse<UserDTO>>();
             return createdUser;
         }
         else
         {
-            return new ServiceResponse(false, res.ReasonPhrase);
+            return new CreatedResponse<UserDTO>(false, res.ReasonPhrase);
         }
     }
 

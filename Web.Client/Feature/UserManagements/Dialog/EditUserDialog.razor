@@ -19,60 +19,64 @@
                             <MudText Typo="Typo.h6">Profile User</MudText>
                         </MudCardHeader>
                         <MudCardContent>
-                            <MudTextField Label="Nama Lengkap" HelperText="Max. 40 characters"
-                                          Variant="Variant.Outlined"
-                                          MaxLength="40"
-                                          @bind-Value="userModel.NamaLengkap"
-                                          For="@(() => userModel.NamaLengkap)"/>
-                            <MudRadioGroup T="int" ValueChanged="i => userModel.Gender = (Gender)i" Value="(int)userModel.Gender" Class="mt-4">
-                                <MudRadio Value="1"
-                                          Color="Color.Primary">
-                                    Perempuan
-                                </MudRadio>
-                                <MudRadio Value="0"
-                                          Color="Color.Primary">
-                                    Laki - Laki
-                                </MudRadio>
+                            <MudStack Spacing="3">
+                                <MudTextField Label="Nama Lengkap" HelperText="Max. 40 characters"
+                                              Variant="Variant.Outlined"
+                                              MaxLength="40"
+                                              @bind-Value="userModel.NamaLengkap"
+                                              For="@(() => userModel.NamaLengkap)"/>
+                                <MudField Label="Jenis Kelamin" Variant="Variant.Outlined" InnerPadding="false">
+                                    <MudRadioGroup T="int" ValueChanged="i => userModel.Gender = (Gender)i">
+                                        <MudRadio Value="1"
+                                                  Color="Color.Primary">
+                                            Perempuan
+                                        </MudRadio>
+                                        <MudRadio Value="0"
+                                                  Color="Color.Primary">
+                                            Laki - Laki
+                                        </MudRadio>
 
-                            </MudRadioGroup>
-                            <MudSelect T="string" Label="Pekerjaan"
-                                       Class="mt-3"
-                                       @bind-Value="userModel.Pekerjaan"
-                                       Variant="Variant.Outlined"
-                                       AnchorOrigin="Origin.BottomCenter">
-                                <MudSelectItem T="string" Value="@("Mahasiswa")">Mahasiswa</MudSelectItem>
-                                <MudSelectItem T="string" Value="@("Alumni")">Alumni</MudSelectItem>
-                                <MudSelectItem T="string" Value="@("Umum")">Umum</MudSelectItem>
-                            </MudSelect>
-                            <MudTextField Label="Nomor Telepon" HelperText="Max. 15 characters"
-                                          Class="mt-3"
-                                          Variant="Variant.Outlined"
-                                          MaxLength="15"
-                                          InputType="InputType.Number"
-                                          @bind-Value="userModel.PhoneNumber"
-                                          For="@(() => userModel.PhoneNumber)"/>
-                            <MudAutocomplete T="Provinsi" Label="Provinsi"
-                                             Variant="Variant.Outlined"
-                                             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
-                                             Strict="false"
-                                             Value="SelectedProv"
-                                             ValueChanged="(Provinsi selected) => { SelectedProv = selected; FilterKota(SelectedProv.Id); SelectedKota = null; }"
-                                             ToStringFunc="@(e => e == null ? null : $"{e.NamaProvinsi}")"
-                                             SearchFunc="@SearchProv"/>
-                            @{
+                                    </MudRadioGroup>
+                                </MudField>
+                                <MudSelect T="string" Label="Pekerjaan"
+                                           @bind-Value="userModel.Pekerjaan"
+                                           Variant="Variant.Outlined"
+                                           AnchorOrigin="Origin.BottomCenter">
+                                    <MudSelectItem T="string" Value="@("Dosen")">Dosen</MudSelectItem>
+                                    <MudSelectItem T="string" Value="@("Mahasiswa")">Mahasiswa</MudSelectItem>
+                                    <MudSelectItem T="string" Value="@("Alumni")">Alumni</MudSelectItem>
+                                    <MudSelectItem T="string" Value="@("Umum")">Umum</MudSelectItem>
+                                </MudSelect>
+                                <MudTextField Label="Nomor Telepon" HelperText="Max. 15 characters"
+                                              Variant="Variant.Outlined"
+                                              MaxLength="15"
+                                              InputType="InputType.Number"
+                                              @bind-Value="userModel.PhoneNumber"
+                                              For="@(() => userModel.PhoneNumber)"/>
+                                <MudAutocomplete T="Provinsi" Label="Provinsi"
+                                                 Variant="Variant.Outlined"
+                                                 AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                                 Strict="false"
+                                                 Value="SelectedProv"
+                                                 ValueChanged="(Provinsi selected) => { SelectedProv = selected; FilterKota(SelectedProv.Id); SelectedKota = null; }"
+                                                 ToStringFunc="@(e => e == null ? null : $"{e.NamaProvinsi}")"
+                                                 SearchFunc="@SearchProv"/>
+                                @{
                                 if (SelectedProv != null)
                                 {
-                                    FilterKota(SelectedProv.Id);
-                                    <MudAutocomplete T="Kota" Label="Kota"
-                                                     Variant="Variant.Outlined"
-                                                     AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
-                                                     Strict="false"
-                                                     Value="SelectedKota"
-                                                     ValueChanged="kota => { SelectedKota = kota; userModel.KotaId = kota.Id; }"
-                                                     ToStringFunc="@(e => e == null ? null : $"{e.NamaKota}")"
-                                                     SearchFunc="@SearchKota"/>
+                                FilterKota(SelectedProv.Id);
+                                <MudAutocomplete T="Kota" Label="Kota"
+                                                 Variant="Variant.Outlined"
+                                                 AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                                 Strict="false"
+                                                 Value="SelectedKota"
+                                                 ValueChanged="kota => { SelectedKota = kota; userModel.KotaId = kota.Id; }"
+                                                 ToStringFunc="@(e => e == null ? null : $"{e.NamaKota}")"
+                                                 SearchFunc="@SearchKota"/>
                                 }
-                            }
+                                }
+                            </MudStack>
+                            
 
                         </MudCardContent>
                     </MudCard>
@@ -85,45 +89,50 @@
                             <MudText Typo="Typo.h6">Akun Login</MudText>
                         </MudCardHeader>
                         <MudCardContent>
-                            <MudCard>
-                                <MudCardMedia Image="/images/blazor.png" Height="100"/>
-                                <MudCardContent>
-                                    
-                                </MudCardContent>
-                                <MudCardActions>
-                                    <MudFileUpload T="IBrowserFile"
-                                                   Hidden="@false"
-                                                   Accept=".png, .jpg"
-                                                   @bind-Files="userModel.ImageFile"
-                                                   OnFilesChanged="UploadFiles">
-                                        <ButtonTemplate>
-                                            <MudFab HtmlTag="label"
-                                                    Color="Color.Primary"
-                                                    Icon="@Icons.Material.Filled.Image"
-                                                    Label="Upload Foto"
-                                                    for="@(() => userModel.ImageFile)"/>
-                                        </ButtonTemplate>
-                                    </MudFileUpload>
-                                </MudCardActions>
-                            </MudCard>
-                            <MudSelect T="string" Label="Role"
-                                       @bind-Value="userModel.Role"
-                                       Variant="Variant.Outlined"
-                                       AnchorOrigin="Origin.BottomCenter">
-                                <MudSelectItem T="string" Value="@("Operator")">Operator</MudSelectItem>
-                                <MudSelectItem T="string" Value="@("Dosen")">Dosen</MudSelectItem>
-                                <MudSelectItem T="string" Value="@("User")">User</MudSelectItem>
-                            </MudSelect>
+                            <MudStack Spacing="3">
+                                <MudCard>
+                                    <MudCardMedia Image="/images/blazor.png" Height="100"/>
+                                    <MudCardContent>
 
-                            <MudTextField Label="Email" Class="mt-3"
-                                          Variant="Variant.Outlined"
-                                          @bind-Value="userModel.Email"
-                                          For="@(() => userModel.Email)"/>
-                            <MudTextField Label="Username" Class="mt-3"
-                                          Variant="Variant.Outlined"
-                                          ReadOnly
-                                          @bind-Value="userModel.UserName"
-                                          For="@(() => userModel.UserName)"/>
+                                    </MudCardContent>
+                                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg">
+                                        <ActivatorContent>
+                                            <MudFab Color="Color.Primary"
+                                                    StartIcon="@Icons.Material.Filled.Image"
+                                                    Label="Unggah Foto"/>
+                                        </ActivatorContent>
+                                        @* <SelectedTemplate> *@
+                                        @*     @if (context != null) *@
+                                        @*     { *@
+                                        @*     <MudText>@context.Name</MudText> *@
+                                        @*     } *@
+                                        @*     else *@
+                                        @*     { *@
+                                        @*     <MudText>No File</MudText> *@
+                                        @*     } *@
+                                        @* </SelectedTemplate> *@
+                                    </MudFileUpload>
+                                </MudCard>
+                                <MudSelect T="string" Label="Role"
+                                           @bind-Value="userModel.Role"
+                                           Variant="Variant.Outlined"
+                                           AnchorOrigin="Origin.BottomCenter">
+                                    <MudSelectItem T="string" Value="@("Operator")">Operator</MudSelectItem>
+                                    <MudSelectItem T="string" Value="@("Dosen")">Dosen</MudSelectItem>
+                                    <MudSelectItem T="string" Value="@("User")">User</MudSelectItem>
+                                </MudSelect>
+
+                                <MudTextField Label="Email"
+                                              Variant="Variant.Outlined"
+                                              @bind-Value="userModel.Email"
+                                              For="@(() => userModel.Email)"/>
+                                <MudTextField Label="Username"
+                                              Variant="Variant.Outlined"
+                                              ReadOnly
+                                              @bind-Value="userModel.UserName"
+                                              For="@(() => userModel.UserName)"/>
+                            </MudStack>
+                            
                         </MudCardContent>
                     </MudCard>
                 </MudItem>
@@ -171,9 +180,9 @@
     }
 
 
-    private async Task UploadFiles(InputFileChangeEventArgs e)
+    private async Task UploadFiles(IBrowserFile file)
     {
-        var stream = userModel.ImageFile.OpenReadStream();
+        var stream = file.OpenReadStream();
         using (var memstream = new MemoryStream())
         {
             await stream.CopyToAsync(memstream);

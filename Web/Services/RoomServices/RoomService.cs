@@ -66,7 +66,7 @@ public class RoomService:IRoom
             .Room
             .AsNoTracking()
             .Include(x=>x.Exam)
-            .ThenInclude(y=>y.Soals)
+            .ThenInclude(y=>y.Soals.OrderBy(o=>o.Nomor))
             .ThenInclude(z=>z.PilihanJawaban)
             .Include(x => x.ListPeserta)
             .FirstOrDefaultAsync(x => x.Id == Id);

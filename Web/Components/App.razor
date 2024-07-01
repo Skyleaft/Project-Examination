@@ -47,6 +47,14 @@
             {
                 return InteractiveWebAssembly;
             }
+            else if (HttpContext.Request.Path.StartsWithSegments("/userclient"))
+            {
+                return InteractiveServer;
+            }
+            else if (HttpContext.Request.Path.StartsWithSegments("/exam"))
+            {
+                return InteractiveServer;
+            }
             else
             {
                 return new InteractiveAutoRenderMode(false);

@@ -1,0 +1,44 @@
+﻿@page "/userclient/confirmEmail"
+@using System.Text
+@using global::Shared.Users
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@layout BlankLayout
+
+<MudContainer MaxWidth="MaxWidth.Small">
+    <MudStack Justify="Justify.Center">
+        <h3>@statusMessage</h3>
+        <EmailConfirmed/>
+        <MudButton Href="/Account/Login" Variant="Variant.Filled" Class="pa-4" Color="Color.Primary">Menuju Halaman Login</MudButton>
+    </MudStack>
+</MudContainer>
+
+
+@code {
+    [SupplyParameterFromQuery] private string? UserId { get; set; }
+    [SupplyParameterFromQuery] private string? Code { get; set; }
+    [Inject] UserManager<ApplicationUser> _userManager { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+
+    string statusMessage;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        if (UserId is null || Code is null)
+        {
+            _navigationManager.NavigateTo("/Account/Login");
+        }
+
+        var user = await _userManager.FindByIdAsync(UserId);
+        if (user is null)
+        {
+            statusMessage = $"Error loading user with ID {UserId}";
+        }
+        else
+        {
+            var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Code));
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            statusMessage = result.Succeeded ? "Terimakasih Sudah Mengkonfirmasi Email" : "Error confirming your email.";
+        }
+    }
+}
