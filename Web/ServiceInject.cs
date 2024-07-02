@@ -1,4 +1,5 @@
-﻿using Web.Client.Interfaces;
+﻿using Web.Client.Feature.Register;
+using Web.Client.Interfaces;
 using Web.Services.ExamServices;
 using Web.Services.ReferenceServices;
 using Web.Services.RoomServices;
@@ -16,6 +17,7 @@ public static class ServiceInject
         services.AddScoped<IReferences, ReferenceService>();
         services.AddScoped<IRoom, RoomService>();
         services.AddScoped<IUserExam, UserExamService>();
+        services.AddScoped<IMailService, EmailService>();
         return services;
     }
 }

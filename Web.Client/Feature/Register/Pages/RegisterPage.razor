@@ -3,6 +3,7 @@
 @using System.Text
 @using global::Shared.Common
 @using global::Shared.Users
+@using MailKit.Security
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using MimeKit
@@ -59,7 +60,7 @@
                                             <MudSelectItem T="string" Value="@("Alumni")">Alumni</MudSelectItem>
                                             <MudSelectItem T="string" Value="@("Umum")">Umum</MudSelectItem>
                                         </MudSelect>
-                                        
+
                                         <MudTextField Label="Nomor Telepon" HelperText="Max. 15 characters"
                                                       Variant="Variant.Outlined"
                                                       MaxLength="15"
@@ -74,17 +75,17 @@
                                                          ToStringFunc="@(e => e == null ? null : $"{e.NamaProvinsi}")"
                                                          SearchFunc="@SearchProv"/>
                                         @{
-                                        if (SelectedProv != null)
-                                        {
-                                        FilterKota(SelectedProv.Id);
-                                        <MudAutocomplete T="Kota" Label="Kota"
-                                                         Variant="Variant.Outlined"
-                                                         AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
-                                                         Strict="false"
-                                                         ValueChanged="kota => { SelectedKota = kota; userModel.KotaId = kota.Id; }"
-                                                         ToStringFunc="@(e => e == null ? null : $"{e.NamaKota}")"
-                                                         SearchFunc="@SearchKota"/>
-                                        }
+                                            if (SelectedProv != null)
+                                            {
+                                                FilterKota(SelectedProv.Id);
+                                                <MudAutocomplete T="Kota" Label="Kota"
+                                                                 Variant="Variant.Outlined"
+                                                                 AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                                                 Strict="false"
+                                                                 ValueChanged="kota => { SelectedKota = kota; userModel.KotaId = kota.Id; }"
+                                                                 ToStringFunc="@(e => e == null ? null : $"{e.NamaKota}")"
+                                                                 SearchFunc="@SearchKota"/>
+                                            }
                                         }
 
                                     </MudStack>
@@ -141,12 +142,14 @@
 
 </EditForm>
 
+
 @code {
     [Inject] IUser _userService { get; set; }
-    [Inject]UserManager<ApplicationUser> _userManager { get; set; }
+    [Inject] UserManager<ApplicationUser> _userManager { get; set; }
     [Inject] IReferences _reference { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
+    [Inject] IMailService _mailService { get; set; }
 
     private UserAddDTO userModel = new UserAddDTO()
     {
@@ -187,7 +190,6 @@
                 "Info",
                 "Akun Berhasil Didaftarkan, Silahkan Cek Email Anda",
                 yesText: "Ok");
-            
         }
         else
         {
@@ -207,9 +209,9 @@
         var emailConfirmationLink = _navigationManager.GetUriWithQueryParameters(
             _navigationManager.ToAbsoluteUri("userclient/confirmEmail").AbsoluteUri,
             new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code });
-        
+
         var email = new MimeMessage();
-        email.From.Add(MailboxAddress.Parse("makayla.kemmer91@ethereal.email"));
+        email.From.Add(MailboxAddress.Parse("info@mzstudio.space"));
         email.To.Add(MailboxAddress.Parse(userModel.Email));
         email.Subject = "Konfirmasi Email Aplikasi Ujian Online";
         email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
@@ -300,20 +302,7 @@
 "
         };
 
-        try
-        {
-            using var smtp = new SmtpClient();
-             await smtp.ConnectAsync("smtp.ethereal.email", 587,true);
-             await smtp.AuthenticateAsync("makayla.kemmer91@ethereal.email", "Mgt4R8WCpgwZ6v5hhH");
-             await smtp.SendAsync(email);
-             await smtp.DisconnectAsync(true);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-        
-
+        _mailService.SendMail(email);
     }
 
     public async Task FilterKota(string ProvID)
@@ -341,6 +330,13 @@
             .Where(x => x.NamaKota
                 .Contains(search, StringComparison.CurrentCultureIgnoreCase))
             .ToList();
+    }
+
+    private async Task TestSendEmail()
+    {
+        userModel.Email = "milzanmlk@gmail.com";
+        await SendEmail("2d6c7290-3f4b-40d8-b74d-c37dd956b6e8");
+        
     }
 
 }

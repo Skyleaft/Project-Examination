@@ -18,6 +18,7 @@ using Web.Common.Database;
 using Web.Components;
 using Web.Components.Auth;
 using MudExtensions.Services;
+using Web.Client.Shared.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,6 +48,8 @@ builder.Services.AddAuthentication(options =>
         options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
     })
     .AddIdentityCookies();
+
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 
 var connectionString = builder.Configuration.GetConnectionString("mzserver") 
                        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
