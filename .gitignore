@@ -49,3 +49,4 @@ Domain/bin
 ProjectExamination/bin
 Domain/obj
 API/appsettings.json
+Web/appsettings.json
