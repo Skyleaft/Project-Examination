@@ -19,7 +19,7 @@ public class Exam : IGenericModifier
         get
         {
             if (Soals != null)
-                return Soals.Sum(x => x.BobotPoint);
+                return Soals.Sum(x => x.MaxPoint);
             return 0;
         }
     }

@@ -114,7 +114,7 @@
             {
                 RoomId = room.Id,
                 UserId = userId,
-                TimeLeft = room.Durasi,
+                TimeLeft = TimeSpan.FromMinutes(room.Durasi),
                 UserAnswers = listSoal,
                 StartDate = null,
                 EndDate = null

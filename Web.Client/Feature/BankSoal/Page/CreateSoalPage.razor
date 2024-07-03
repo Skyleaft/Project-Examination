@@ -78,17 +78,17 @@ else
                 </MudCardActions>
             </MudCard>
         </MudItem>
-
-        <MudItem xs="12" md="6">
-        </MudItem>
-
+        
         <MudItem xs="12" md="6">
             <MudSpacer/>
             <MudIconButton
                 Icon="@Icons.Material.Filled.Delete"
                 aria-label="Delete"
                 Color="Color.Error"/>
-            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Primary" OnClick="OnSaveExam">Simpan</MudButton>
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" 
+                       Color="Color.Primary" 
+                       Class="pa-3 py-2"
+                       OnClick="OnSaveExam">Simpan</MudButton>
         </MudItem>
     </MudGrid>
 
@@ -214,7 +214,6 @@ else
                                                          Label="Point"
                                                          Variant="Variant.Outlined"/>
                                         <MudTextField Label="@urutan"
-                                                      MaxLength="30"
                                                       Class="flex-grow-1"
                                                       Variant="Variant.Outlined"
                                                       @bind-Value="@jawaban.Jawaban"/>

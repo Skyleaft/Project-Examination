@@ -87,13 +87,14 @@ namespace Web.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Nama = table.Column<string>(type: "text", nullable: false),
-                    Kode = table.Column<string>(type: "text", nullable: false),
+                    Nama = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Kode = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     JadwalStart = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     JadwalEnd = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Durasi = table.Column<int>(type: "integer", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    ExamId = table.Column<int>(type: "integer", nullable: true),
+                    ExamId = table.Column<int>(type: "integer", nullable: false),
+                    Thumbnail = table.Column<byte[]>(type: "bytea", nullable: true),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     LastModifiedBy = table.Column<string>(type: "text", nullable: true),
@@ -106,7 +107,8 @@ namespace Web.Migrations
                         name: "FK_Room_Exam_ExamId",
                         column: x => x.ExamId,
                         principalTable: "Exam",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -117,7 +119,7 @@ namespace Web.Migrations
                     ExamId = table.Column<int>(type: "integer", nullable: false),
                     Nomor = table.Column<int>(type: "integer", nullable: false),
                     Pertanyaan = table.Column<string>(type: "text", nullable: false),
-                    BobotPoint = table.Column<int>(type: "integer", nullable: false)
+                    isMultipleJawaban = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -298,12 +300,13 @@ namespace Web.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     IsOngoing = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDone = table.Column<bool>(type: "boolean", nullable: false),
                     RoomId = table.Column<Guid>(type: "uuid", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    TimeLeft = table.Column<int>(type: "integer", nullable: false)
+                    StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    TimeLeft = table.Column<TimeSpan>(type: "interval", nullable: false)
                 },
                 constraints: table =>
                 {

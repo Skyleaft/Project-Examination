@@ -12,7 +12,7 @@ using Web.Common.Database;
 namespace Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240616161111_Initial")]
+    [Migration("20240703155456_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -198,9 +198,6 @@ namespace Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("BobotPoint")
-                        .HasColumnType("integer");
-
                     b.Property<int>("ExamId")
                         .HasColumnType("integer");
 
@@ -210,6 +207,9 @@ namespace Web.Migrations
                     b.Property<string>("Pertanyaan")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("isMultipleJawaban")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -259,7 +259,7 @@ namespace Web.Migrations
                     b.Property<int>("Durasi")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ExamId")
+                    b.Property<int>("ExamId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsActive")
@@ -273,7 +273,8 @@ namespace Web.Migrations
 
                     b.Property<string>("Kode")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -283,7 +284,11 @@ namespace Web.Migrations
 
                     b.Property<string>("Nama")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<byte[]>("Thumbnail")
+                        .HasColumnType("bytea");
 
                     b.HasKey("Id");
 
@@ -324,8 +329,11 @@ namespace Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsOngoing")
                         .HasColumnType("boolean");
@@ -333,15 +341,16 @@ namespace Web.Migrations
                     b.Property<Guid>("RoomId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("TimeLeft")
-                        .HasColumnType("integer");
+                    b.Property<TimeSpan>("TimeLeft")
+                        .HasColumnType("interval");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
@@ -543,7 +552,9 @@ namespace Web.Migrations
                 {
                     b.HasOne("Shared.BankSoal.Exam", "Exam")
                         .WithMany()
-                        .HasForeignKey("ExamId");
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Exam");
                 });
@@ -571,7 +582,7 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Shared.TakeExam.UserExam", b =>
                 {
-                    b.HasOne("Shared.RoomSet.Room", "Room")
+                    b.HasOne("Shared.RoomSet.Room", null)
                         .WithMany("ListPeserta")
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -582,8 +593,6 @@ namespace Web.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Room");
 
                     b.Navigation("User");
                 });

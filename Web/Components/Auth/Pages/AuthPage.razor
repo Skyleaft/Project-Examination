@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Components.Endpoints
 @using Microsoft.AspNetCore.Identity
+@using Web.Components.Auth.Components
 @inject AuthenticationStateProvider authStateProvicder
 @inject NavigationManager navManager
 @page "/Account/Login"
@@ -39,7 +40,7 @@
                     </div>
                     <MudTextField T="string" Label="Username" Class="mt-3" ShrinkLabel name="model.Username" Required="true" RequiredError="Username is required!"
                                   @bind-Value="model.UserName" InputType="InputType.Text" Variant="Variant.Outlined"/>
-                    <MudTextField T="string" Label="Password" Class="mt-3" ShrinkLabel name="model.Password" Required="true" RequiredError="Password is required!"
+                    <MudTextField T="string" Label="Password" Class="mt-3" ShrinkLabel name="model.Password" Required="true" RequiredError="Password is required!" 
                                   @bind-Value="model.Password" InputType="InputType.Password" Variant="Variant.Outlined"/>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto mt-4" FullWidth Style="height:60px">Login</MudButton>
                 <MudButton Variant="Variant.Text" Href="userclient/register" FullWidth Class="mt-2">Daftar</MudButton>

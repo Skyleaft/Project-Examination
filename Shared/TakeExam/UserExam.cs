@@ -16,7 +16,7 @@ public class UserExam
     public Guid RoomId { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
-    public int TimeLeft { get; set; }
+    public TimeSpan TimeLeft { get; set; }
     public List<UserAnswer>? UserAnswers { get; set; }
 
     public int? Score
@@ -29,17 +29,13 @@ public class UserExam
         }
     }
 
-    // public double? ScoreNormalize
-    // {
-    //     get
-    //     {
-    //         if (UserAnswers != null && Room!=null)
-    //         {
-    //             var score = (double)UserAnswers.Sum(x => x.SoalJawaban?.Point * x.Soal?.BobotPoint??0);
-    //             return score / (double)Room.Exam?.TotalPoint * 100;
-    //         }
-    //
-    //         return 0;
-    //     }
-    // }
+    public double? ScoreNormalize
+    {
+        get
+        {
+            if (UserAnswers != null)
+                return ((double)Score / (double)UserAnswers.Sum(x=>x.Soal.MaxPoint)) * 100;
+            return 0;
+        }
+    }
 }

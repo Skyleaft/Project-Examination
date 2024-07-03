@@ -96,7 +96,7 @@
                             </td>
                             <td>
                                 <MudText Typo="Typo.body1">
-                                    <b>@userExam.TimeLeft Menit</b>
+                                    <b>@userExam.TimeLeft.TotalMinutes.ToString("0") </b> Menit
                                 </MudText>
                             </td>
                         </tr>
@@ -109,7 +109,20 @@
                             </td>
                             <td>
                                 <MudText Typo="Typo.body1">
-                                    <i>@userExam.Score</i> / <b>@Nilai.ToString("0.00")</b>
+                                    <b>@userExam.Score</b> / @room.Exam.TotalPoint
+                                </MudText>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <MudText Typo="Typo.body1">Nilai</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body1">
+                                    <b>@userExam.ScoreNormalize.Value.ToString("0.00")</b>
                                 </MudText>
                             </td>
                         </tr>
@@ -140,7 +153,6 @@
     private UserExam userExam;
     private Room room;
     private bool isLoading = true;
-    private double Nilai;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -154,18 +166,12 @@
 
             userExam = await _userExamRepo.Get(new Guid(Id));
             room = await _roomRepo.Get(userExam.RoomId);
-            Nilai = ScoreNormalize(userExam.UserAnswers, room.Exam);
+
             isLoading = false;
             StateHasChanged();
         }
     }
     
-    public double ScoreNormalize(List<UserAnswer> userAnswer, Exam exam)
-    {
-        var score = (double)userAnswer.Sum(x => x.SoalJawaban?.Point * x.Soal?.BobotPoint??0);
-        return score / (double)exam?.TotalPoint * 100;
-    }
-
     private void OnBackHome()
     {
         _navigationManager.NavigateTo("/userroom",true);

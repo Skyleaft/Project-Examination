@@ -20,9 +20,12 @@
         <MudItem xs=12 md=8>
             <MudCard Class="pa-4">
                 <MudCardHeader>
-                    <CardHeaderContent>
+                    <MudStack Row="true">
+                        <MudIconButton Variant="Variant.Text"
+                                       Icon="@Icons.Material.Filled.ArrowBack"
+                                       Href="/account/login"></MudIconButton>
                         <MudText Typo="Typo.h4">Daftar Akun Baru</MudText>
-                    </CardHeaderContent>
+                    </MudStack>
                 </MudCardHeader>
                 <MudCardContent>
                     <MudGrid>
@@ -178,7 +181,7 @@
     private async Task OnValidSubmit(EditContext obj)
     {
         var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
-        var dial = await DialogService.ShowAsync<BluryDialog>("Registering...", options);
+        var dial = await DialogService.ShowAsync<BluryDialog>("Sedang Mendaftar...", options);
 
         var created = await _userService.Register(userModel, new CancellationToken());
         if (created.isSuccess)

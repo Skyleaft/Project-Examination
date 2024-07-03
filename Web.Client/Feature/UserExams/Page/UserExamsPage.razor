@@ -44,11 +44,13 @@ else
                                         Class="m-2"
                                         @bind-Value="@item.Pertanyaan">
                                     </MudExRichTextEdit>
-                                    <MudRadioGroup T="Guid?" Class="ml-3" @bind-Value="@userExam.UserAnswers.Find(x=>x.SoalId==item.Id).SoalJawabanId">
+                                    <MudRadioGroup T="Guid?" Class="ml-3" @bind-Value="@userExam.UserAnswers.Find(x => x.SoalId == item.Id).SoalJawabanId">
                                         @{
                                             foreach (var jawaban in item.PilihanJawaban)
                                             {
-                                                <MudRadio Value="jawaban?.Id" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
+                                                <MudItem xs="12">
+                                                    <MudRadio Value="jawaban?.Id" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
+                                                </MudItem>
                                             }
                                         }
                                     </MudRadioGroup>
@@ -56,8 +58,6 @@ else
                             </div>
 
                         </MudPaper>
-                        
-
                     }
                 }
             </div>
@@ -75,7 +75,7 @@ else
                         @{
                             foreach (var item in room.Exam.Soals)
                             {
-                                <MudButton Variant="Variant.Outlined"
+                                <MudButton Variant="CheckSoalIsAnswer(item)"
                                            Color="Color.Primary"
                                            Style="width: 50px; height: 50px;">
                                     @item.Nomor
@@ -89,11 +89,11 @@ else
 
             <MudPaper Class="my-3">
                 <MudWatch @ref="_watch" Interval="TimeSpan.FromMilliseconds(1)" Mode="WatchMode.CountDown"
-                          CountdownTime="TimeSpan.FromMinutes(userExam.TimeLeft)"
+                          CountdownTime="userExam.TimeLeft"
                           CountdownCompleted="() => ForceEnd()"
                           ShowHour="true" ShowMinute="true" ShowSecond="true" ShowMillisecond="false"
                           Delimiter="@(":")" Typo="Typo.h5" Color="Color.Default"/>
-                
+
             </MudPaper>
 
             <div class="d-flex justify-center flex-grow-1 gap-4">
@@ -101,8 +101,9 @@ else
                            Color="Color.Warning"
                            OnClick="EndExam"
                            StartIcon="@Icons.Material.Filled.ExitToApp"
-                           Variant="Variant.Filled"
-                           >Selesai!</MudButton>
+                           Variant="Variant.Filled">
+                    Selesai!
+                </MudButton>
             </div>
 
         </MudItem>
@@ -115,7 +116,7 @@ else
     [Inject] IUserExam _userExamRepo { get; set; }
     [Inject] IRoom _roomRepo { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
-    
+
     private Room room;
     private UserExam userExam;
 
@@ -124,10 +125,9 @@ else
     PaginatedResponse<Soal> soalPaging;
 
     bool isLoading = true;
-    
+
     protected override async Task OnInitializedAsync()
     {
-        
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -139,17 +139,28 @@ else
             if (auth is not null)
             {
             }
+
             userExam = await _userExamRepo.Get(new Guid(Id));
             room = await _roomRepo.Get(userExam.RoomId);
             soalPaging = await room.Exam.Soals.ToPagingList(1, 10);
             isLoading = false;
-            
-            
+
+
             StateHasChanged();
         }
+
         _watch.Start();
     }
-    
+
+    private Variant CheckSoalIsAnswer(Soal soal)
+    {
+        if (userExam.UserAnswers == null)
+            return Variant.Outlined;
+        if (userExam.UserAnswers.Find(x => x.SoalId == soal.Id).SoalJawabanId == null)
+            return Variant.Outlined;
+        return Variant.Filled;
+    }
+
     private async Task PageChanged(int page)
     {
         isLoading = true;
@@ -160,12 +171,12 @@ else
 
     private async Task ForceEnd()
     {
-        userExam.EndDate=DateTime.Now;
+        userExam.EndDate = DateTime.Now;
         userExam.IsOngoing = false;
         userExam.IsDone = true;
-        userExam.TimeLeft = _watch.CountdownTime.Minutes;
+        userExam.TimeLeft = _watch.Value;
         var res = await _userExamRepo.Update(userExam);
-        if(res.Flag)
+        if (res.Flag)
             _navigationManager.NavigateTo($"/exam/examresult/{Id}");
     }
 
@@ -175,30 +186,29 @@ else
         var result = await Dialog.ShowMessageBox(
             "Warning",
             $"Yakin Jawaban anda sudah benar?",
-            yesText: "Ya",cancelText:"Tidak");
+            yesText: "Ya", cancelText: "Tidak");
         StateHasChanged();
-        if (result!=null)
+        if (result != null)
         {
             _watch.Stop();
             userExam.IsDone = true;
             userExam.IsOngoing = false;
-            userExam.EndDate=DateTime.Now;
-            userExam.TimeLeft = _watch.Value.Minutes;
+            userExam.EndDate = DateTime.Now;
+            userExam.TimeLeft = _watch.Value;
             var res = await _userExamRepo.Update(userExam);
-            if(res.Flag)
+            if (res.Flag)
                 _navigationManager.NavigateTo($"/exam/examresult/{Id}");
         }
     }
-    
-    
+
+
     private async Task OnBeforeNavBack(LocationChangingContext locationChangingContext)
     {
-        if (locationChangingContext.TargetLocation.Contains( $"/exam/exambefore/{Id}"))
+        if (locationChangingContext.TargetLocation.Contains($"/exam/exambefore/{Id}"))
         {
             locationChangingContext.PreventNavigation();
         }
-        
     }
-    
+
 
 }

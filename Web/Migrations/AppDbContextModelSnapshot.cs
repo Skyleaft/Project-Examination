@@ -341,8 +341,8 @@ namespace Web.Migrations
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("TimeLeft")
-                        .HasColumnType("integer");
+                    b.Property<TimeSpan>("TimeLeft")
+                        .HasColumnType("interval");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -579,7 +579,7 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Shared.TakeExam.UserExam", b =>
                 {
-                    b.HasOne("Shared.RoomSet.Room", "Room")
+                    b.HasOne("Shared.RoomSet.Room", null)
                         .WithMany("ListPeserta")
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -590,8 +590,6 @@ namespace Web.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Room");
 
                     b.Navigation("User");
                 });

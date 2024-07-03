@@ -17,4 +17,18 @@ public class Soal
             return 0;
         }
     }
+
+    public int MaxPoint
+    {
+        get{
+            return PilihanJawaban.Max(x=>x.Point);
+        }
+    }
+
+    public int MinPoint
+    {
+        get{
+            return PilihanJawaban.Min(x=>x.Point);
+        }
+    }
 }
