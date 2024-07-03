@@ -36,7 +36,25 @@
             </MudCardContent>
             <MudCardActions>
                 <MudSpacer/>
-                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnLihat">Lihat</MudButton>
+                @{
+                    if (!room.IsActive)
+                    {
+                        <MudText Typo="Typo.body2">Ujian Belum Dibuka</MudText>
+                    }
+                    else if (room.JadwalStart>DateTime.Now)
+                    {
+                        <MudText Typo="Typo.body2">Ujian Belum Dimulai</MudText>
+                    }
+                    else if (room.JadwalEnd<DateTime.Now)
+                    {
+                        <MudText Typo="Typo.body2">Ujian Telah Berakhir</MudText>
+                    }
+                    else
+                    {
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnLihat">Lihat</MudButton>
+                    }
+                }
+                
 
             </MudCardActions>
         </MudCard>

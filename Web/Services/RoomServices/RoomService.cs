@@ -41,7 +41,8 @@ public class RoomService:IRoom
         }
         
         r.LastModifiedOn = DateTime.Now;
-        _dbContext.Entry(room).CurrentValues.SetValues(r);
+        _dbContext.Room.Update(r);
+        //_dbContext.Entry(room).CurrentValues.SetValues(r);
         
         await _dbContext.SaveChangesAsync();
         return new ServiceResponse(true, "data berhasil diupdate");

@@ -109,7 +109,7 @@
                             </td>
                             <td>
                                 <MudText Typo="Typo.body1">
-                                    <b>@userExam.Score</b>
+                                    <i>@userExam.Score</i> / <b>@Nilai.ToString("0.00")</b>
                                 </MudText>
                             </td>
                         </tr>
@@ -140,6 +140,7 @@
     private UserExam userExam;
     private Room room;
     private bool isLoading = true;
+    private double Nilai;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -153,9 +154,16 @@
 
             userExam = await _userExamRepo.Get(new Guid(Id));
             room = await _roomRepo.Get(userExam.RoomId);
+            Nilai = ScoreNormalize(userExam.UserAnswers, room.Exam);
             isLoading = false;
             StateHasChanged();
         }
+    }
+    
+    public double ScoreNormalize(List<UserAnswer> userAnswer, Exam exam)
+    {
+        var score = (double)userAnswer.Sum(x => x.SoalJawaban?.Point * x.Soal?.BobotPoint??0);
+        return score / (double)exam?.TotalPoint * 100;
     }
 
     private void OnBackHome()

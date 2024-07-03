@@ -147,13 +147,21 @@
 
     private async Task OnMulai()
     {
-        userExam.StartDate = DateTime.Now;
-        userExam.IsOngoing = true;
-        var res = await _userExamRepo.Update(userExam);
-        if (res.Flag)
+        if (userExam.IsDone)
         {
-            _navigationManager.NavigateTo($"exam/userexam/{Id}");
+            _navigationManager.NavigateTo($"/exam/examresult/{Id}");
         }
+        else
+        {
+            userExam.StartDate = DateTime.Now;
+            userExam.IsOngoing = true;
+            var res = await _userExamRepo.Update(userExam);
+            if (res.Flag)
+            {
+                _navigationManager.NavigateTo($"exam/userexam/{Id}");
+            }
+        }
+        
     }
     
     

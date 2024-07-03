@@ -66,4 +66,10 @@ public class UserService :IUser
         var userDTO = await _httpClient.GetFromJsonAsync<UserDTO>($"/api/user/{id}");
         return userDTO;
     }
+
+    public async Task<ServiceResponse> ForceActivate(string userID)
+    {
+        var res = await _httpClient.GetFromJsonAsync<ServiceResponse>($"/api/user/activate/{userID}");
+        return res;
+    }
 }

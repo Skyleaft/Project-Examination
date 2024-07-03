@@ -1,5 +1,6 @@
 ﻿@using global::Shared.Common
 @using global::Shared.Users
+@using Mapster
 @using Web.Client.Feature.References
 @using Web.Client.Interfaces
 @using Web.Client.Services
@@ -163,6 +164,7 @@
         var data = await _userService.Register(userModel, new CancellationToken());
         if (data.isSuccess)
         {
+            await _userService.ForceActivate(data.Data.Id.ToString());
             dial.Close();
             MudDialog.Close(DialogResult.Ok(true));
             DialogService.ShowMessageBox(

@@ -99,4 +99,15 @@ public class UserService:IUser
         data.Role = rol.First();
         return data;
     }
+
+    public async Task<ServiceResponse> ForceActivate(string userID)
+    {
+        var finduser = await _userManager.FindByIdAsync(userID);
+        finduser.EmailConfirmed = true;
+        var updated = await _userManager.UpdateAsync(finduser);
+        if (updated.Succeeded)
+            return new ServiceResponse(true, "Berhasil mengaktifkan user");
+        else
+            return new ServiceResponse(false, updated.Errors.First().Description);
+    }
 }

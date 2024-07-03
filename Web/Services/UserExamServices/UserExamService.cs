@@ -88,6 +88,8 @@ public class UserExamService : IUserExam
             .UserExam
             .Include(x=>x.UserAnswers)
             .ThenInclude(y=>y.SoalJawaban)
+            .Include(x=>x.UserAnswers)
+            .ThenInclude(y=>y.Soal)
             .FirstOrDefaultAsync(x => x.Id == Id);
         if (find == null)
         {

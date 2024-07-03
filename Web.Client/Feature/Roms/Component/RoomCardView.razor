@@ -4,13 +4,24 @@
 @inject IDialogService Dialog
 <MudCard Style="width: 350px; min-width: 350px">
     <MudCardMedia Image="@strImage" Height="100"/>
-    <MudCardHeader>
+    <MudCardHeader Class="mb-n7">
+        <MudText Typo="Typo.h6">@data.Nama</MudText>
         <MudSpacer/>
-        <MudIcon Icon="@Icons.Material.Filled.Circle"
-                 Color="data.IsActive == true ? Color.Success : Color.Error"/>
+        @{
+            if (isWaitActiveState)
+            {
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+            }
+            else
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Circle"
+                         Color="data.IsActive == true ? Color.Success : Color.Error"/>
+            }
+        }
+        
     </MudCardHeader>
     <MudCardContent>
-        <MudText Typo="Typo.h6">@data.Nama</MudText>
+        <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
         <MudText Typo="Typo.body2">Kode Ruangan :<b>@data.Kode</b></MudText>
         <MudStack Row="true" Spacing="2">
             <MudText Typo="Typo.body2">Mulai : @data.JadwalStart.ToString("dd/MM/yyyy hh:mm")</MudText>
@@ -23,14 +34,22 @@
         <MudButton Variant="Variant.Text" Color="Color.Primary">Lihat</MudButton>
         <MudSpacer/>
         @{
-            if (data.IsActive)
+            if (isWaitActiveState)
             {
-                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="OnDeactive">Non-Aktifkan</MudButton>
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
             }
             else
             {
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnActivate">Aktifkan</MudButton>
+                if (data.IsActive)
+                {
+                    <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="OnDeactive">Non-Aktifkan</MudButton>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnActivate">Aktifkan</MudButton>
+                } 
             }
+            
         }
 
         
@@ -43,16 +62,27 @@
     [Parameter] public EventCallback<int> RefreshData { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IRoom _roomRepo { get; set; }
+    private bool isWaitActiveState;
 
     DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 
-    private void OnActivate()
+    private async Task OnActivate()
     {
+        isWaitActiveState = true;
         data.IsActive = true;
+        await Task.Delay(300);
+        var status =  await _roomRepo.Update(data);
+        isWaitActiveState = false;
+        StateHasChanged();
     }
-    private void OnDeactive()
+    private async Task OnDeactive()
     {
+        isWaitActiveState = true;
         data.IsActive = false;
+        await Task.Delay(300);
+        var status =  await _roomRepo.Update(data);
+        isWaitActiveState = false;
+        StateHasChanged();
     }
     
 
