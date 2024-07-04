@@ -7,7 +7,8 @@ EXPOSE 22001
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Web/Web.csproj", "AppExam/Web"]
+COPY Web ./AppExam/Web
+COPY Web.Client ./AppExam/Web.Client
 RUN dotnet restore "Web/Web.csproj"
 COPY . .
 WORKDIR "/src/AppExam/Web"
