@@ -14,8 +14,10 @@
                 <MudStack Row="true">
                     <MudTextField Variant="Variant.Outlined"
                                   MaxLength="40"
+                                  Label="Masukan Kode Ruangan"
                                   @bind-Value="kodeRoom"></MudTextField>
                     <MudButton Variant="Variant.Outlined" 
+                               Color="Color.Primary"
                                OnClick="OnSearchRoom">Cari</MudButton>
                 </MudStack>
                 @{

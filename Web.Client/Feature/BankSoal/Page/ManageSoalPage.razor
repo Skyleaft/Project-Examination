@@ -1,11 +1,12 @@
 ﻿@page "/BankSoal";
 @using global::Shared.BankSoal
 @using global::Shared.Common
+@using Microsoft.AspNetCore.Authorization
 @using Web.Client.Interfaces
 @using Web.Client.Feature.BankSoal.Component
 @implements IBrowserViewportObserver
 @implements IAsyncDisposable
-
+@attribute [Authorize(Roles = "Superuser,Dosen,Operator")]
 <h3>Kumpulan Soal</h3>
 
 

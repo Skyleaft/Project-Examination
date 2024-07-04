@@ -7,7 +7,7 @@
 @using Web.Client.Interfaces
 @layout UserExamLayout
 @rendermode InteractiveServer
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Superuser,User")]
 @inject IDialogService Dialog
 @inject AuthenticationStateProvider AuthenticationStateProvider
 

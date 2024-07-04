@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using MudBlazor.Extensions.Core
 @using Web.Client.Interfaces
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Superuser,User")]
 @inject IDialogService Dialog
 @inject AuthenticationStateProvider AuthenticationStateProvider
 

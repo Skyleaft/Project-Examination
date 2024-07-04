@@ -9,7 +9,7 @@
 @using Web.Client.Services
 @using Web.Client.Shared.Models
 @inject IDialogService Dialog
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Superuser,Operator")]
 
 <h3>UserManagement</h3>
 

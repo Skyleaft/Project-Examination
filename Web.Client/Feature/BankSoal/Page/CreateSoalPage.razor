@@ -7,7 +7,7 @@
 @using Web.Client.Shared.Extensions
 @rendermode InteractiveWebAssembly
 @layout SoalLayout
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Superuser,Dosen,Operator")]
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 @if (isLoading)
@@ -37,29 +37,31 @@ else
                                   @bind-Value="@model.Nama"
                                   Immediate
                                   Required
-                                  Label="Nama Ujian"/>
-                    <MudText Class="mt-3">Pengaturan Soal</MudText>
-                    <div class="d-flex flex-row flex-grow-1 gap-4">
-                        <MudSwitch @bind-Value="@model.IsRandomize"
+                                  Label="Nama Paket Soal"/>
+                    <MudField Variant="Variant.Outlined" Class="mt-3" Label="Pengaturan Soal">
+                        <div class="d-flex flex-row flex-grow-1 gap-4">
+                            <MudSwitch @bind-Value="@model.IsRandomize"
                                    Label="Acak Soal?" Color="Color.Success"/>
-                        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg">
-                            <ActivatorContent>
-                                <MudFab Color="Color.Primary"
-                                        StartIcon="@Icons.Material.Filled.Image"
-                                        Label="Unggah Pratinjau"/>
-                            </ActivatorContent>
-                            <SelectedTemplate>
-                                @if (context != null)
-                                {
+                            <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg">
+                                <ActivatorContent>
+                                    <MudFab Color="Color.Primary"
+                                            StartIcon="@Icons.Material.Filled.Image"
+                                            Label="Unggah Pratinjau"/>
+                                </ActivatorContent>
+                                <SelectedTemplate>
+                                    @if (context != null)
+                                    {
                                     <MudText>@context.Name</MudText>
-                                }
-                                else
-                                {
+                                    }
+                                    else
+                                    {
                                     <MudText>No File</MudText>
-                                }
-                            </SelectedTemplate>
-                        </MudFileUpload>
-                    </div>
+                                    }
+                                </SelectedTemplate>
+                            </MudFileUpload>
+                        </div>
+                    </MudField>
+                    
 
                     <MudTextField Variant="Variant.Outlined"
                                   T="int"
@@ -73,6 +75,12 @@ else
                                   Value="@model.TotalPoint"
                                   ReadOnly
                                   Label="Total Point"/>
+                    <MudButton Variant="Variant.Filled" 
+                               StartIcon="@Icons.Material.Filled.Save"
+                               FullWidth="true"
+                               Color="Color.Primary"
+                               Class="pa-3 py-2 mt-4"
+                               OnClick="OnSaveExam">Simpan</MudButton>
                 </MudCardContent>
                 <MudCardActions >
                 </MudCardActions>
@@ -80,15 +88,7 @@ else
         </MudItem>
         
         <MudItem xs="12" md="6">
-            <MudSpacer/>
-            <MudIconButton
-                Icon="@Icons.Material.Filled.Delete"
-                aria-label="Delete"
-                Color="Color.Error"/>
-            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" 
-                       Color="Color.Primary" 
-                       Class="pa-3 py-2"
-                       OnClick="OnSaveExam">Simpan</MudButton>
+            
         </MudItem>
     </MudGrid>
 
@@ -242,14 +242,25 @@ else
                                     i += 1;
                                 }
                             }
-                            <MudButton OnClick="AddJawaban"
-                                       FullWidth="true"
-                                       Variant="Variant.Outlined"
-                                       Color="Color.Primary"
-                                       Class="mx-2 py-2 mt-4"
-                                       StartIcon="@Icons.Material.Filled.Add">
-                                Tambah Jawaban
-                            </MudButton>
+                            <MudStack Row="true" Spacing="2" Class="mt-3 mx-2">
+                                <MudButton OnClick="AddJawaban"
+                                           FullWidth="true"
+                                           Variant="Variant.Outlined"
+                                           Color="Color.Primary"
+                                           Class="py-2"
+                                           StartIcon="@Icons.Material.Filled.Add">
+                                    Tambah Jawaban
+                                </MudButton>
+                                <MudButton OnClick="Add5Jawaban"
+                                           FullWidth="false"
+                                           Variant="Variant.Outlined"
+                                           Color="Color.Primary"
+                                           Class="py-2"
+                                           StartIcon="@Icons.Material.Filled.Add">
+                                    5
+                                </MudButton>
+                            </MudStack>
+                            
 
                         </MudCardContent>
                         <MudCardActions >
@@ -372,6 +383,8 @@ else
     {
         if (!string.IsNullOrEmpty(model.Nama))
         {
+            var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
+            var dial = await DialogService.ShowAsync<BluryDialog>("Harap Tunggu...", options);
             if (model.Id == 0)
             {
                 var created = await examRepo.Create(model);
@@ -379,7 +392,7 @@ else
                 {
                     model = created.Data;
                 }
-
+                dial.Close();
                 DialogService.ShowMessageBox(
                     "Info",
                     "Soal Berhasil di Simpan",
@@ -390,6 +403,7 @@ else
                 var edited = await examRepo.Update(model);
                 if (edited.Flag)
                 {
+                    dial.Close();
                     DialogService.ShowMessageBox(
                         "Info",
                         "Soal Berhasil di Update",
@@ -397,6 +411,7 @@ else
                 }
                 else
                 {
+                    dial.Close();
                     DialogService.ShowMessageBox(
                         "Error",
                         edited.Message,
@@ -408,7 +423,7 @@ else
         {
             DialogService.ShowMessageBox(
                 "Info",
-                "Nama Ujian Tidak Boleh Kosong",
+                "Nama Paket Soal Tidak Boleh Kosong",
                 yesText: "Ok");
         }
     }
@@ -431,6 +446,22 @@ else
                 yesText: "Ok");
         }
 
+        StateHasChanged();
+    }
+    private void Add5Jawaban()
+    {
+        if (currentSoal.PilihanJawaban.Count==0)
+        {
+            for (int i = 1; i < 6; i++)
+            {
+                currentSoal.PilihanJawaban.Add(new SoalJawaban()
+                {
+                    Id = Guid.NewGuid(),
+                    SoalId = currentSoal.Id
+                });
+            }
+            
+        }
         StateHasChanged();
     }
 

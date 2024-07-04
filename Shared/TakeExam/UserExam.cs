@@ -33,7 +33,7 @@ public class UserExam
     {
         get
         {
-            if (UserAnswers != null)
+            if (UserAnswers != null && Score!=null)
                 return ((double)Score / (double)UserAnswers.Sum(x=>x.Soal.MaxPoint)) * 100;
             return 0;
         }

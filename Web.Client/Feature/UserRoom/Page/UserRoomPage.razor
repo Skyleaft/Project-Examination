@@ -7,7 +7,7 @@
 @using MudBlazor.Extensions.Core
 @using Web.Client.Interfaces
 @using Web.Client.Feature.UserRoom.Components
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Superuser,User")]
 @implements IBrowserViewportObserver
 @implements IAsyncDisposable
 @inject IDialogService Dialog

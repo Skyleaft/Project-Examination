@@ -46,7 +46,7 @@ public class ExamService(HttpClient _httpClient) :IExam
 
     public async Task<ServiceResponse> Delete(int Id)
     {
-        var res = await _httpClient.DeleteFromJsonAsync<ServiceResponse>($"api/room/{Id}");
+        var res = await _httpClient.DeleteFromJsonAsync<ServiceResponse>($"api/exam/{Id}");
         return res;
     }
 

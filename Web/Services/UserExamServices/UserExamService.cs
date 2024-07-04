@@ -111,8 +111,24 @@ public class UserExamService : IUserExam
             .UserExam
             .Include(x=>x.UserAnswers)
             .ThenInclude(y=>y.SoalJawaban)
+            .Include(x=>x.UserAnswers)
+            .ThenInclude(y=>y.Soal)
             .Where(x=>x.UserId == UserId)
             .OrderBy(x => x.StartDate)
+            .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
+        return data;
+    }
+
+    public async Task<PaginatedResponse<UserExam>> FindReport(FindRequest r, CancellationToken ct)
+    {
+        var data = await _dbContext
+            .UserExam
+            .Include(x=>x.User)
+            .ThenInclude(y=>y.Kota)
+            .Include(x=>x.UserAnswers)
+            .ThenInclude(y=>y.SoalJawaban)
+            .Include(x=>x.UserAnswers)
+            .ThenInclude(y=>y.Soal)
             .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
     }

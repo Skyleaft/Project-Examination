@@ -1,5 +1,115 @@
 ﻿@page "/report/manage"
-<UnderDev></UnderDev>
+@using System.Text.Json
+@using global::Shared.Common
+@using global::Shared.TakeExam
+@using global::Shared.Users
+@using Mapster
+@using Microsoft.AspNetCore.Authorization
+@using Web.Client.Feature.UserManagements.Dialog
+@using Web.Client.Interfaces
+@using Web.Client.Services
+@using Web.Client.Shared.Models
+@inject IDialogService Dialog
+@attribute [Authorize(Roles = "Superuser,Dosen,Operator")]
+
+<h3>Kelola Hasil Ujian</h3>
+
+<MudTable ServerData="ServerReload"
+          Dense="true" Hover="true" @ref="table">
+    <ToolBarContent>
+        <MudSpacer/>
+        <MudTextField T="string"
+                      ValueChanged="@(s => OnSearch(s))"
+                      Placeholder="Search"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      IconSize="Size.Medium" Class="mt-0">
+        </MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortLabel="User.NamaLengkap" T="UserExam">Nama Lengkap</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="User.Gender" T="UserExam">Jenis Kelamin</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="User.Kota.NamaKota" T="UserExam">Asal</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="User.Pekerjaan" T="UserExam">Pekerjaan</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="User.PhoneNumber" T="UserExam">Nomor Telepon</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="" T="UserExam">Skor</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="" T="UserExam">Nilai</MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="NamaLengkap">@context.User.NamaLengkap</MudTd>
+        <MudTd DataLabel="Jenis Kelamin">@setGender(context.User.Gender)</MudTd>
+        <MudTd DataLabel="Asal">@context.User.Kota.NamaKota</MudTd>
+        <MudTd DataLabel="Pekerjaan">@context.User.Pekerjaan</MudTd>
+        <MudTd DataLabel="Nomor Telepon">@setHideNoTelp(context.User.PhoneNumber)</MudTd>
+        <MudTd DataLabel="Skor">@context.Score</MudTd>
+        <MudTd DataLabel="Nilai">@context.ScoreNormalize</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Data Tidak Ditemukan...</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager/>
+    </PagerContent>
+</MudTable>
+
 @code {
+    [Inject] IUser _userService { get; set; }
+    [Inject] IUserExam _userExamService { get; set; }
+    private IEnumerable<UserExam> pagedData;
+    private MudTable<UserExam> table;
     
+    private string searchString = "";
+
+    DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
+
+
+    private string setGender(Gender gender)
+    {
+        return gender == Gender.LakiLaki ? "L" : "P";
+    }
+
+    private string setHideNoTelp(string notelp)
+    {
+        if (string.IsNullOrWhiteSpace(notelp) || notelp.Length < 5)
+            return notelp;
+        return $"{notelp.Substring(0, 5)}{"*".PadRight(notelp.Length - 5, '*')}";
+    }
+
+    private async Task<TableData<UserExam>> ServerReload(TableState state, CancellationToken ct)
+    {
+        var req = new FindRequest();
+        req.Page = state.Page;
+        req.PageSize = state.PageSize;
+        req.Search = searchString;
+        req.OrderBy = state.SortLabel;
+        req.Direction = (int)state.SortDirection;
+        var data = await _userExamService.FindReport(req, ct);
+        pagedData = data.Items;
+        return new TableData<UserExam>() { TotalItems = data.TotalItems, Items = pagedData };
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+    
+
 }

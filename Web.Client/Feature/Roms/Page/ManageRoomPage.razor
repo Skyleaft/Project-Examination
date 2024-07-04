@@ -9,7 +9,7 @@
 @implements IAsyncDisposable
 @inject IDialogService Dialog
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Superuser,Dosen,Operator")]
 
 <MudPaper Class="pa-8">
     <div class="d-none d-flex align-center flex-grow-1 mr-2 mb-6">

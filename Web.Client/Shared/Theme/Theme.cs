@@ -86,7 +86,7 @@ namespace Web.Client.Shared.Theme
         {
             Default = new Default()
             {
-                FontFamily = new[] { "Public Sans", "Roboto", "Arial", "sans-serif" },
+                FontFamily = new[] { "Poppins", "Roboto", "Arial", "sans-serif", "Helvetica" },
                 LetterSpacing = "normal"
             },
             H1 = new H1()
@@ -108,14 +108,14 @@ namespace Web.Client.Shared.Theme
             H5 = new H5()
             {
                 FontSize = "1.8rem",
-                FontWeight = 700,
+                FontWeight = 500,
                 LineHeight = 2,
             },
             H6 = new H6()
             {
                 FontSize = "1.125rem",
-                FontWeight = 700,
-                LineHeight = 2,
+                FontWeight = 500,
+                LineHeight = 1.6,
             },
             Subtitle1 = new Subtitle1()
             {
@@ -140,7 +140,7 @@ namespace Web.Client.Shared.Theme
         };
         private static readonly PaletteLight LandingPageLightPalette = new()
         {
-            Primary = "#2bde80",
+            Primary = "#11998e",
             AppbarText = "#424242",
             AppbarBackground = "rgba(0,0,0,0)",
             BackgroundGray = "#F9FAFC",
@@ -153,7 +153,7 @@ namespace Web.Client.Shared.Theme
         };
         private static readonly PaletteDark LandingPageDarkPalette = new()
         {
-            Primary = "#2bde80",
+            Primary = "#11b0a5",
             AppbarText = "#92929f",
             AppbarBackground = "rgba(0,0,0,0)",
             BackgroundGray = "#1a1a27",

@@ -68,4 +68,16 @@ public class UserExamService(HttpClient _httpClient) : IUserExam
 
         return data;
     }
+
+    public async Task<PaginatedResponse<UserExam>> FindReport(FindRequest r, CancellationToken ct)
+    {
+        var res = await _httpClient.PostAsJsonAsync("api/userexam/findReport", r, ct);
+        var data = new PaginatedResponse<UserExam>();
+        if (res.IsSuccessStatusCode)
+        {
+            data = await res.Content.ReadFromJsonAsync<PaginatedResponse<UserExam>>(ct);
+        }
+
+        return data;
+    }
 }

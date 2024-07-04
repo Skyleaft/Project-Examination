@@ -11,6 +11,7 @@ public interface IUserExam
     public Task<ServiceResponse> Delete(Guid Id);
     public Task<UserExam> Get(Guid Id);
     public Task<PaginatedResponse<UserExam>> Find(FindRequest r,CancellationToken ct,string? UserId="");
+    public Task<PaginatedResponse<UserExam>> FindReport(FindRequest r,CancellationToken ct);
 }
 
 public class CreateUserExamDTO
