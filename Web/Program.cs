@@ -116,13 +116,17 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();  
     
     string[] roles = { "Superuser","Operator","Dosen","User" };
-    foreach (var role in roles)
+    if (roleManager.Roles.Count() == 0)
     {
-        if (!(await roleManager.RoleExistsAsync(role)))  
-        {  
-            await roleManager.CreateAsync(new IdentityRole(role));  
-        } 
+        foreach (var role in roles)
+        {
+            if (!(await roleManager.RoleExistsAsync(role)))  
+            {  
+                await roleManager.CreateAsync(new IdentityRole(role));  
+            } 
+        }
     }
+    
 
     var superuser = new ApplicationUser()
     {
