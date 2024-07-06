@@ -1,4 +1,5 @@
 
+using System.Text.Json.Serialization;
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -13,6 +14,7 @@ using Web.Client.Shared.Extensions;
 using MudExtensions.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
