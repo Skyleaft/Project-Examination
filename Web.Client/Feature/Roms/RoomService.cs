@@ -13,7 +13,7 @@ public class RoomService(HttpClient _httpClient) : IRoom
 {
     public async Task<CreatedResponse<Room>> Create(Room r)
     {
-        var res = await _httpClient.PostAsJsonAsync("api/room/",r);
+        var res = await _httpClient.PostAsJsonAsync("api/room/", r);
         if (res.IsSuccessStatusCode)
         {
             var created = await res.Content.ReadFromJsonAsync<CreatedResponse<Room>>();
@@ -27,7 +27,7 @@ public class RoomService(HttpClient _httpClient) : IRoom
 
     public async Task<ServiceResponse> Update(Room r)
     {
-        var res = await _httpClient.PutAsJsonAsync($"api/room/{r.Id}",r);
+        var res = await _httpClient.PutAsJsonAsync($"api/room/{r.Id}", r);
         if (res.IsSuccessStatusCode)
         {
             var content = await res.Content.ReadFromJsonAsync<ServiceResponse>();
@@ -58,8 +58,14 @@ public class RoomService(HttpClient _httpClient) : IRoom
 
     public async Task<Room> Get(string kode)
     {
-        var data = await _httpClient.GetFromJsonAsync<Room>($"/api/room?kode={kode}");
-        return data;
+        var res = await _httpClient.GetAsync($"/api/room?kode={kode}");
+        if (res.IsSuccessStatusCode)
+        {
+            var data = await res.Content.ReadAsStringAsync();
+            if (!string.IsNullOrEmpty(data))
+                return await res.Content.ReadFromJsonAsync<Room>();
+        }
+        return null;
     }
 
     public async Task<PaginatedResponse<Room>> Find(FindRequest r, CancellationToken ct, string? Username)

@@ -150,6 +150,13 @@
         if (!string.IsNullOrEmpty(kodeRoom))
         {
             room = await _roomRepo.Get(kodeRoom);
+            if (room == null)
+            {
+                DialogService.ShowMessageBox(
+                    "Error",
+                    "Kode Ruangan Tidak Ditemukan!",
+                    yesText: "Ok");
+            }
         }
 
         isLoading = false;

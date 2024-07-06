@@ -31,4 +31,23 @@ public class EmailService:IMailService
             return false;
         }
     }
+
+    public async Task<bool> SendMailAsync(MimeMessage email)
+    {
+        try
+        {
+            using var MailClient = new SmtpClient();
+            MailClient.CheckCertificateRevocation = false;
+            await MailClient.ConnectAsync(Mail_Settings.Host, Mail_Settings.Port, Mail_Settings.UseSSL);
+            await MailClient.AuthenticateAsync(Mail_Settings.EmailId, Mail_Settings.Password);
+            await MailClient.SendAsync(email);
+            await MailClient.DisconnectAsync(true);
+            return true;
+        }
+        catch
+        {
+            // Exception Details
+            return false;
+        }
+    }
 }
