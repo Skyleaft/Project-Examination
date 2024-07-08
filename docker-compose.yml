@@ -4,4 +4,8 @@
     build:
       context: .
       dockerfile: Web/Dockerfile
+    container_name: "Web"
+    ports:
+      - 8080:8080
+    restart: always
 
