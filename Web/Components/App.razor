@@ -67,15 +67,15 @@
             }
             else if (HttpContext.Request.Path.StartsWithSegments("/userclient"))
             {
-                return new InteractiveServerRenderMode(false);
+                return new InteractiveServerRenderMode(true);
             }
             else if (HttpContext.Request.Path.StartsWithSegments("/exam"))
             {
-                return new InteractiveServerRenderMode(false);
+                return new InteractiveServerRenderMode(true);
             }
             else
             {
-                return new InteractiveAutoRenderMode(false);
+                return new InteractiveServerRenderMode(true);
             }
         }
         // HttpContext.Request.Path.StartsWithSegments("/Account")

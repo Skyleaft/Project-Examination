@@ -24,7 +24,7 @@
                         {
                             foreach (var item in room.Exam.Soals)
                             {
-                                <MudButton Variant="Variant.Outlined"
+                                <MudButton Variant="CheckSoalIsAnswer(item)"
                                            Color="Color.Primary"
                                            Style="width: 50px; height: 50px;">
                                     @item.Nomor
@@ -170,6 +170,15 @@
             isLoading = false;
             StateHasChanged();
         }
+    }
+    
+    private Variant CheckSoalIsAnswer(Soal soal)
+    {
+        if (userExam.UserAnswers == null)
+            return Variant.Outlined;
+        if (userExam.UserAnswers.Find(x => x.SoalId == soal.Id).SoalJawabanId == null)
+            return Variant.Outlined;
+        return Variant.Filled;
     }
     
     private void OnBackHome()

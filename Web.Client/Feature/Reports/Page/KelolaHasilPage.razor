@@ -72,9 +72,9 @@
 @code {
     [Inject] IUser _userService { get; set; }
     [Inject] IUserExam _userExamService { get; set; }
-    private IEnumerable<UserExam> pagedData;
     private MudTable<UserExam> table;
-    
+    private IEnumerable<UserExam> pagedData;
+    private int totalItems;
     private string searchString = "";
 
     DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
@@ -91,18 +91,22 @@
             return notelp;
         return $"{notelp.Substring(0, 5)}{"*".PadRight(notelp.Length - 5, '*')}";
     }
-
+    
     private async Task<TableData<UserExam>> ServerReload(TableState state, CancellationToken ct)
     {
-        var req = new FindRequest();
+        FindRequest req = new FindRequest();
         req.Page = state.Page;
         req.PageSize = state.PageSize;
         req.Search = searchString;
         req.OrderBy = state.SortLabel;
         req.Direction = (int)state.SortDirection;
-        var data = await _userExamService.FindReport(req, ct);
-        pagedData = data.Items;
-        return new TableData<UserExam>() { TotalItems = data.TotalItems, Items = pagedData };
+        var data = await _userExamService.FindReport(req, new CancellationToken());
+        var tabledata = new TableData<UserExam>()
+        {
+            TotalItems = data.TotalItems,
+            Items = data.Items
+        };
+        return tabledata;
     }
 
     private void OnSearch(string text)

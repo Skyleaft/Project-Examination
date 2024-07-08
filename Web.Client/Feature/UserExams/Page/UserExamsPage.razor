@@ -5,6 +5,7 @@
 @using global::Shared.TakeExam
 @using Microsoft.AspNetCore.Authorization
 @using MudBlazor.Extensions.Core
+@using MudExRichTextEditor.Types
 @using Web.Client.Interfaces
 @layout UserExamLayout
 @rendermode InteractiveServer
@@ -37,20 +38,24 @@ else
                                     <MudText Typo="Typo.body1">@item.Nomor.</MudText>
                                 </MudPaper>
                                 <MudPaper Class="flex-1 d-flex flex-column" Elevation="0">
-                                    <MudExRichTextEdit
-                                        @ref="@Editor"
-                                        BorderColor="MudExColor.Transparent"
-                                        ReadOnly
-                                        Class="m-2"
-                                        @bind-Value="@item.Pertanyaan">
-                                    </MudExRichTextEdit>
-                                    <MudRadioGroup T="Guid?" Class="ml-3" @bind-Value="@userExam.UserAnswers.Find(x => x.SoalId == item.Id).SoalJawabanId">
+                                    @* <MudExRichTextEdit *@
+                                    @*     @ref="@Editor" *@
+                                    @*     BorderColor="MudExColor.Transparent" *@
+                                    @*     ReadOnly *@
+                                    @*     Class="m-2" *@
+                                    @*     Theme="QuillTheme.Bubble" *@
+                                    @*     DebugLevel="QuillDebugLevel.Log" *@
+                                    @*     Value="@item.Pertanyaan"> *@
+                                    @* </MudExRichTextEdit> *@
+                                    <MudText Class="m-2">@((MarkupString)@item.Pertanyaan)</MudText>
+                                    <MudRadioGroup T="SoalJawaban?" Class="ml-3" ValueChanged="OnPilihJawaban" Value="@userExam.UserAnswers?.Find(x => x.SoalId == item.Id)?.SoalJawaban">
                                         @{
                                             foreach (var jawaban in item.PilihanJawaban)
                                             {
                                                 <MudItem xs="12">
-                                                    <MudRadio Value="jawaban?.Id" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
+                                                    <MudRadio Value="jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
                                                 </MudItem>
+                                                
                                             }
                                         }
                                     </MudRadioGroup>
@@ -119,6 +124,8 @@ else
 
     private Room room;
     private UserExam userExam;
+
+    private List<UserAnswer> jawabanUser = new List<UserAnswer>();
 
     MudExRichTextEdit Editor;
     MudWatch _watch = new();
@@ -209,6 +216,21 @@ else
             locationChangingContext.PreventNavigation();
         }
     }
-
+    
+    
+    private void OnPilihJawaban(SoalJawaban? obj)
+    {
+        if(obj==null)
+            
+            return;
+        var jawaban =userExam.UserAnswers.Find(x => x.SoalId == obj.SoalId);
+        if (jawaban != null)
+        {
+            jawaban.SoalJawaban = obj;
+            jawaban.SoalJawabanId = obj.Id;
+            StateHasChanged();
+        }
+        
+    }
 
 }
