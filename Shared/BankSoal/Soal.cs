@@ -8,6 +8,7 @@ public class Soal
     public string Pertanyaan { get; set; }
     public List<SoalJawaban> PilihanJawaban { get; set; }
     public bool isMultipleJawaban { get; set; }
+
     public int BobotPoint
     {
         get
@@ -20,15 +21,21 @@ public class Soal
 
     public int MaxPoint
     {
-        get{
-            return PilihanJawaban.Max(x=>x.Point);
+        get
+        {
+            if (PilihanJawaban != null)
+                return PilihanJawaban.Max(x => x.Point);
+            return 0;
         }
     }
 
     public int MinPoint
     {
-        get{
-            return PilihanJawaban.Min(x=>x.Point);
+        get
+        {
+            if (PilihanJawaban != null)
+                return PilihanJawaban.Min(x => x.Point);
+            return 0;
         }
     }
 }

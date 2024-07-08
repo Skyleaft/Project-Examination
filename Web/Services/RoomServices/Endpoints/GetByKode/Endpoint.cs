@@ -5,7 +5,7 @@ using Web.Client.Interfaces;
 
 namespace Web.Services.RoomServices.Endpoints.GetByKode;
 
-public class Endpoint : EndpointWithoutRequest<Room>
+public class Endpoint : Endpoint<string,Room>
 {
     private readonly IRoom _repo;
 
@@ -19,9 +19,10 @@ public class Endpoint : EndpointWithoutRequest<Room>
         Get("/room");
     }
 
-    public override async Task HandleAsync(CancellationToken ct)
+    public override async Task HandleAsync(string kode,CancellationToken ct)
     {
-        var res = await _repo.Get(Query<string>("kode"));
+        var param = Query<string>("kode");
+        var res = await _repo.Get(param);
         await SendAsync(res, cancellation: ct);
     }
 }

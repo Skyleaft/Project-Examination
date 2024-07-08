@@ -23,7 +23,8 @@
                     <MudStack Row="true">
                         <MudIconButton Variant="Variant.Text"
                                        Icon="@Icons.Material.Filled.ArrowBack"
-                                       Href="/account/login"></MudIconButton>
+                                       Href="/account/login">
+                        </MudIconButton>
                         <MudText Typo="Typo.h4">Daftar Akun Baru</MudText>
                     </MudStack>
                 </MudCardHeader>
@@ -186,13 +187,23 @@
         var created = await _userService.Register(userModel, new CancellationToken());
         if (created.isSuccess)
         {
-            await SendEmail(created.Data.Id.ToString());
+            var mail = await SendEmail(created.Data.Id.ToString());
             dial.Close();
-            userModel = null;
-            DialogService.ShowMessageBox(
-                "Info",
-                "Akun Berhasil Didaftarkan, Silahkan Cek Email Anda",
-                yesText: "Ok");
+            if (!mail)
+            {
+                DialogService.ShowMessageBox(
+                    "Error",
+                    "Ada Error di Email Service",
+                    yesText: "Ok");
+            }
+            else
+            {
+                userModel = null;
+                DialogService.ShowMessageBox(
+                    "Info",
+                    "Akun Berhasil Didaftarkan, Silahkan Cek Email Anda",
+                    yesText: "Ok");
+            }
         }
         else
         {
@@ -204,7 +215,7 @@
         }
     }
 
-    private async Task SendEmail(string userId)
+    private async Task<bool> SendEmail(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -305,7 +316,7 @@
 "
         };
 
-        _mailService.SendMail(email);
+        return await _mailService.SendMailAsync(email);
     }
 
     public async Task FilterKota(string ProvID)
@@ -339,7 +350,6 @@
     {
         userModel.Email = "milzanmlk@gmail.com";
         await SendEmail("2d6c7290-3f4b-40d8-b74d-c37dd956b6e8");
-        
     }
 
 }

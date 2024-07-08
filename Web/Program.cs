@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using FastEndpoints;
@@ -31,6 +32,10 @@ builder.Services.AddSystemd();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 builder.Services.InjectService();
+
+builder.Services.ConfigureHttpJsonOptions(options => {
+    options.SerializerOptions.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
+});
 
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredSessionStorage();
