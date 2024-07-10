@@ -133,4 +133,16 @@ public class UserExamService : IUserExam
             .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
     }
+
+    public async Task<bool> SaveTimeLeft(Guid Id, TimeSpan timeLeft)
+    {
+        var data = await _dbContext.
+            UserExam
+            .FirstOrDefaultAsync(x=>x.Id == Id);
+        if (data == null)
+            return false;
+        data.TimeLeft = timeLeft;
+        await _dbContext.SaveChangesAsync();
+        return true;
+    }
 }

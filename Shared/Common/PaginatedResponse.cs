@@ -57,7 +57,6 @@ public static class PaginatedListHelper
         pageSize = pageSize > 0 ? pageSize : DefaultPageSize;
         var count = source.Count();
         var items = new List<T>();
-        
         items = source.Skip((currentPage - 1) * pageSize)
             .Take(pageSize)
             .ToList();

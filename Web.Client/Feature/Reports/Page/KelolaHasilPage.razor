@@ -101,6 +101,7 @@
         req.OrderBy = state.SortLabel;
         req.Direction = (int)state.SortDirection;
         var data = await _userExamService.FindReport(req, new CancellationToken());
+        await Task.Delay(100);
         var tabledata = new TableData<UserExam>()
         {
             TotalItems = data.TotalItems,

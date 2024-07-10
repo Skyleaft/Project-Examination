@@ -80,4 +80,9 @@ public class UserExamService(HttpClient _httpClient) : IUserExam
 
         return data;
     }
+
+    public Task<bool> SaveTimeLeft(Guid Id, TimeSpan timeLeft)
+    {
+        throw new NotImplementedException();
+    }
 }

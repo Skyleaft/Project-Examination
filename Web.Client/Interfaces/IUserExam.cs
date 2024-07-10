@@ -12,6 +12,7 @@ public interface IUserExam
     public Task<UserExam> Get(Guid Id);
     public Task<PaginatedResponse<UserExam>> Find(FindRequest r,CancellationToken ct,string? UserId="");
     public Task<PaginatedResponse<UserExam>> FindReport(FindRequest r,CancellationToken ct);
+    public Task<bool> SaveTimeLeft(Guid Id, TimeSpan timeLeft);
 }
 
 public class CreateUserExamDTO

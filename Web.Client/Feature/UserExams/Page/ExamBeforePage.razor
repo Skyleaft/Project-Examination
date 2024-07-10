@@ -3,6 +3,7 @@
 @using global::Shared.RoomSet
 @using global::Shared.TakeExam
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using MudBlazor.Extensions.Core
 @using Web.Client.Interfaces
 @layout UserExamLayout
@@ -10,6 +11,7 @@
 @attribute [Authorize(Roles = "Superuser,User")]
 @inject IDialogService Dialog
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 <MudContainer MaxWidth="MaxWidth.Medium">
     <MudPaper Width="100%" Class="pa-4">
@@ -123,6 +125,7 @@
     private UserExam userExam;
     private Room room;
     private bool isLoading = true;
+    string privateKey = "zlxkjcoijasdfnwqwesfvlaksnoaiscnzxnocqanqwf";
 
     protected override async Task OnInitializedAsync()
     {
@@ -140,6 +143,8 @@
 
             userExam = await _userExamRepo.Get(new Guid(Id));
             room = await _roomRepo.Get(userExam.RoomId);
+            
+            await ProtectedSessionStore.DeleteAsync(privateKey);
             isLoading = false;
             StateHasChanged();
         }

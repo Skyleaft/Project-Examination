@@ -4,6 +4,7 @@
 @using global::Shared.RoomSet
 @using global::Shared.TakeExam
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using MudBlazor.Extensions.Core
 @using MudExRichTextEditor.Types
 @using Web.Client.Interfaces
@@ -12,6 +13,8 @@
 @attribute [Authorize(Roles = "Superuser,User")]
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IDialogService Dialog
+@inject ProtectedSessionStorage ProtectedSessionStore
+@implements IDisposable
 
 <NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="OnBeforeNavBack"/>
 
@@ -32,43 +35,46 @@ else
                 @{
                     foreach (var item in soalPaging.Items)
                     {
-                        <MudPaper Class="pa-4 ma-2 my-3">
-                            <div class="d-flex flex-grow-1 gap-1">
-                                <MudPaper Class="flex-none d-flex py-3" Width="25px" Elevation="0">
-                                    <MudText Typo="Typo.body1">@item.Nomor.</MudText>
-                                </MudPaper>
-                                <MudPaper Class="flex-1 d-flex flex-column" Elevation="0">
-                                    @* <MudExRichTextEdit *@
-                                    @*     @ref="@Editor" *@
-                                    @*     BorderColor="MudExColor.Transparent" *@
-                                    @*     ReadOnly *@
-                                    @*     Class="m-2" *@
-                                    @*     Theme="QuillTheme.Bubble" *@
-                                    @*     DebugLevel="QuillDebugLevel.Log" *@
-                                    @*     Value="@item.Pertanyaan"> *@
-                                    @* </MudExRichTextEdit> *@
-                                    <MudText Class="m-2">@((MarkupString)@item.Pertanyaan)</MudText>
-                                    <MudRadioGroup T="SoalJawaban?" Class="ml-3" ValueChanged="OnPilihJawaban" Value="@userExam.UserAnswers?.Find(x => x.SoalId == item.Id)?.SoalJawaban">
-                                        @{
-                                            foreach (var jawaban in item.PilihanJawaban)
-                                            {
-                                                <MudItem xs="12">
-                                                    <MudRadio Value="jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
-                                                </MudItem>
-                                                
-                                            }
-                                        }
-                                    </MudRadioGroup>
-                                </MudPaper>
+                        if (reRender)
+                        {
+                            <div class="d-none d-flex align-center flex-grow-1 ma-8">
+                                <MudSpacer/>
+                                <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+                                <MudSpacer/>
                             </div>
+                        }
+                        else
+                        {
+                            <MudPaper Class="pa-4 ma-2 my-3">
+                                <div class="d-flex flex-grow-1 gap-1">
+                                    <MudPaper Class="flex-none d-flex py-3" Width="25px" Elevation="0">
+                                        <MudText Typo="Typo.body1">@item.Soal.Nomor</MudText>
+                                    </MudPaper>
+                                    <MudPaper Class="flex-1 d-flex flex-column" Elevation="0">
+                                        <MudText Class="m-2">@((MarkupString)@item.Soal.Pertanyaan)</MudText>
+                                        <MudRadioGroup T="SoalJawaban?" Class="ml-3" ValueChanged="OnPilihJawaban" Value="item.SoalJawaban">
+                                            @{
+                                                foreach (var jawaban in item.Soal.PilihanJawaban)
+                                                {
+                                                    <MudItem xs="12">
+                                                        <MudRadio Value="jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
+                                                    </MudItem>
+                                                }
+                                            }
+                                        </MudRadioGroup>
+                                    </MudPaper>
+                                </div>
 
-                        </MudPaper>
+                            </MudPaper>
+                        }
                     }
                 }
             </div>
             <div class="d-none d-flex align-center flex-grow-1 mt-8">
                 <MudSpacer/>
-                <MudPagination Color="Color.Primary" Count="@soalPaging.TotalPage" SelectedChanged="PageChanged"/>
+                <MudPagination Color="Color.Primary"
+                               Count="@soalPaging.TotalPage"
+                               SelectedChanged="PageChanged"/>
                 <MudSpacer/>
             </div>
 
@@ -93,11 +99,25 @@ else
             </MudPaper>
 
             <MudPaper Class="my-3">
-                <MudWatch @ref="_watch" Interval="TimeSpan.FromMilliseconds(1)" Mode="WatchMode.CountDown"
-                          CountdownTime="userExam.TimeLeft"
-                          CountdownCompleted="() => ForceEnd()"
-                          ShowHour="true" ShowMinute="true" ShowSecond="true" ShowMillisecond="false"
-                          Delimiter="@(":")" Typo="Typo.h5" Color="Color.Default"/>
+                @{
+                    if (isLoadTime)
+                    {
+                        <div class="d-none d-flex align-center flex-grow-1 ma-8">
+                            <MudSpacer/>
+                            <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+                            <MudSpacer/>
+                        </div>
+                    }
+                    else
+                    {
+                        <MudWatch @ref="_watch" Interval="TimeSpan.FromMilliseconds(1)" Mode="WatchMode.CountDown"
+                                  CountdownTime="userExam.TimeLeft"
+                                  CountdownCompleted="() => ForceEnd()"
+                                  ShowHour="true" ShowMinute="true" ShowSecond="true" ShowMillisecond="false"
+                                  Delimiter="@(":")" Typo="Typo.h5" Color="Color.Default"/>
+                    }
+                }
+
 
             </MudPaper>
 
@@ -115,6 +135,8 @@ else
     </MudGrid>
 }
 
+<MudText>@testasd</MudText>
+
 
 @code {
     [Parameter] public string Id { get; set; }
@@ -129,12 +151,35 @@ else
 
     MudExRichTextEdit Editor;
     MudWatch _watch = new();
-    PaginatedResponse<Soal> soalPaging;
+    PaginatedResponse<UserAnswer> soalPaging;
 
     bool isLoading = true;
+    bool reRender;
+    string testasd;
+    bool isLoadTime = true;
+    string privateKey = "zlxkjcoijasdfnwqwesfvlaksnoaiscnzxnocqanqwf";
+    private Timer? _timer;
 
     protected override async Task OnInitializedAsync()
     {
+        _timer = new System.Threading.Timer(
+            e =>
+            {
+                InvokeAsync(async () =>
+                {
+                    //testasd = DateTime.Now.ToString();
+                    if (userExam != null)
+                    {
+                        await ProtectedSessionStore.SetAsync(privateKey, _watch.Value);
+                    }
+
+                    // Call this to force the server to send a new updated view
+                });
+            },
+            null,
+            TimeSpan.Zero,
+            TimeSpan.FromSeconds(5)
+        );
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -147,10 +192,19 @@ else
             {
             }
 
+
             userExam = await _userExamRepo.Get(new Guid(Id));
             room = await _roomRepo.Get(userExam.RoomId);
-            soalPaging = await room.Exam.Soals.ToPagingList(1, 10);
+            soalPaging = await userExam.UserAnswers.OrderBy(x => x.Soal.Nomor).ToPagingList(1, 10);
+
+            var timeleft = await ProtectedSessionStore.GetAsync<TimeSpan>(privateKey);
+            if (timeleft.Success)
+            {
+                userExam.TimeLeft = timeleft.Value;
+            }
+
             isLoading = false;
+            isLoadTime = false;
 
 
             StateHasChanged();
@@ -163,17 +217,24 @@ else
     {
         if (userExam.UserAnswers == null)
             return Variant.Outlined;
-        if (userExam.UserAnswers.Find(x => x.SoalId == soal.Id).SoalJawabanId == null)
+        if (userExam.UserAnswers.Find(x => x.SoalId == soal.Id).SoalJawaban == null)
             return Variant.Outlined;
         return Variant.Filled;
     }
 
     private async Task PageChanged(int page)
     {
-        isLoading = true;
-        soalPaging = await room.Exam.Soals.ToPagingList(page, 10);
-        isLoading = false;
+        reRender = true;
+        soalPaging = await userExam.UserAnswers.OrderBy(x => x.Soal.Nomor).ToPagingList(page, 10);
+
+        await reRenderSoal();
         StateHasChanged();
+    }
+
+    private async Task reRenderSoal()
+    {
+        await Task.Delay(150);
+        reRender = false;
     }
 
     private async Task ForceEnd()
@@ -184,7 +245,10 @@ else
         userExam.TimeLeft = _watch.Value;
         var res = await _userExamRepo.Update(userExam);
         if (res.Flag)
+        {
+            await ProtectedSessionStore.DeleteAsync(privateKey);
             _navigationManager.NavigateTo($"/exam/examresult/{Id}");
+        }
     }
 
 
@@ -204,7 +268,10 @@ else
             userExam.TimeLeft = _watch.Value;
             var res = await _userExamRepo.Update(userExam);
             if (res.Flag)
+            {
+                await ProtectedSessionStore.DeleteAsync(privateKey);
                 _navigationManager.NavigateTo($"/exam/examresult/{Id}");
+            }
         }
     }
 
@@ -216,21 +283,19 @@ else
             locationChangingContext.PreventNavigation();
         }
     }
-    
-    
-    private void OnPilihJawaban(SoalJawaban? obj)
+
+
+    private async Task OnPilihJawaban(SoalJawaban? obj)
     {
-        if(obj==null)
-            
+        if (obj == null)
             return;
-        var jawaban =userExam.UserAnswers.Find(x => x.SoalId == obj.SoalId);
-        if (jawaban != null)
-        {
-            jawaban.SoalJawaban = obj;
-            jawaban.SoalJawabanId = obj.Id;
-            StateHasChanged();
-        }
-        
+        userExam.UserAnswers!.Find(x => x.SoalId == obj.SoalId).SoalJawaban = obj;
+        userExam.UserAnswers!.Find(x => x.SoalId == obj.SoalId).SoalJawabanId = obj.Id;
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
     }
 
 }

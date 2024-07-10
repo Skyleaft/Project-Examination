@@ -99,6 +99,7 @@
         req.OrderBy = state.SortLabel;
         req.Direction = (int)state.SortDirection;
         var data = await _userService.Find(req, ct);
+        await Task.Delay(100);
         totalItems = data.TotalItems;
         pagedData = data.Items;
         return new TableData<ApplicationUser>() { TotalItems = totalItems, Items = pagedData };

@@ -3,6 +3,7 @@
 @using global::Shared.RoomSet
 @using global::Shared.TakeExam
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using MudBlazor.Extensions.Core
 @using Web.Client.Interfaces
 @layout UserExamLayout
@@ -10,6 +11,7 @@
 @attribute [Authorize(Roles = "Superuser,User")]
 @inject IDialogService Dialog
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 <NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="OnBeforeNavBack"/>
 
@@ -153,6 +155,7 @@
     private UserExam userExam;
     private Room room;
     private bool isLoading = true;
+    string privateKey = "zlxkjcoijasdfnwqwesfvlaksnoaiscnzxnocqanqwf";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -181,8 +184,9 @@
         return Variant.Filled;
     }
     
-    private void OnBackHome()
+    private async Task OnBackHome()
     {
+        await ProtectedSessionStore.DeleteAsync(privateKey);
         _navigationManager.NavigateTo("/userroom",true);
     }
 
