@@ -2,6 +2,7 @@
 using Web.Client.Interfaces;
 using Web.Services.ExamServices;
 using Web.Services.ReferenceServices;
+using Web.Services.ReportServices;
 using Web.Services.RoomServices;
 using Web.Services.UserExamServices;
 using Web.Services.UserServices;
@@ -18,6 +19,7 @@ public static class ServiceInject
         services.AddScoped<IRoom, RoomService>();
         services.AddScoped<IUserExam, UserExamService>();
         services.AddScoped<IMailService, EmailService>();
+        services.AddScoped<IReport, ReportService>();
         return services;
     }
 }

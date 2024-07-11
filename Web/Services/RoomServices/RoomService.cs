@@ -10,7 +10,7 @@ using Web.Common.Database;
 
 namespace Web.Services.RoomServices;
 
-public class RoomService:IRoom
+public class RoomService : IRoom
 {
     private readonly AppDbContext _dbContext;
     private readonly AuthenticationStateProvider _authenticationStateProvider;
@@ -39,11 +39,11 @@ public class RoomService:IRoom
         {
             return new ServiceResponse(false, "data tidak ditemukan");
         }
-        
+
         r.LastModifiedOn = DateTime.Now;
         _dbContext.Room.Update(r);
         //_dbContext.Entry(room).CurrentValues.SetValues(r);
-        
+
         await _dbContext.SaveChangesAsync();
         return new ServiceResponse(true, "data berhasil diupdate");
     }
@@ -66,9 +66,9 @@ public class RoomService:IRoom
         var find = await _dbContext
             .Room
             .AsNoTracking()
-            .Include(x=>x.Exam)
-            .ThenInclude(y=>y.Soals.OrderBy(o=>o.Nomor))
-            .ThenInclude(z=>z.PilihanJawaban)
+            .Include(x => x.Exam)
+            .ThenInclude(y => y.Soals.OrderBy(o => o.Nomor))
+            .ThenInclude(z => z.PilihanJawaban)
             .Include(x => x.ListPeserta)
             .FirstOrDefaultAsync(x => x.Id == Id);
         if (find == null)
@@ -84,8 +84,8 @@ public class RoomService:IRoom
         var find = await _dbContext
             .Room
             .AsNoTracking()
-            .Include(x=>x.Exam)
-            .ThenInclude(y=>y.Soals)
+            .Include(x => x.Exam)
+            .ThenInclude(y => y.Soals)
             .FirstOrDefaultAsync(x => x.Kode == kode);
         if (find == null)
         {
@@ -95,7 +95,7 @@ public class RoomService:IRoom
         return find;
     }
 
-    public async Task<PaginatedResponse<Room>> Find(FindRequest r, CancellationToken ct,string? Username="")
+    public async Task<PaginatedResponse<Room>> Find(FindRequest r, CancellationToken ct, string? Username = "")
     {
         if (string.IsNullOrEmpty(Username))
         {
@@ -103,13 +103,14 @@ public class RoomService:IRoom
             var user = auth.User;
             Username = user.Identity.Name;
         }
+
         var data = await _dbContext
             .Room
             .WhereIf(!string.IsNullOrEmpty(r.Search),
-                x => x.Nama.ToLower().Contains(r.Search.ToLower()))
-            .WhereIf(!string.IsNullOrEmpty(r.Search),
-                x => x.Kode.ToLower().Contains(r.Search.ToLower()))
-            .Where(x=>x.CreatedBy == Username)
+                x => x.Nama.ToLower().Contains(r.Search.ToLower()) ||
+                     x.Kode.ToLower().Contains(r.Search.ToLower())
+            )
+            .Where(x => x.CreatedBy == Username)
             .OrderBy(x => x.CreatedOn)
             .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;

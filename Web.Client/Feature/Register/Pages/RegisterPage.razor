@@ -23,7 +23,7 @@
                     <MudStack Row="true">
                         <MudIconButton Variant="Variant.Text"
                                        Icon="@Icons.Material.Filled.ArrowBack"
-                                       Href="/account/login">
+                                       OnClick="ToLogin">
                         </MudIconButton>
                         <MudText Typo="Typo.h4">Daftar Akun Baru</MudText>
                     </MudStack>
@@ -350,6 +350,11 @@
     {
         userModel.Email = "milzanmlk@gmail.com";
         await SendEmail("2d6c7290-3f4b-40d8-b74d-c37dd956b6e8");
+    }
+
+    private void ToLogin()
+    {
+       _navigationManager.NavigateTo("/",true);
     }
 
 }

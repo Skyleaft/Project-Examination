@@ -9,7 +9,7 @@
     <MudStack Justify="Justify.Center">
         <h3>@statusMessage</h3>
         <EmailConfirmed/>
-        <MudButton Href="/Account/Login" Variant="Variant.Filled" Class="pa-4" Color="Color.Primary">Menuju Halaman Login</MudButton>
+        <MudButton OnClick="ToLogin" Variant="Variant.Filled" Class="pa-4" Color="Color.Primary">Menuju Halaman Login</MudButton>
     </MudStack>
 </MudContainer>
 
@@ -26,7 +26,7 @@
     {
         if (UserId is null || Code is null)
         {
-            _navigationManager.NavigateTo("/Account/Login");
+            _navigationManager.NavigateTo("/",true);
         }
 
         var user = await _userManager.FindByIdAsync(UserId);
@@ -41,4 +41,10 @@
             statusMessage = result.Succeeded ? "Terimakasih Sudah Mengkonfirmasi Email" : "Error confirming your email.";
         }
     }
+
+    private void ToLogin()
+    {
+        _navigationManager.NavigateTo("/",true);
+    }
+
 }
