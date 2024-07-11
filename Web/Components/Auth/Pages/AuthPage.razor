@@ -51,9 +51,9 @@
 
 @code {
     [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
-    [SupplyParameterFromQuery] private string? ReturnUrl { get; }
-    [SupplyParameterFromQuery] private bool? isLogout { get; }
-    [SupplyParameterFromForm] private LoginDTO model { get; } = new();
+    [SupplyParameterFromQuery] private string? ReturnUrl { get; set; } = default;
+    [SupplyParameterFromQuery] private bool? isLogout { get; set; } = default;
+    [SupplyParameterFromForm] private LoginDTO model { get; set; } = new();
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] HttpClient httpClient { get; set; }
@@ -93,7 +93,15 @@
             if (result.Succeeded)
             {
                 //dial.Close();
-                RedirectManager.RedirectTo(ReturnUrl);
+                if (string.IsNullOrEmpty(ReturnUrl))
+                {
+                    RedirectManager.RedirectTo("/");
+                }
+                else
+                {
+                    RedirectManager.RedirectTo(ReturnUrl);
+
+                }
             }
             else if (result.IsLockedOut)
             {
@@ -114,6 +122,7 @@
         }
         catch (Exception ex)
         {
+            navManager.NavigateTo("/",true);
         }
     }
 
