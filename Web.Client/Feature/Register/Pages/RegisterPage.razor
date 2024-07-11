@@ -153,6 +153,7 @@
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] IMailService _mailService { get; set; }
+    [Inject] ISnackbar _snackbar { get; set; }
 
     private UserAddDTO userModel = new()
     {
@@ -190,18 +191,28 @@
             dial.Close();
             if (!mail)
             {
-                DialogService.ShowMessageBox(
-                    "Error",
-                    "Ada Error di Email Service",
-                    "Ok");
+                _snackbar.Add(
+                    @<div>
+                        <h3>Info ERROR!!</h3>
+                        <ul>
+                            <li>IMail Services</li>
+                            <li>Ada Error di Send Email</li>
+                        </ul>
+                    </div>
+                    , Severity.Error);
             }
             else
             {
                 userModel = null;
-                DialogService.ShowMessageBox(
-                    "Info",
-                    "Akun Berhasil Didaftarkan, Silahkan Cek Email Anda",
-                    "Ok");
+                _snackbar.Add(
+                    @<div>
+                        <h3>Info!!</h3>
+                        <ul>
+                            <li>Success</li>
+                            <li>Akun Berhasil Didaftarkan, Silahkan Cek Email Anda</li>
+                        </ul>
+                    </div>
+                    , Severity.Success);
             }
         }
         else

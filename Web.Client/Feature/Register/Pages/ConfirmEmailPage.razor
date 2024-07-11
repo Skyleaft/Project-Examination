@@ -15,8 +15,8 @@
 
 
 @code {
-    [SupplyParameterFromQuery] private string? UserId { get; }
-    [SupplyParameterFromQuery] private string? Code { get; }
+    [SupplyParameterFromQuery] private string UserId { get; set; }
+    [SupplyParameterFromQuery] private string Code { get; set; }
     [Inject] UserManager<ApplicationUser> _userManager { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
 
