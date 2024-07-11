@@ -7,17 +7,20 @@ EXPOSE 8443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-# Copy everything
-COPY . ./
 
+COPY Web/Web.csproj Web/
+COPY Web.Client/Web.Client.csproj WebClient/
+COPY Shared/Shared.csproj Shared/
+COPY ProjectExamination.ServiceDefaults/ProjectExamination.ServiceDefaults.csproj ServiceDefault/
+RUN dotnet restore Web/Web.csproj
+
+COPY . .
 WORKDIR /src/Web
 RUN dotnet workload install wasm-tools --skip-manifest-update
 RUN dotnet build "Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN apt-get update -y
-RUN apt-get install -y python3
 RUN dotnet publish "Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
