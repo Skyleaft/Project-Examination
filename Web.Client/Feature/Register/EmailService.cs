@@ -6,13 +6,15 @@ using Web.Client.Shared.Models;
 
 namespace Web.Client.Feature.Register;
 
-public class EmailService:IMailService
+public class EmailService : IMailService
 {
-    MailSettings Mail_Settings = null;
+    private readonly MailSettings Mail_Settings;
+
     public EmailService(IOptions<MailSettings> options)
     {
         Mail_Settings = options.Value;
     }
+
     public bool SendMail(MimeMessage email)
     {
         try
@@ -25,7 +27,7 @@ public class EmailService:IMailService
             MailClient.Disconnect(true);
             return true;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             // Exception Details
             return false;

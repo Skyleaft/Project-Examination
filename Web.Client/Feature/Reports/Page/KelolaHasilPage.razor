@@ -1,15 +1,8 @@
 ﻿@page "/report/manage"
-@using System.Text.Json
 @using global::Shared.Common
 @using global::Shared.Report
-@using global::Shared.TakeExam
-@using global::Shared.Users
-@using Mapster
 @using Microsoft.AspNetCore.Authorization
-@using Web.Client.Feature.UserManagements.Dialog
 @using Web.Client.Interfaces
-@using Web.Client.Services
-@using Web.Client.Shared.Models
 @inject IDialogService Dialog
 @attribute [Authorize(Roles = "Superuser,Dosen,Operator")]
 
@@ -83,7 +76,7 @@
     private int totalItems;
     private string searchString = "";
 
-    DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
+    DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
 
 
     private string setGender(Gender gender)
@@ -97,10 +90,10 @@
             return notelp;
         return $"{notelp.Substring(0, 5)}{"*".PadRight(notelp.Length - 5, '*')}";
     }
-    
+
     private async Task<TableData<ExamReport>> ServerReload(TableState state, CancellationToken ct)
     {
-        FindRequest req = new FindRequest();
+        var req = new FindRequest();
         req.Page = state.Page;
         req.PageSize = state.PageSize;
         req.Search = searchString;
@@ -108,7 +101,7 @@
         req.Direction = (int)state.SortDirection;
         var data = await _report.Find(req, new CancellationToken());
         await Task.Delay(100);
-        var tabledata = new TableData<ExamReport>()
+        var tabledata = new TableData<ExamReport>
         {
             TotalItems = data.TotalItems,
             Items = data.Items
@@ -121,6 +114,6 @@
         searchString = text;
         table.ReloadServerData();
     }
-    
+
 
 }

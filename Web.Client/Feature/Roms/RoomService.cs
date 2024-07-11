@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Shared.BankSoal;
 using Shared.Common;
 using Shared.RoomSet;
 using Web.Client.Interfaces;
@@ -19,10 +18,8 @@ public class RoomService(HttpClient _httpClient) : IRoom
             var created = await res.Content.ReadFromJsonAsync<CreatedResponse<Room>>();
             return created;
         }
-        else
-        {
-            return new CreatedResponse<Room>(false, res.ReasonPhrase);
-        }
+
+        return new CreatedResponse<Room>(false, res.ReasonPhrase);
     }
 
     public async Task<ServiceResponse> Update(Room r)
@@ -33,15 +30,14 @@ public class RoomService(HttpClient _httpClient) : IRoom
             var content = await res.Content.ReadFromJsonAsync<ServiceResponse>();
             return content;
         }
-        else if (res.StatusCode == HttpStatusCode.BadRequest)
+
+        if (res.StatusCode == HttpStatusCode.BadRequest)
         {
             var content = await res.Content.ReadFromJsonAsync<BadResponse>();
             return new ServiceResponse(false, JsonSerializer.Serialize(content.Errors));
         }
-        else
-        {
-            return new ServiceResponse(false, res.ReasonPhrase);
-        }
+
+        return new ServiceResponse(false, res.ReasonPhrase);
     }
 
     public async Task<ServiceResponse> Delete(Guid Id)
@@ -65,6 +61,7 @@ public class RoomService(HttpClient _httpClient) : IRoom
             if (!string.IsNullOrEmpty(data))
                 return await res.Content.ReadFromJsonAsync<Room>();
         }
+
         return null;
     }
 
@@ -72,10 +69,7 @@ public class RoomService(HttpClient _httpClient) : IRoom
     {
         var res = await _httpClient.PostAsJsonAsync("api/room/find", r, ct);
         var data = new PaginatedResponse<Room>();
-        if (res.IsSuccessStatusCode)
-        {
-            data = await res.Content.ReadFromJsonAsync<PaginatedResponse<Room>>(ct);
-        }
+        if (res.IsSuccessStatusCode) data = await res.Content.ReadFromJsonAsync<PaginatedResponse<Room>>(ct);
 
         return data;
     }

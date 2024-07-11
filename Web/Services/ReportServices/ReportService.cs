@@ -14,10 +14,7 @@ public class ReportService(AppDbContext _dbContext) : IReport
             .ExamReport
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == Id);
-        if (find == null)
-        {
-            return null;
-        }
+        if (find == null) return null;
 
         return find;
     }

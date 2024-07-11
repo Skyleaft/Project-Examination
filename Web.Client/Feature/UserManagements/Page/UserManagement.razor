@@ -1,13 +1,10 @@
 ﻿@page "/UserManagement"
-@using System.Text.Json
 @using global::Shared.Common
 @using global::Shared.Users
 @using Mapster
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Feature.UserManagements.Dialog
 @using Web.Client.Interfaces
-@using Web.Client.Services
-@using Web.Client.Shared.Models
 @inject IDialogService Dialog
 @attribute [Authorize(Roles = "Superuser,Operator")]
 
@@ -16,7 +13,7 @@
 <MudTable ServerData="ServerReload"
           Dense="true" Hover="true" @ref="table">
     <ToolBarContent>
-        <MudButton OnClick="@((e) => OpenDialog())"
+        <MudButton OnClick="@(e => OpenDialog())"
                    Variant="Variant.Outlined"
                    StartIcon="@Icons.Material.Outlined.PersonAdd"
                    Color="Color.Primary">
@@ -27,7 +24,7 @@
                       ValueChanged="@(s => OnSearch(s))"
                       Placeholder="Search"
                       Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search" 
+                      AdornmentIcon="@Icons.Material.Filled.Search"
                       IconSize="Size.Medium" Class="mt-0">
         </MudTextField>
     </ToolBarContent>
@@ -50,8 +47,8 @@
         <MudTd DataLabel="Jenis Kelamin">@setGender(context.Gender)</MudTd>
         <MudTd DataLabel="Username">@context.UserName</MudTd>
         <MudTd DataLabel="Action">
-            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" aria-label="delete" OnClick="()=>OnDelete(context)"></MudIconButton>
-            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="Edit" OnClick="()=>OnEdit(context)"></MudIconButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" aria-label="delete" OnClick="() => OnDelete(context)"></MudIconButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="Edit" OnClick="() => OnEdit(context)"></MudIconButton>
         </MudTd>
     </RowTemplate>
     <NoRecordsContent>
@@ -69,26 +66,26 @@
     [Inject] IUser _userService { get; set; }
     private IEnumerable<ApplicationUser> pagedData;
     private MudTable<ApplicationUser> table;
-    
+
     private int totalItems;
     private string searchString = "";
 
-    DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
-    
-    
+    readonly DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
+
+
     private string setGender(Gender gender)
     {
         return gender == Gender.LakiLaki ? "Laki - Laki" : "Perempuan";
     }
+
     private async Task OpenDialog()
     {
-        var form =await Dialog.ShowAsync<AddUserDialog>("Tambah User", maxWidth);
+        var form = await Dialog.ShowAsync<AddUserDialog>("Tambah User", maxWidth);
         var result = await form.Result;
-        if(!result.Canceled)
+        if (!result.Canceled)
             await table.ReloadServerData();
     }
 
-    
 
     private async Task<TableData<ApplicationUser>> ServerReload(TableState state, CancellationToken ct)
     {
@@ -102,7 +99,7 @@
         await Task.Delay(100);
         totalItems = data.TotalItems;
         pagedData = data.Items;
-        return new TableData<ApplicationUser>() { TotalItems = totalItems, Items = pagedData };
+        return new TableData<ApplicationUser> { TotalItems = totalItems, Items = pagedData };
     }
 
     private void OnSearch(string text)
@@ -116,9 +113,9 @@
         var result = await Dialog.ShowMessageBox(
             "Warning",
             $"Yakin Mau Dihapus UserName :{data.UserName}",
-            yesText: "Delete",cancelText:"Cancel");
+            "Delete", cancelText: "Cancel");
         StateHasChanged();
-        if (result!=null)
+        if (result != null)
         {
             var res = await _userService.Delete(data.Id, new CancellationToken());
             if (res.Flag)
@@ -126,7 +123,7 @@
                 await Dialog.ShowMessageBox(
                     "Info",
                     res.Message,
-                    yesText: "Ok");
+                    "Ok");
                 await table.ReloadServerData();
             }
             else
@@ -134,21 +131,19 @@
                 await Dialog.ShowMessageBox(
                     "Error",
                     res.Message,
-                    yesText: "Ok");
+                    "Ok");
             }
-                
         }
-        
     }
 
     private async Task OnEdit(ApplicationUser data)
     {
-        var userDTO =await _userService.Get(data.Id);
+        var userDTO = await _userService.Get(data.Id);
         var edit = userDTO.Adapt<UserEditDTO>();
         var parameters = new DialogParameters<EditUserDialog> { { x => x.userModel, edit } };
-        var form =await Dialog.ShowAsync<EditUserDialog>("Edit User", parameters,maxWidth);
+        var form = await Dialog.ShowAsync<EditUserDialog>("Edit User", parameters, maxWidth);
         var result = await form.Result;
-        if(!result.Canceled)
+        if (!result.Canceled)
             await table.ReloadServerData();
     }
 

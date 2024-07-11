@@ -14,23 +14,23 @@ public class PersistentAuthenticationStateProvider : AuthenticationStateProvider
 
     public PersistentAuthenticationStateProvider(PersistentComponentState state)
     {
-        if (!state.TryTakeFromJson<UserInfo>(nameof(UserInfo), out var userInfo) || userInfo is null)
-        {
-            return;
-        }
+        if (!state.TryTakeFromJson<UserInfo>(nameof(UserInfo), out var userInfo) || userInfo is null) return;
 
         Claim[] claims =
         [
             new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),
             new Claim(ClaimTypes.Name, userInfo.Name),
             new Claim(ClaimTypes.Role, userInfo.Role),
-            new Claim(ClaimTypes.Email, userInfo.Email),
+            new Claim(ClaimTypes.Email, userInfo.Email)
         ];
 
         _authenticationStateTask = Task.FromResult(
             new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
-                authenticationType: nameof(PersistentAuthenticationStateProvider)))));
+                nameof(PersistentAuthenticationStateProvider)))));
     }
 
-    public override Task<AuthenticationState> GetAuthenticationStateAsync() => _authenticationStateTask;
+    public override Task<AuthenticationState> GetAuthenticationStateAsync()
+    {
+        return _authenticationStateTask;
+    }
 }

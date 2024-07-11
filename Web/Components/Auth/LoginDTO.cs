@@ -8,6 +8,7 @@ public class LoginDTO
     [MinLength(4)]
     [MaxLength(40)]
     public string UserName { get; set; } = null!;
+
     [Required]
     [MinLength(6)]
     [MaxLength(30)]

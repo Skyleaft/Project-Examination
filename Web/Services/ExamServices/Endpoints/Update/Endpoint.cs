@@ -1,15 +1,15 @@
 ﻿using FastEndpoints;
-using FluentValidation;
 using Shared.BankSoal;
 using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
 
 namespace Web.Services.ExamServices.Endpoints.Update;
 
-public class Endpoint : Endpoint<Exam,ServiceResponse>
+public class Endpoint : Endpoint<Exam, ServiceResponse>
 {
     private readonly IExam _examService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+
     public Endpoint(IExam examService, IHttpContextAccessor httpContextAccessor)
     {
         _examService = examService;
@@ -20,9 +20,9 @@ public class Endpoint : Endpoint<Exam,ServiceResponse>
     {
         Put("/exam/{Id}");
     }
-    
 
-    public override async Task HandleAsync(Exam r,CancellationToken ct)
+
+    public override async Task HandleAsync(Exam r, CancellationToken ct)
     {
         var username = _httpContextAccessor.HttpContext.User.Identity.Name;
         r.LastModifiedBy = username;
@@ -30,4 +30,3 @@ public class Endpoint : Endpoint<Exam,ServiceResponse>
         await SendAsync(res, cancellation: ct);
     }
 }
-

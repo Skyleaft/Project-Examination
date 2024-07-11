@@ -27,14 +27,11 @@ public class ExamService : IExam
     public async Task<ServiceResponse> Update(Exam r)
     {
         var exam = await Get(r.Id);
-        if (exam == null)
-        {
-            return new ServiceResponse(false, "data tidak ditemukan");
-        }
-        
+        if (exam == null) return new ServiceResponse(false, "data tidak ditemukan");
+
         r.LastModifiedOn = DateTime.Now;
         _dbContext.Entry(exam).CurrentValues.SetValues(r);
-        
+
         // Delete children
         foreach (var existingChild in exam.Soals)
         {
@@ -42,7 +39,7 @@ public class ExamService : IExam
                 _dbContext.Soal.Remove(existingChild);
             _dbContext.SoalJawaban.RemoveRange(existingChild.PilihanJawaban);
         }
-        
+
         // Update and Insert children
         foreach (var soal in r.Soals)
         {
@@ -55,13 +52,14 @@ public class ExamService : IExam
                 _dbContext.Entry(existingChild).CurrentValues.SetValues(soal);
                 await _dbContext.SoalJawaban.AddRangeAsync(soal.PilihanJawaban);
             }
-                
+
             else
             {
                 await _dbContext.Soal.AddAsync(soal);
                 await _dbContext.SoalJawaban.AddRangeAsync(soal.PilihanJawaban);
             }
         }
+
         await _dbContext.SaveChangesAsync();
         return new ServiceResponse(true, "data berhasil diupdate");
     }
@@ -69,10 +67,7 @@ public class ExamService : IExam
     public async Task<ServiceResponse> Delete(int Id)
     {
         var find = await _dbContext.Exam.FindAsync(Id);
-        if (find == null)
-        {
-            return new ServiceResponse(false, "data tidak ditemukan");
-        }
+        if (find == null) return new ServiceResponse(false, "data tidak ditemukan");
 
         _dbContext.Exam.Remove(find);
         await _dbContext.SaveChangesAsync();
@@ -86,10 +81,7 @@ public class ExamService : IExam
             .Include(x => x.Soals.OrderBy(s => s.Nomor))
             .ThenInclude(xs => xs.PilihanJawaban)
             .FirstOrDefaultAsync(x => x.Id == Id);
-        if (find == null)
-        {
-            return null;
-        }
+        if (find == null) return null;
 
         return find;
     }

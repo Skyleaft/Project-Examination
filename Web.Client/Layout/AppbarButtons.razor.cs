@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Shared.Users;
 using Web.Client.Services;
 using Web.Client.Services.Notifications;
 using Web.Client.Shared.Enums;
@@ -13,12 +12,12 @@ namespace Web.Client.Layout;
 
 public partial class AppbarButtons
 {
-    [Inject] private INotificationService NotificationService { get; set; }
-    [Inject] private LayoutService LayoutService { get; set; }
-    [Inject] NavigationManager navManager { get; set; }
     private IDictionary<NotificationMessage, bool> _messages = null;
     private bool _newNotificationsAvailable = false;
-    
+    [Inject] private INotificationService NotificationService { get; set; }
+    [Inject] private LayoutService LayoutService { get; set; }
+    [Inject] private NavigationManager navManager { get; set; }
+
     [Parameter] public string _avaSource { get; set; }
 
     public string DarkLightModeButtonText => LayoutService.CurrentDarkLightMode switch
@@ -40,7 +39,7 @@ public partial class AppbarButtons
         await NotificationService.MarkNotificationsAsRead();
         _newNotificationsAvailable = false;
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -57,6 +56,6 @@ public partial class AppbarButtons
     private async Task Logout()
     {
         //await signInManager.SignOutAsync();
-        navManager.NavigateTo("/Account/Login?isLogout=true",true);
+        navManager.NavigateTo("/Account/Login?isLogout=true", true);
     }
 }

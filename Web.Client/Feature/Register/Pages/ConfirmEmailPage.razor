@@ -15,18 +15,18 @@
 
 
 @code {
-    [SupplyParameterFromQuery] private string? UserId { get; set; }
-    [SupplyParameterFromQuery] private string? Code { get; set; }
+    [SupplyParameterFromQuery] private string? UserId { get; }
+    [SupplyParameterFromQuery] private string? Code { get; }
     [Inject] UserManager<ApplicationUser> _userManager { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
 
     string statusMessage;
-    
+
     protected override async Task OnInitializedAsync()
     {
         if (UserId is null || Code is null)
         {
-            _navigationManager.NavigateTo("/",true);
+            _navigationManager.NavigateTo("/", true);
         }
 
         var user = await _userManager.FindByIdAsync(UserId);
@@ -44,7 +44,7 @@
 
     private void ToLogin()
     {
-        _navigationManager.NavigateTo("/",true);
+        _navigationManager.NavigateTo("/", true);
     }
 
 }

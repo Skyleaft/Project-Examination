@@ -2,7 +2,7 @@
 
 namespace Web.Client.Feature.UserManagements;
 
-public class UserEditDTO :UserDTO
+public class UserEditDTO : UserDTO
 {
     public IBrowserFile ImageFile { get; set; }
 }

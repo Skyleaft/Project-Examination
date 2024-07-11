@@ -16,7 +16,6 @@ RUN dotnet restore Web/Web.csproj
 
 COPY . .
 WORKDIR /src/Web
-RUN dotnet workload install wasm-tools --skip-manifest-update
 RUN dotnet build "Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

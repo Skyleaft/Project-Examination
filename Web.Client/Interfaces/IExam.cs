@@ -10,5 +10,5 @@ public interface IExam
     public Task<ServiceResponse> Update(Exam r);
     public Task<ServiceResponse> Delete(int Id);
     public Task<Exam> Get(int Id);
-    public Task<PaginatedResponse<Exam>> Find(FindRequest r,CancellationToken ct);
+    public Task<PaginatedResponse<Exam>> Find(FindRequest r, CancellationToken ct);
 }

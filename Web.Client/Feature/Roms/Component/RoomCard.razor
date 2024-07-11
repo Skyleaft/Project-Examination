@@ -1,5 +1,4 @@
-﻿@using global::Shared.Common
-@using global::Shared.RoomSet
+﻿@using global::Shared.RoomSet
 @using Web.Client.Interfaces
 @inject IDialogService Dialog
 <MudCard Style="width: 280px; min-width: 280px">
@@ -27,15 +26,15 @@
     [Parameter] public EventCallback<int> RefreshData { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IRoom _roomRepo { get; set; }
-    
-    DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
+
+    DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 
     private async Task OnEdit()
     {
         var parameters = new DialogParameters<RoomDialog>();
-        parameters.Add(x=>x.room,data);
-        parameters.Add(x=>x.isEdit,true);
-        var form = await Dialog.ShowAsync<RoomDialog>("Ubah Room",parameters, maxWidth);
+        parameters.Add(x => x.room, data);
+        parameters.Add(x => x.isEdit, true);
+        var form = await Dialog.ShowAsync<RoomDialog>("Ubah Room", parameters, maxWidth);
         var result = await form.Result;
         if (!result.Canceled)
             await RefreshData.InvokeAsync(1);
@@ -46,9 +45,9 @@
         var result = await Dialog.ShowMessageBox(
             "Warning",
             $"Yakin Mau Dihapus Data :{data.Nama}",
-            yesText: "Delete",cancelText:"Cancel");
+            "Delete", cancelText: "Cancel");
         StateHasChanged();
-        if (result!=null)
+        if (result != null)
         {
             var res = await _roomRepo.Delete(data.Id);
             if (res.Flag)
@@ -56,7 +55,7 @@
                 await Dialog.ShowMessageBox(
                     "Info",
                     res.Message,
-                    yesText: "Ok");
+                    "Ok");
                 await RefreshData.InvokeAsync(1);
                 StateHasChanged();
             }
@@ -65,9 +64,8 @@
                 await Dialog.ShowMessageBox(
                     "Error",
                     res.Message,
-                    yesText: "Ok");
+                    "Ok");
             }
-                
         }
     }
 

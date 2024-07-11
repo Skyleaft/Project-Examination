@@ -7,11 +7,17 @@ using Web.Client.Services.UserPreferences;
 using Web.Client.Shared.Enums;
 
 namespace Web.Client.Services;
+
 public class LayoutService
 {
     private readonly IUserPreferencesService _userPreferencesService;
-    private UserPreferences.UserPreferences _userPreferences;
     private bool _systemPreferences;
+    private UserPreferences.UserPreferences _userPreferences;
+
+    public LayoutService(IUserPreferencesService userPreferencesService)
+    {
+        _userPreferencesService = userPreferencesService;
+    }
 
     public bool IsRTL { get; private set; }
     public DarkLightMode CurrentDarkLightMode { get; private set; } = DarkLightMode.System;
@@ -19,11 +25,6 @@ public class LayoutService
     public bool IsDarkMode { get; private set; }
 
     public MudTheme CurrentTheme { get; private set; }
-
-    public LayoutService(IUserPreferencesService userPreferencesService)
-    {
-        _userPreferencesService = userPreferencesService;
-    }
 
     public void SetDarkMode(bool value)
     {
@@ -72,7 +73,10 @@ public class LayoutService
 
     public event EventHandler MajorUpdateOccurred;
 
-    private void OnMajorUpdateOccurred() => MajorUpdateOccurred?.Invoke(this, EventArgs.Empty);
+    private void OnMajorUpdateOccurred()
+    {
+        MajorUpdateOccurred?.Invoke(this, EventArgs.Empty);
+    }
 
     public async Task CycleDarkLightModeAsync()
     {
@@ -110,5 +114,4 @@ public class LayoutService
         CurrentTheme = theme;
         OnMajorUpdateOccurred();
     }
-    
 }

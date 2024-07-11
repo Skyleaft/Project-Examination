@@ -2,7 +2,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using Shared.Common;
-using Shared.RoomSet;
 using Shared.TakeExam;
 using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
@@ -13,36 +12,33 @@ public class UserExamService(HttpClient _httpClient) : IUserExam
 {
     public async Task<CreatedResponse<UserExam>> Create(CreateUserExamDTO r)
     {
-        var res = await _httpClient.PostAsJsonAsync("api/userexam/",r);
+        var res = await _httpClient.PostAsJsonAsync("api/userexam/", r);
         if (res.IsSuccessStatusCode)
         {
             var created = await res.Content.ReadFromJsonAsync<CreatedResponse<UserExam>>();
             return created;
         }
-        else
-        {
-            var error = await res.Content.ReadFromJsonAsync<BadResponse>();
-            return new CreatedResponse<UserExam>(false, error.Errors["generalErrors"].FirstOrDefault());
-        }
+
+        var error = await res.Content.ReadFromJsonAsync<BadResponse>();
+        return new CreatedResponse<UserExam>(false, error.Errors["generalErrors"].FirstOrDefault());
     }
 
     public async Task<ServiceResponse> Update(UserExam r)
     {
-        var res = await _httpClient.PutAsJsonAsync($"api/userexam/{r.Id}",r);
+        var res = await _httpClient.PutAsJsonAsync($"api/userexam/{r.Id}", r);
         if (res.IsSuccessStatusCode)
         {
             var content = await res.Content.ReadFromJsonAsync<ServiceResponse>();
             return content;
         }
-        else if (res.StatusCode == HttpStatusCode.BadRequest)
+
+        if (res.StatusCode == HttpStatusCode.BadRequest)
         {
             var content = await res.Content.ReadFromJsonAsync<BadResponse>();
             return new ServiceResponse(false, JsonSerializer.Serialize(content.Errors));
         }
-        else
-        {
-            return new ServiceResponse(false, res.ReasonPhrase);
-        }
+
+        return new ServiceResponse(false, res.ReasonPhrase);
     }
 
     public async Task<ServiceResponse> Delete(Guid Id)
@@ -61,10 +57,7 @@ public class UserExamService(HttpClient _httpClient) : IUserExam
     {
         var res = await _httpClient.PostAsJsonAsync("api/userexam/find", r, ct);
         var data = new PaginatedResponse<UserExam>();
-        if (res.IsSuccessStatusCode)
-        {
-            data = await res.Content.ReadFromJsonAsync<PaginatedResponse<UserExam>>(ct);
-        }
+        if (res.IsSuccessStatusCode) data = await res.Content.ReadFromJsonAsync<PaginatedResponse<UserExam>>(ct);
 
         return data;
     }
@@ -73,10 +66,7 @@ public class UserExamService(HttpClient _httpClient) : IUserExam
     {
         var res = await _httpClient.PostAsJsonAsync("api/userexam/findReport", r, ct);
         var data = new PaginatedResponse<UserExam>();
-        if (res.IsSuccessStatusCode)
-        {
-            data = await res.Content.ReadFromJsonAsync<PaginatedResponse<UserExam>>(ct);
-        }
+        if (res.IsSuccessStatusCode) data = await res.Content.ReadFromJsonAsync<PaginatedResponse<UserExam>>(ct);
 
         return data;
     }

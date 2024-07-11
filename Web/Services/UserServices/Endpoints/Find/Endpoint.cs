@@ -12,9 +12,9 @@ public class Endpoint(IUser repo) : Endpoint<FindRequest, PaginatedResponse<Appl
         Post("/user/Find");
     }
 
-    public override async Task HandleAsync(FindRequest r,CancellationToken ct)
+    public override async Task HandleAsync(FindRequest r, CancellationToken ct)
     {
-        var res = await repo.Find(r,ct);
+        var res = await repo.Find(r, ct);
         await SendAsync(res, cancellation: ct);
     }
 }

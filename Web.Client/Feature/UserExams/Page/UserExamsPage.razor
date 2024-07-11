@@ -1,17 +1,17 @@
 ﻿@page "/exam/userexam/{Id:Guid}"
-@using global::Shared.BankSoal
-@using global::Shared.Common
-@using global::Shared.RoomSet
-@using global::Shared.TakeExam
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@using Web.Client.Interfaces
 @layout UserExamLayout
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Superuser,User")]
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IDialogService Dialog
-@inject ProtectedSessionStorage ProtectedSessionStore
+@inject ISessionStorageService SessionStorage
+@using Blazored.SessionStorage
+@using global::Shared.BankSoal
+@using global::Shared.Common
+@using global::Shared.RoomSet
+@using global::Shared.TakeExam
+@using Microsoft.AspNetCore.Authorization
+@using Web.Client.Interfaces
 @implements IDisposable
 
 <NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="OnBeforeNavBack"/>
@@ -49,7 +49,7 @@ else
                                         <MudText Typo="Typo.body1">@item.Soal.Nomor</MudText>
                                     </MudPaper>
                                     <MudPaper Class="flex-1 d-flex flex-column" Elevation="0">
-                                        <MudText Class="m-2">@((MarkupString)@item.Soal.Pertanyaan)</MudText>
+                                        <MudText Class="m-2">@((MarkupString)item.Soal.Pertanyaan)</MudText>
                                         <MudRadioGroup T="SoalJawaban?" Class="ml-3" ValueChanged="OnPilihJawaban" Value="item.SoalJawaban">
                                             @{
                                                 foreach (var jawaban in item.Soal.PilihanJawaban)
@@ -145,7 +145,7 @@ else
     private Room room;
     private UserExam userExam;
 
-    private List<UserAnswer> jawabanUser = new List<UserAnswer>();
+    private List<UserAnswer> jawabanUser = new();
 
     MudExRichTextEdit Editor;
     MudWatch _watch = new();
@@ -155,12 +155,12 @@ else
     bool reRender;
     string testasd;
     bool isLoadTime = true;
-    string privateKey = "zlxkjcoijasdfnwqwesfvlaksnoaiscnzxnocqanqwf";
+    readonly string privateKey = "zlxkjcoijasdfnwqwesfvlaksnoaiscnzxnocqanqwf";
     private Timer? _timer;
 
     protected override async Task OnInitializedAsync()
     {
-        _timer = new System.Threading.Timer(
+        _timer = new Timer(
             e =>
             {
                 InvokeAsync(async () =>
@@ -168,7 +168,7 @@ else
                     //testasd = DateTime.Now.ToString();
                     if (userExam != null)
                     {
-                        await ProtectedSessionStore.SetAsync(privateKey, _watch.Value);
+                        await SessionStorage.SetItemAsync(privateKey, _watch.Value);
                     }
 
                     // Call this to force the server to send a new updated view
@@ -195,10 +195,10 @@ else
             room = await _roomRepo.Get(userExam.RoomId);
             soalPaging = await userExam.UserAnswers.OrderBy(x => x.Soal.Nomor).ToPagingList(1, 10);
 
-            var timeleft = await ProtectedSessionStore.GetAsync<TimeSpan>(privateKey);
-            if (timeleft.Success)
+            var timeleft = await SessionStorage.GetItemAsync<TimeSpan>(privateKey);
+            if (timeleft != null)
             {
-                userExam.TimeLeft = timeleft.Value;
+                userExam.TimeLeft = timeleft;
             }
 
             isLoading = false;
@@ -244,7 +244,7 @@ else
         var res = await _userExamRepo.Update(userExam);
         if (res.Flag)
         {
-            await ProtectedSessionStore.DeleteAsync(privateKey);
+            await SessionStorage.RemoveItemAsync(privateKey);
             _navigationManager.NavigateTo($"/exam/examresult/{Id}");
         }
     }
@@ -254,8 +254,8 @@ else
     {
         var result = await Dialog.ShowMessageBox(
             "Warning",
-            $"Yakin Jawaban anda sudah benar?",
-            yesText: "Ya", cancelText: "Tidak");
+            "Yakin Jawaban anda sudah benar?",
+            "Ya", cancelText: "Tidak");
         StateHasChanged();
         if (result != null)
         {
@@ -267,7 +267,7 @@ else
             var res = await _userExamRepo.Update(userExam);
             if (res.Flag)
             {
-                await ProtectedSessionStore.DeleteAsync(privateKey);
+                await SessionStorage.RemoveItemAsync(privateKey);
                 _navigationManager.NavigateTo($"/exam/examresult/{Id}");
             }
         }

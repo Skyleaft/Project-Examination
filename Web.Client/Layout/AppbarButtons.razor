@@ -1,6 +1,4 @@
-﻿
-
-@inject AuthenticationStateProvider AuthenticationStateProvider
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
 <MudTooltip Delay="1000" Text="Notifications">
     <MudBadge Color="Color.Secondary" Dot="true" Overlap="true" Visible="_newNotificationsAvailable">
         <MudMenu Icon="@Icons.Material.Outlined.Notifications" Color="Color.Inherit" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopCenter" PopoverClass="docs-layout-menu-shadow" ListClass="pa-2 docs-menu-list" LockScroll="true">
@@ -16,30 +14,30 @@
                         <MudText Typo="Typo.subtitle2">@message.Title</MudText>
                         <MudText Typo="Typo.body2">@($"{message.Authors.FirstOrDefault()?.DisplayName} • {message.PublishDate.ToString("MM/dd/yyyy")}")</MudText>
                     </MudMenuItem>
-                    <MudDivider Class="my-2" />
+                    <MudDivider Class="my-2"/>
                 }
             }
             else
             {
                 <div class="d-flex justify-center align-center px-2 py-8 relative">
                     <MudText Class="mud-text-secondary my-12">Nothing new :(</MudText>
-                    <MudBlazorLogo Class="docs-logo-filter mx-16 absolute" />
+                    <MudBlazorLogo Class="docs-logo-filter mx-16 absolute"/>
                 </div>
             }
         </MudMenu>
     </MudBadge>
 </MudTooltip>
 <MudTooltip Delay="1000" Text="@(DarkLightModeButtonText)">
-    <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@LayoutService.CycleDarkLightModeAsync" />
+    <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@LayoutService.CycleDarkLightModeAsync"/>
 </MudTooltip>
-<MudDivider FlexItem="true" Vertical="true" DividerType="DividerType.Middle" Class="mx-4 my-4" />
+<MudDivider FlexItem="true" Vertical="true" DividerType="DividerType.Middle" Class="mx-4 my-4"/>
 <AuthorizeView>
     <Authorized>
         @{
             if (string.IsNullOrEmpty(_avaSource))
             {
                 <MudBadge Color="Color.Success" Overlap="true" Bordered="true" Class="mr-3">
-                    <MudAvatar Style="height:35px; width:35px;" Color="Color.Primary" >
+                    <MudAvatar Style="height:35px; width:35px;" Color="Color.Primary">
                         @context.User.Identity.Name[0]
                     </MudAvatar>
                 </MudBadge>
@@ -51,7 +49,6 @@
                         <MudImage Src="@_avaSource"></MudImage>
                     </MudAvatar>
                 </MudBadge>
-                
             }
         }
         <MudText Class="mr-2">@context.User.Identity.Name</MudText>
@@ -69,5 +66,5 @@
 @code
 {
     private string? currentUrl;
-    
+
 }

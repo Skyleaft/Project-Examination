@@ -1,5 +1,4 @@
 ﻿using FastEndpoints;
-using Shared.RoomSet;
 using Shared.TakeExam;
 using Web.Client.Interfaces;
 

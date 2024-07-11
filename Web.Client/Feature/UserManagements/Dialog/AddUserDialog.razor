@@ -1,11 +1,6 @@
 ﻿@using global::Shared.Common
 @using global::Shared.Users
-@using Mapster
-@using Web.Client.Feature.References
 @using Web.Client.Interfaces
-@using Web.Client.Services
-@using Web.Client.Shared.Models
-
 <EditForm Model="@userModel" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator/>
     <MudDialog>
@@ -127,16 +122,21 @@
     [Inject] IUser _userService { get; set; }
     [Inject] IReferences _reference { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
-    void Cancel() => MudDialog.Cancel();
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
     bool success;
 
-    Provinsi SelectedProv = null;
-    Kota SelectedKota = null;
+    Provinsi SelectedProv;
+    Kota SelectedKota;
 
-    UserAddDTO userModel = new UserAddDTO();
-    List<Provinsi> dataProv = new List<Provinsi>();
-    List<Kota> dataKota = new List<Kota>();
-    List<Kota> filterKota = new List<Kota>();
+    readonly UserAddDTO userModel = new();
+    List<Provinsi> dataProv = new();
+    List<Kota> dataKota = new();
+    List<Kota> filterKota = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -170,7 +170,7 @@
             DialogService.ShowMessageBox(
                 "Info",
                 data.Message,
-                yesText: "Ok");
+                "Ok");
         }
         else
         {
@@ -178,7 +178,7 @@
             DialogService.ShowMessageBox(
                 "Error",
                 data.Message,
-                yesText: "Ok");
+                "Ok");
         }
     }
 

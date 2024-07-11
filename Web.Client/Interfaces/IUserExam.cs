@@ -10,8 +10,8 @@ public interface IUserExam
     public Task<ServiceResponse> Update(UserExam r);
     public Task<ServiceResponse> Delete(Guid Id);
     public Task<UserExam> Get(Guid Id);
-    public Task<PaginatedResponse<UserExam>> Find(FindRequest r,CancellationToken ct,string? UserId="");
-    public Task<PaginatedResponse<UserExam>> FindReport(FindRequest r,CancellationToken ct);
+    public Task<PaginatedResponse<UserExam>> Find(FindRequest r, CancellationToken ct, string? UserId = "");
+    public Task<PaginatedResponse<UserExam>> FindReport(FindRequest r, CancellationToken ct);
     public Task<bool> SaveTimeLeft(Guid Id, TimeSpan timeLeft);
 }
 
@@ -26,5 +26,4 @@ public class CreateUserExamDTO
     public DateTime? EndDate { get; set; }
     public TimeSpan TimeLeft { get; set; }
     public List<UserAnswer>? UserAnswers { get; set; }
-    
 }

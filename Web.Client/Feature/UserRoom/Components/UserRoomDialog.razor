@@ -1,9 +1,7 @@
 ﻿@using global::Shared.BankSoal
-@using global::Shared.Common
 @using global::Shared.RoomSet
 @using global::Shared.TakeExam
 @using Web.Client.Interfaces
-@using Web.Client.Shared.Extensions
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <MudDialog>
@@ -66,20 +64,25 @@
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] private IExam _examRepo { get; set; }
     [Inject] private IRoom _roomRepo { get; set; }
-    [Inject]private NavigationManager _navigationManager { get; set; }
+    [Inject] private NavigationManager _navigationManager { get; set; }
 
     [Parameter]
     public
-        UserExam userExam { get; set; } = new UserExam();
+        UserExam userExam { get; set; } = new();
+
     [Parameter]
     public
-        Room room { get; set; } = new Room();
-    
-    void Cancel() => MudDialog.Cancel();
+        Room room { get; set; } = new();
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
     int examid;
 
 
-    List<Exam> _exams = new List<Exam>();
+    List<Exam> _exams = new();
     DateTime? dateStart = DateTime.Today;
     DateTime? dateEnd = DateTime.Today;
 
@@ -113,7 +116,7 @@
 
     private void CreateUserExam()
     {
-        _navigationManager.NavigateTo($"exam/exambefore/{userExam.Id}",true);
+        _navigationManager.NavigateTo($"exam/exambefore/{userExam.Id}", true);
     }
 
 }

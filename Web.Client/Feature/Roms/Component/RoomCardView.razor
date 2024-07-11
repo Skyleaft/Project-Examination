@@ -1,5 +1,4 @@
-﻿@using global::Shared.Common
-@using global::Shared.RoomSet
+﻿@using global::Shared.RoomSet
 @using Web.Client.Interfaces
 @inject IDialogService Dialog
 <MudCard Style="width: 350px; min-width: 350px">
@@ -15,10 +14,10 @@
             else
             {
                 <MudIcon Icon="@Icons.Material.Filled.Circle"
-                         Color="data.IsActive == true ? Color.Success : Color.Error"/>
+                         Color="data.IsActive ? Color.Success : Color.Error"/>
             }
         }
-        
+
     </MudCardHeader>
     <MudCardContent>
         <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
@@ -47,12 +46,11 @@
                 else
                 {
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnActivate">Aktifkan</MudButton>
-                } 
+                }
             }
-            
         }
 
-        
+
     </MudCardActions>
 </MudCard>
 
@@ -64,26 +62,27 @@
     [Inject] IRoom _roomRepo { get; set; }
     private bool isWaitActiveState;
 
-    DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
+    DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 
     private async Task OnActivate()
     {
         isWaitActiveState = true;
         data.IsActive = true;
         await Task.Delay(300);
-        var status =  await _roomRepo.Update(data);
+        var status = await _roomRepo.Update(data);
         isWaitActiveState = false;
         StateHasChanged();
     }
+
     private async Task OnDeactive()
     {
         isWaitActiveState = true;
         data.IsActive = false;
         await Task.Delay(300);
-        var status =  await _roomRepo.Update(data);
+        var status = await _roomRepo.Update(data);
         isWaitActiveState = false;
         StateHasChanged();
     }
-    
+
 
 }

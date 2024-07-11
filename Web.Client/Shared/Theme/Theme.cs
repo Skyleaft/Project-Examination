@@ -4,178 +4,182 @@
 
 using MudBlazor;
 
-namespace Web.Client.Shared.Theme
+namespace Web.Client.Shared.Theme;
+
+public class Themes
 {
-    public class Themes
+    public static MudTheme LandingPageTheme()
     {
-        public static MudTheme LandingPageTheme()
+        var theme = new MudTheme
         {
-            var theme = new MudTheme()
-            {
-                PaletteLight = LandingPageLightPalette,
-                PaletteDark = LandingPageDarkPalette,
-                Shadows = LandingPageShadows,
-                LayoutProperties = LandingPageLayoutProperties,
-                ZIndex = new ZIndex(),
-                Typography = LandingPageTypography
-            };
-            return theme;
+            PaletteLight = LandingPageLightPalette,
+            PaletteDark = LandingPageDarkPalette,
+            Shadows = LandingPageShadows,
+            LayoutProperties = LandingPageLayoutProperties,
+            ZIndex = new ZIndex(),
+            Typography = LandingPageTypography
+        };
+        return theme;
+    }
+
+    public static MudTheme DocsTheme()
+    {
+        var theme = new MudTheme
+        {
+            PaletteLight = DocsLightPalette,
+            PaletteDark = DocsDarkPalette,
+            LayoutProperties = new LayoutProperties()
+        };
+        return theme;
+    }
+
+
+    #region Docs
+
+    private static readonly PaletteLight DocsLightPalette = new()
+    {
+        Black = "#110e2d",
+        AppbarText = "#424242",
+        AppbarBackground = "rgba(255,255,255,0.8)",
+        DrawerBackground = "#ffffff",
+        GrayLight = "#e8e8e8",
+        GrayLighter = "#f9f9f9"
+    };
+
+    private static readonly PaletteDark DocsDarkPalette = new()
+    {
+        Primary = "#7e6fff",
+        Surface = "#1e1e2d",
+        Background = "#1a1a27",
+        BackgroundGray = "#151521",
+        AppbarText = "#92929f",
+        AppbarBackground = "rgba(26,26,39,0.8)",
+        DrawerBackground = "#1a1a27",
+        ActionDefault = "#74718e",
+        ActionDisabled = "#9999994d",
+        ActionDisabledBackground = "#605f6d4d",
+        TextPrimary = "#b2b0bf",
+        TextSecondary = "#92929f",
+        TextDisabled = "#ffffff33",
+        DrawerIcon = "#92929f",
+        DrawerText = "#92929f",
+        GrayLight = "#2a2833",
+        GrayLighter = "#1e1e2d",
+        Info = "#4a86ff",
+        Success = "#3dcb6c",
+        Warning = "#ffb545",
+        Error = "#ff3f5f",
+        LinesDefault = "#33323e",
+        TableLines = "#33323e",
+        Divider = "#292838",
+        OverlayLight = "#1e1e2d80"
+    };
+
+    #endregion
+
+    #region LandingPage
+
+    private static readonly LayoutProperties LandingPageLayoutProperties = new()
+    {
+        DefaultBorderRadius = "6px"
+    };
+
+    private static readonly Typography LandingPageTypography = new()
+    {
+        Default = new Default
+        {
+            FontFamily = new[] { "Poppins", "Roboto", "Arial", "sans-serif", "Helvetica" },
+            LetterSpacing = "normal"
+        },
+        H1 = new H1
+        {
+            FontSize = "4rem",
+            FontWeight = 700
+        },
+        H3 = new H3
+        {
+            FontSize = "3rem",
+            FontWeight = 600,
+            LineHeight = 1.8
+        },
+        H4 = new H4
+        {
+            FontSize = "1.8rem",
+            FontWeight = 700
+        },
+        H5 = new H5
+        {
+            FontSize = "1.8rem",
+            FontWeight = 500,
+            LineHeight = 2
+        },
+        H6 = new H6
+        {
+            FontSize = "1.125rem",
+            FontWeight = 500,
+            LineHeight = 1.6
+        },
+        Subtitle1 = new Subtitle1
+        {
+            FontSize = "1.1rem",
+            FontWeight = 500
+        },
+        Subtitle2 = new Subtitle2
+        {
+            FontSize = "1rem",
+            FontWeight = 600,
+            LineHeight = 1.8
+        },
+        Body1 = new Body1
+        {
+            FontSize = "1rem",
+            FontWeight = 400
+        },
+        Button = new Button
+        {
+            TextTransform = "none"
         }
+    };
 
-        public static MudTheme DocsTheme()
-        {
-            var theme = new MudTheme()
-            {
-                PaletteLight = DocsLightPalette,
-                PaletteDark = DocsDarkPalette,
-                LayoutProperties = new LayoutProperties()
-            };
-            return theme;
-        }
+    private static readonly PaletteLight LandingPageLightPalette = new()
+    {
+        Primary = "#11998e",
+        AppbarText = "#424242",
+        AppbarBackground = "rgba(0,0,0,0)",
+        BackgroundGray = "#F9FAFC",
+        TextSecondary = "#425466",
+        Dark = "#110E2D",
+        DarkLighten = "#1A1643",
+        GrayDefault = "#4B5563",
+        GrayLight = "#9CA3AF",
+        GrayLighter = "#adbdccff"
+    };
 
-        
+    private static readonly PaletteDark LandingPageDarkPalette = new()
+    {
+        Primary = "#11b0a5",
+        AppbarText = "#92929f",
+        AppbarBackground = "rgba(0,0,0,0)",
+        BackgroundGray = "#1a1a27",
+        Surface = "#1e1e2d",
+        Background = "#151521",
+        Dark = "#111019",
+        DarkLighten = "#1A1643",
+        TextPrimary = "#ffffff",
+        TextSecondary = "#92929f",
+        TextDisabled = "#ffffff33",
+        ActionDefault = "#92929f",
+        DrawerIcon = "#92929f",
+        DrawerText = "#92929f",
+        DrawerBackground = "#151521",
+        OverlayLight = "#1e1e2d80",
+        Divider = "#5c5c6a"
+    };
 
-        #region Docs
-
-        private static readonly PaletteLight DocsLightPalette = new()
+    private static readonly Shadow LandingPageShadows = new()
+    {
+        Elevation = new[]
         {
-            Black = "#110e2d",
-            AppbarText = "#424242",
-            AppbarBackground = "rgba(255,255,255,0.8)",
-            DrawerBackground = "#ffffff",
-            GrayLight = "#e8e8e8",
-            GrayLighter = "#f9f9f9"
-        };
-
-        private static readonly PaletteDark DocsDarkPalette  = new()
-        {
-            Primary = "#7e6fff",
-            Surface= "#1e1e2d",
-            Background = "#1a1a27",
-            BackgroundGray = "#151521",
-            AppbarText = "#92929f",
-            AppbarBackground = "rgba(26,26,39,0.8)",
-            DrawerBackground = "#1a1a27",
-            ActionDefault = "#74718e",
-            ActionDisabled = "#9999994d",
-            ActionDisabledBackground = "#605f6d4d",
-            TextPrimary = "#b2b0bf",
-            TextSecondary = "#92929f",
-            TextDisabled = "#ffffff33",
-            DrawerIcon = "#92929f",
-            DrawerText = "#92929f",
-            GrayLight = "#2a2833",
-            GrayLighter = "#1e1e2d",
-            Info = "#4a86ff",
-            Success = "#3dcb6c",
-            Warning = "#ffb545",
-            Error = "#ff3f5f",
-            LinesDefault = "#33323e",
-            TableLines = "#33323e",
-            Divider = "#292838",
-            OverlayLight = "#1e1e2d80"
-        };
-        #endregion
-        #region LandingPage
-
-        private static readonly LayoutProperties LandingPageLayoutProperties = new()
-        {
-            DefaultBorderRadius = "6px"
-        };
-        private static readonly Typography LandingPageTypography = new()
-        {
-            Default = new Default()
-            {
-                FontFamily = new[] { "Poppins", "Roboto", "Arial", "sans-serif", "Helvetica" },
-                LetterSpacing = "normal"
-            },
-            H1 = new H1()
-            {
-                FontSize = "4rem",
-                FontWeight = 700,
-            },
-            H3 = new H3()
-            {
-                FontSize = "3rem",
-                FontWeight = 600,
-                LineHeight = 1.8,
-            },
-            H4 = new H4()
-            {
-                FontSize = "1.8rem",
-                FontWeight = 700,
-            },
-            H5 = new H5()
-            {
-                FontSize = "1.8rem",
-                FontWeight = 500,
-                LineHeight = 2,
-            },
-            H6 = new H6()
-            {
-                FontSize = "1.125rem",
-                FontWeight = 500,
-                LineHeight = 1.6,
-            },
-            Subtitle1 = new Subtitle1()
-            {
-                FontSize = "1.1rem",
-                FontWeight = 500
-            },
-            Subtitle2 = new Subtitle2()
-            {
-                FontSize = "1rem",
-                FontWeight = 600,
-                LineHeight = 1.8,
-            },
-            Body1 = new Body1()
-            {
-                FontSize = "1rem",
-                FontWeight = 400
-            },
-            Button = new Button()
-            {
-                TextTransform = "none"
-            }
-        };
-        private static readonly PaletteLight LandingPageLightPalette = new()
-        {
-            Primary = "#11998e",
-            AppbarText = "#424242",
-            AppbarBackground = "rgba(0,0,0,0)",
-            BackgroundGray = "#F9FAFC",
-            TextSecondary = "#425466",
-            Dark = "#110E2D",
-            DarkLighten = "#1A1643",
-            GrayDefault = "#4B5563",
-            GrayLight = "#9CA3AF",
-            GrayLighter = "#adbdccff"
-        };
-        private static readonly PaletteDark LandingPageDarkPalette = new()
-        {
-            Primary = "#11b0a5",
-            AppbarText = "#92929f",
-            AppbarBackground = "rgba(0,0,0,0)",
-            BackgroundGray = "#1a1a27",
-            Surface= "#1e1e2d",
-            Background = "#151521",
-            Dark = "#111019",
-            DarkLighten = "#1A1643",
-            TextPrimary = "#ffffff",
-            TextSecondary = "#92929f",
-            TextDisabled = "#ffffff33",
-            ActionDefault = "#92929f",
-            DrawerIcon = "#92929f",
-            DrawerText = "#92929f",
-            DrawerBackground = "#151521",
-            OverlayLight = "#1e1e2d80",
-            Divider = "#5c5c6a"
-        };
-
-        private static readonly Shadow LandingPageShadows = new()
-        {
-            Elevation = new string[]
-            {
             "none",
             "0 2px 4px -1px rgba(6, 24, 44, 0.2)",
             "0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12)",
@@ -202,8 +206,8 @@ namespace Web.Client.Shared.Theme
             "0 50px 100px -20px rgba(50, 50, 93, 0.25), 0 30px 60px -30px rgba(0, 0, 0, 0.30)",
             "2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),12.5px 12.5px 10px rgba(0, 0, 0, 0.035),22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042),41.8px 41.8px 33.4px rgba(0, 0, 0, 0.05),100px 100px 80px rgba(0, 0, 0, 0.07)",
             "0px 0px 20px 0px rgba(0, 0, 0, 0.05)"
-            }
-        };
-        #endregion
-    }
+        }
+    };
+
+    #endregion
 }

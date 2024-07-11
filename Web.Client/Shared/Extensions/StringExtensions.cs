@@ -15,7 +15,6 @@ public static class StringExtensions
             return string.Empty;
         var builder = new StringBuilder();
         for (var i = 0; i < source.Length; i++)
-        {
             if (char.IsLower(source[i])) // if current char is already lowercase
             {
                 builder.Append(source[i]);
@@ -46,7 +45,6 @@ public static class StringExtensions
             {
                 builder.Append(char.ToLowerInvariant(source[i]));
             }
-        }
 
         return builder.ToString();
     }
@@ -89,7 +87,7 @@ public static class StringExtensions
             return urlEncodedBase64compressedCode;
         }
     }
-    
+
     public static string GenerateRandomString(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

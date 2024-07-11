@@ -10,7 +10,9 @@
         @{
             if (!string.IsNullOrEmpty(data.LastModifiedBy))
             {
-                <MudText Typo="Typo.caption"><i>*@data.LastModifiedBy @(data.LastModifiedOn.Value.ToString("dd/MM/yyyy HH:mm "))</i></MudText>
+                <MudText Typo="Typo.caption">
+                    <i>*@data.LastModifiedBy @(data.LastModifiedOn.Value.ToString("dd/MM/yyyy HH:mm "))</i>
+                </MudText>
             }
         }
     </MudCardContent>
@@ -38,9 +40,9 @@
         var result = await Dialog.ShowMessageBox(
             "Warning",
             $"Yakin Mau Dihapus Data :{data.Nama}",
-            yesText: "Delete",cancelText:"Cancel");
+            "Delete", cancelText: "Cancel");
         StateHasChanged();
-        if (result!=null)
+        if (result != null)
         {
             var res = await _examRepo.Delete(data.Id);
             if (res.Flag)
@@ -48,7 +50,7 @@
                 await Dialog.ShowMessageBox(
                     "Info",
                     res.Message,
-                    yesText: "Ok");
+                    "Ok");
                 await RefreshData.InvokeAsync(1);
                 StateHasChanged();
             }
@@ -57,9 +59,8 @@
                 await Dialog.ShowMessageBox(
                     "Error",
                     res.Message,
-                    yesText: "Ok");
+                    "Ok");
             }
-                
         }
     }
 

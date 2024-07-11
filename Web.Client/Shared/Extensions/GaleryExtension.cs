@@ -1,15 +1,16 @@
-﻿namespace Web.Client.Shared.Extensions
+﻿namespace Web.Client.Shared.Extensions;
+
+public class GaleryExtension
 {
-    public class GaleryExtension
+    private readonly IConfiguration _configuration;
+
+    public GaleryExtension(IConfiguration configuration)
     {
-        private readonly IConfiguration _configuration;
-        public GaleryExtension(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-        public string SetImageURL(string imgUrl)
-        {
-            return _configuration.GetConnectionString("ApiConnection") + imgUrl;
-        }
+        _configuration = configuration;
+    }
+
+    public string SetImageURL(string imgUrl)
+    {
+        return _configuration.GetConnectionString("ApiConnection") + imgUrl;
     }
 }

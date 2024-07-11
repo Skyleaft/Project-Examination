@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Components.Authorization;
+﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Shared.BankSoal;
 using Shared.Common;
 using Shared.RoomSet;
 using Web.Client.Interfaces;
@@ -12,8 +10,8 @@ namespace Web.Services.RoomServices;
 
 public class RoomService : IRoom
 {
-    private readonly AppDbContext _dbContext;
     private readonly AuthenticationStateProvider _authenticationStateProvider;
+    private readonly AppDbContext _dbContext;
 
     public RoomService(AppDbContext dbContext, AuthenticationStateProvider authenticationStateProvider)
     {
@@ -35,10 +33,7 @@ public class RoomService : IRoom
     public async Task<ServiceResponse> Update(Room r)
     {
         var room = await Get(r.Id);
-        if (room == null)
-        {
-            return new ServiceResponse(false, "data tidak ditemukan");
-        }
+        if (room == null) return new ServiceResponse(false, "data tidak ditemukan");
 
         r.LastModifiedOn = DateTime.Now;
         _dbContext.Room.Update(r);
@@ -51,10 +46,7 @@ public class RoomService : IRoom
     public async Task<ServiceResponse> Delete(Guid Id)
     {
         var find = await _dbContext.Room.FindAsync(Id);
-        if (find == null)
-        {
-            return new ServiceResponse(false, "data tidak ditemukan");
-        }
+        if (find == null) return new ServiceResponse(false, "data tidak ditemukan");
 
         _dbContext.Room.Remove(find);
         await _dbContext.SaveChangesAsync();
@@ -71,10 +63,7 @@ public class RoomService : IRoom
             .ThenInclude(z => z.PilihanJawaban)
             .Include(x => x.ListPeserta)
             .FirstOrDefaultAsync(x => x.Id == Id);
-        if (find == null)
-        {
-            return null;
-        }
+        if (find == null) return null;
 
         return find;
     }
@@ -87,10 +76,7 @@ public class RoomService : IRoom
             .Include(x => x.Exam)
             .ThenInclude(y => y.Soals)
             .FirstOrDefaultAsync(x => x.Kode == kode);
-        if (find == null)
-        {
-            return null;
-        }
+        if (find == null) return null;
 
         return find;
     }

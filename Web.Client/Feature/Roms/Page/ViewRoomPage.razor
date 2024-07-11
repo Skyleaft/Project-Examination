@@ -1,11 +1,10 @@
 ﻿@page "/room/view"
+@implements IBrowserViewportObserver
 @using global::Shared.Common
 @using global::Shared.RoomSet
 @using Microsoft.AspNetCore.Authorization
-@using Web.Client.Interfaces
 @using Web.Client.Feature.Roms.Component
-@using Web.Client.Shared.Models
-@implements IBrowserViewportObserver
+@using Web.Client.Interfaces
 @implements IAsyncDisposable
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @attribute [Authorize(Roles = "Superuser,Dosen,Operator")]
@@ -70,20 +69,20 @@
     private Breakpoint curentBreak;
     private bool isLoading = true;
 
-    private FindRequest request = new FindRequest()
+    private readonly FindRequest request = new()
     {
         Page = 1,
         PageSize = 15
     };
 
-    PaginatedResponse<Room> dataRoom = new PaginatedResponse<Room>();
+    PaginatedResponse<Room> dataRoom = new();
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await BrowserViewportService.SubscribeAsync(this, fireImmediately: true);
+            await BrowserViewportService.SubscribeAsync(this);
             dataRoom = await _repo.Find(request, new CancellationToken());
             isLoading = false;
             StateHasChanged();
@@ -91,6 +90,7 @@
 
         await base.OnAfterRenderAsync(firstRender);
     }
+
     protected override async Task OnInitializedAsync()
     {
         var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -111,7 +111,10 @@
     }
 
 
-    public async ValueTask DisposeAsync() => await BrowserViewportService.UnsubscribeAsync(this);
+    public async ValueTask DisposeAsync()
+    {
+        await BrowserViewportService.UnsubscribeAsync(this);
+    }
 
     public Task NotifyBrowserViewportChangeAsync(BrowserViewportEventArgs browserViewportEventArgs)
     {

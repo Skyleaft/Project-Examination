@@ -1,14 +1,11 @@
 ﻿@page "/userroom"
-@using global::Shared.BankSoal
-@using global::Shared.Common
-@using global::Shared.RoomSet
-@using global::Shared.TakeExam
-@using Microsoft.AspNetCore.Authorization
-@using MudBlazor.Extensions.Core
-@using Web.Client.Interfaces
-@using Web.Client.Feature.UserRoom.Components
 @attribute [Authorize(Roles = "Superuser,User")]
 @implements IBrowserViewportObserver
+@using global::Shared.Common
+@using global::Shared.TakeExam
+@using Microsoft.AspNetCore.Authorization
+@using Web.Client.Feature.UserRoom.Components
+@using Web.Client.Interfaces
 @implements IAsyncDisposable
 @inject IDialogService Dialog
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -26,8 +23,8 @@
         <MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
             <MudSpacer/>
         </MudHidden>
-        <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" OnClick="()=>PageChanged(1)"></MudIconButton>
-        <MudButton StartIcon="@Icons.Material.Filled.Search" 
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" OnClick="() => PageChanged(1)"></MudIconButton>
+        <MudButton StartIcon="@Icons.Material.Filled.Search"
                    Class="pa-4"
                    OnClick="OnSearchRoom"
                    Color="Color.Primary">
@@ -70,20 +67,20 @@
     private Breakpoint curentBreak;
     private bool isLoading = true;
 
-    private FindRequest request = new FindRequest()
+    private readonly FindRequest request = new()
     {
         Page = 1,
         PageSize = 15
     };
 
-    PaginatedResponse<UserExam> data = new PaginatedResponse<UserExam>();
+    PaginatedResponse<UserExam> data = new();
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await BrowserViewportService.SubscribeAsync(this, fireImmediately: true);
+            await BrowserViewportService.SubscribeAsync(this);
             data = await _repo.Find(request, new CancellationToken());
             isLoading = false;
             StateHasChanged();
@@ -91,12 +88,13 @@
 
         await base.OnAfterRenderAsync(firstRender);
     }
+
     protected override async Task OnInitializedAsync()
     {
         var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authstate.User;
     }
-    
+
 
     private async Task PageChanged(int page)
     {
@@ -108,7 +106,10 @@
     }
 
 
-    public async ValueTask DisposeAsync() => await BrowserViewportService.UnsubscribeAsync(this);
+    public async ValueTask DisposeAsync()
+    {
+        await BrowserViewportService.UnsubscribeAsync(this);
+    }
 
     public Task NotifyBrowserViewportChangeAsync(BrowserViewportEventArgs browserViewportEventArgs)
     {
@@ -138,8 +139,8 @@
     }
 
     public Guid Id { get; }
-    
-    DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
+
+    readonly DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 
     private async Task OnSearchRoom()
     {

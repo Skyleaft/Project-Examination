@@ -7,58 +7,58 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-        <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
-        <PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="7.0.0-rc.1" />
-        <PackageReference Include="FuzzySharp" Version="2.0.2" />
-        <PackageReference Include="MailKit" Version="4.7.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.6" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.6" />
-        <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.6" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-        <PackageReference Include="MimeKit" Version="4.7.0" />
-        <PackageReference Include="MudBlazor" Version="7.0.0-rc.2" />
-        <PackageReference Include="MudBlazor.ThemeManager" Version="1.1.0" />
-        <PackageReference Include="MudExRichTextEditor" Version="1.0.9" />
+        <PackageReference Include="Blazored.LocalStorage" Version="4.5.0"/>
+        <PackageReference Include="Blazored.SessionStorage" Version="2.4.0"/>
+        <PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="7.0.0-rc.1"/>
+        <PackageReference Include="FuzzySharp" Version="2.0.2"/>
+        <PackageReference Include="MailKit" Version="4.7.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0"/>
+        <PackageReference Include="MimeKit" Version="4.7.1"/>
+        <PackageReference Include="MudBlazor" Version="7.1.0"/>
+        <PackageReference Include="MudBlazor.ThemeManager" Version="2.0.0"/>
+        <PackageReference Include="MudExRichTextEditor" Version="1.0.9"/>
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\css\app.css" />
-      <_ContentIncludedByDefault Remove="Feature\BankSoal\Page\Component\ExamCard.razor" />
-      <_ContentIncludedByDefault Remove="Feature\BankSoal\Page\Component\RichToolBarContent.razor" />
+        <_ContentIncludedByDefault Remove="wwwroot\css\app.css"/>
+        <_ContentIncludedByDefault Remove="Feature\BankSoal\Page\Component\ExamCard.razor"/>
+        <_ContentIncludedByDefault Remove="Feature\BankSoal\Page\Component\RichToolBarContent.razor"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Properties\launchSettings.json" />
+        <None Remove="Properties\launchSettings.json"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Shared\Shared.csproj" />
+        <ProjectReference Include="..\Shared\Shared.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Feature\BankSoal\Component\RichToolBarContent.razor" />
-      <AdditionalFiles Include="Feature\Dashboards\Pages\Dashboard.razor" />
-      <AdditionalFiles Include="Feature\Register\Page.razor" />
-      <AdditionalFiles Include="Feature\UserManagements\Dialog\AddUserDialog.razor" />
-      <AdditionalFiles Include="Feature\UserManagements\Dialog\EditUserDialog.razor" />
-      <AdditionalFiles Include="Feature\UserManagements\Page\UserManagement.razor" />
-      <AdditionalFiles Include="Layout\Appbar.razor" />
-      <AdditionalFiles Include="Layout\AppbarButtons.razor" />
-      <AdditionalFiles Include="Layout\BlankLayout.razor" />
-      <AdditionalFiles Include="Layout\MainLayout.razor" />
-      <AdditionalFiles Include="Layout\NavMenu.razor" />
-      <AdditionalFiles Include="Shared\NotificationContent\Announcement_v7_In_Development.razor" />
+        <AdditionalFiles Include="Feature\BankSoal\Component\RichToolBarContent.razor"/>
+        <AdditionalFiles Include="Feature\Dashboards\Pages\Dashboard.razor"/>
+        <AdditionalFiles Include="Feature\Register\Page.razor"/>
+        <AdditionalFiles Include="Feature\UserManagements\Dialog\AddUserDialog.razor"/>
+        <AdditionalFiles Include="Feature\UserManagements\Dialog\EditUserDialog.razor"/>
+        <AdditionalFiles Include="Feature\UserManagements\Page\UserManagement.razor"/>
+        <AdditionalFiles Include="Layout\Appbar.razor"/>
+        <AdditionalFiles Include="Layout\AppbarButtons.razor"/>
+        <AdditionalFiles Include="Layout\BlankLayout.razor"/>
+        <AdditionalFiles Include="Layout\MainLayout.razor"/>
+        <AdditionalFiles Include="Layout\NavMenu.razor"/>
+        <AdditionalFiles Include="Shared\NotificationContent\Announcement_v7_In_Development.razor"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Feature\UserExams\Component\" />
+        <Folder Include="Feature\UserExams\Component\"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Microsoft.AspNetCore.Components.Server">
-        <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.6\Microsoft.AspNetCore.Components.Server.dll</HintPath>
-      </Reference>
+        <Reference Include="Microsoft.AspNetCore.Components.Server">
+            <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.6\Microsoft.AspNetCore.Components.Server.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
 </Project>

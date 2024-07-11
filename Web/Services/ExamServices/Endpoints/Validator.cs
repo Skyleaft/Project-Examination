@@ -9,7 +9,6 @@ public class ExamValidator : Validator<Exam>
     public ExamValidator()
     {
         RuleForEach(x => x.Soals).SetValidator(new SoalValidator());
-
     }
 }
 

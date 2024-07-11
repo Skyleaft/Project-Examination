@@ -1,10 +1,7 @@
 ﻿@using System.Security.Claims
-@using global::Shared.BankSoal
-@using global::Shared.Common
 @using global::Shared.RoomSet
 @using global::Shared.TakeExam
 @using Web.Client.Interfaces
-@using Web.Client.Shared.Extensions
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <MudDialog>
@@ -15,10 +12,13 @@
                     <MudTextField Variant="Variant.Outlined"
                                   MaxLength="40"
                                   Label="Masukan Kode Ruangan"
-                                  @bind-Value="kodeRoom"></MudTextField>
-                    <MudButton Variant="Variant.Outlined" 
+                                  @bind-Value="kodeRoom">
+                    </MudTextField>
+                    <MudButton Variant="Variant.Outlined"
                                Color="Color.Primary"
-                               OnClick="OnSearchRoom">Cari</MudButton>
+                               OnClick="OnSearchRoom">
+                        Cari
+                    </MudButton>
                 </MudStack>
                 @{
                     if (isLoading)
@@ -43,9 +43,8 @@
                                              Label="Durasi Ujian" ReadOnly
                                              Variant="Variant.Outlined"
                                              Min="0" Max="600"/>
-                        } 
+                        }
                     }
-                    
                 }
             </MudStack>
 
@@ -63,17 +62,21 @@
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] private IUserExam _userExam { get; set; }
     [Inject] private IRoom _roomRepo { get; set; }
-    [Inject]private NavigationManager _navigationManager { get; set; }
+    [Inject] private NavigationManager _navigationManager { get; set; }
 
     private Room room;
 
     private string kodeRoom;
     private bool isLoading;
-    
-    void Cancel() => MudDialog.Cancel();
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
     int examid;
     private string userId;
-    
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -92,27 +95,27 @@
 
     protected override async Task OnInitializedAsync()
     {
-        
         StateHasChanged();
     }
 
 
     private async Task CreateUserExam()
     {
-        if (room!=null)
+        if (room != null)
         {
             var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
             var dial = await DialogService.ShowAsync<BluryDialog>("Registering...", options);
-            
+
             var listSoal = new List<UserAnswer>();
             foreach (var soal in room.Exam.Soals)
             {
-                listSoal.Add(new UserAnswer()
+                listSoal.Add(new UserAnswer
                 {
-                    SoalId = soal.Id,
+                    SoalId = soal.Id
                 });
             }
-            var data = new CreateUserExamDTO()
+
+            var data = new CreateUserExamDTO
             {
                 RoomId = room.Id,
                 UserId = userId,
@@ -121,7 +124,7 @@
                 StartDate = null,
                 EndDate = null
             };
-            
+
             var created = await _userExam.Create(data);
             if (created.isSuccess)
             {
@@ -130,7 +133,7 @@
                 DialogService.ShowMessageBox(
                     "Info",
                     "Anda Telah Terdaftar di Kelas Ujian",
-                    yesText: "Ok");
+                    "Ok");
             }
             else
             {
@@ -138,8 +141,9 @@
                 DialogService.ShowMessageBox(
                     "Error",
                     created.Message,
-                    yesText: "Ok");
+                    "Ok");
             }
+
             StateHasChanged();
         }
     }
@@ -155,7 +159,7 @@
                 DialogService.ShowMessageBox(
                     "Error",
                     "Kode Ruangan Tidak Ditemukan!",
-                    yesText: "Ok");
+                    "Ok");
             }
         }
 

@@ -1,12 +1,11 @@
 ﻿using FastEndpoints;
-using Shared.BankSoal;
 using Shared.Common;
 using Shared.RoomSet;
 using Web.Client.Interfaces;
 
 namespace Web.Services.RoomServices.Endpoints.Create;
 
-public class Endpoint : Endpoint<Room,CreatedResponse<Room>>
+public class Endpoint : Endpoint<Room, CreatedResponse<Room>>
 {
     private readonly IRoom _repo;
 
@@ -20,9 +19,9 @@ public class Endpoint : Endpoint<Room,CreatedResponse<Room>>
         Post("/room");
     }
 
-    public override async Task HandleAsync(Room r,CancellationToken ct)
+    public override async Task HandleAsync(Room r, CancellationToken ct)
     {
         var res = await _repo.Create(r);
-        await SendCreatedAtAsync($"/Room/{res.Data.Id}",res.Data,res,cancellation:ct);
+        await SendCreatedAtAsync($"/Room/{res.Data.Id}", res.Data, res, cancellation: ct);
     }
 }

@@ -2,7 +2,6 @@
 using Shared.Common;
 using Web.Client.Feature.UserManagements;
 using Web.Client.Interfaces;
-using Web.Client.Shared.Models;
 
 namespace Web.Services.UserServices.Endpoints.Register;
 
@@ -13,16 +12,12 @@ public class Endpoint(IUser repo) : Endpoint<UserAddDTO, CreatedResponse<UserDTO
         Post("/user/register");
     }
 
-    public override async Task HandleAsync(UserAddDTO r,CancellationToken ct)
+    public override async Task HandleAsync(UserAddDTO r, CancellationToken ct)
     {
-        var res = await repo.Register(r,ct);
+        var res = await repo.Register(r, ct);
         if (res.isSuccess)
-        {
-            await SendCreatedAtAsync($"/user/{res.Data.Id}",res.Data,res,cancellation:ct);
-        }
+            await SendCreatedAtAsync($"/user/{res.Data.Id}", res.Data, res, cancellation: ct);
         else
-        {
             ThrowError(res.Message);
-        }
     }
 }

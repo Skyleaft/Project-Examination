@@ -3,9 +3,9 @@
 @inherits LayoutComponentBase
 @inject LayoutService LayoutService;
 
-<MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="LayoutService.SetDarkMode" />
+<MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="LayoutService.SetDarkMode"/>
 
-<MudSnackbarProvider />
+<MudSnackbarProvider/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 
@@ -19,17 +19,22 @@
 
 @code {
     private MudThemeProvider _mudThemeProvider;
-    
-    protected override async Task  OnInitializedAsync()
+
+    protected override async Task OnInitializedAsync()
     {
         LayoutService.SetBaseTheme(Themes.LandingPageTheme());
         LayoutService.MajorUpdateOccurred += LayoutServiceOnMajorUpdateOccured;
         base.OnInitialized();
     }
-    
+
     public void Dispose()
     {
         LayoutService.MajorUpdateOccurred -= LayoutServiceOnMajorUpdateOccured;
     }
-    private void LayoutServiceOnMajorUpdateOccured(object sender, EventArgs e) => StateHasChanged();
+
+    private void LayoutServiceOnMajorUpdateOccured(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
 }

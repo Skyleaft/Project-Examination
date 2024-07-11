@@ -13,7 +13,7 @@ public class Endpoint(IUser repo) : EndpointWithoutRequest<ServiceResponse>
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var res = await repo.Delete(Route<string>("Id"),ct);
+        var res = await repo.Delete(Route<string>("Id"), ct);
         await SendAsync(res, cancellation: ct);
     }
 }

@@ -10,8 +10,8 @@ namespace Web.Services.ReferenceServices;
 public class ReferenceService : IReferences
 {
     private readonly AppDbContext _appDbContext;
-    private MemoryCache cache = new MemoryCache(new MemoryCacheOptions());
     private readonly ILocalStorageService _storageService;
+    private readonly MemoryCache cache = new(new MemoryCacheOptions());
 
     public ReferenceService(AppDbContext appDbContext, ILocalStorageService storageService)
     {
@@ -39,9 +39,8 @@ public class ReferenceService : IReferences
             {
                 return data;
             }
-            
-            
         }
+
         return data;
     }
 
@@ -55,7 +54,7 @@ public class ReferenceService : IReferences
             cache.Set(key, fetch, TimeSpan.FromDays(1));
             data = fetch;
         }
+
         return data;
     }
-    
 }

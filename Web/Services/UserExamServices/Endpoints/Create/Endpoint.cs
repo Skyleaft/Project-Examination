@@ -1,12 +1,11 @@
 ﻿using FastEndpoints;
 using Shared.Common;
-using Shared.RoomSet;
 using Shared.TakeExam;
 using Web.Client.Interfaces;
 
 namespace Web.Services.UserExamServices.Endpoints.Create;
 
-public class Endpoint : Endpoint<CreateUserExamDTO,CreatedResponse<UserExam>>
+public class Endpoint : Endpoint<CreateUserExamDTO, CreatedResponse<UserExam>>
 {
     private readonly IUserExam _repo;
 
@@ -20,11 +19,11 @@ public class Endpoint : Endpoint<CreateUserExamDTO,CreatedResponse<UserExam>>
         Post("/UserExam");
     }
 
-    public override async Task HandleAsync(CreateUserExamDTO r,CancellationToken ct)
+    public override async Task HandleAsync(CreateUserExamDTO r, CancellationToken ct)
     {
         var res = await _repo.Create(r);
         if (!res.isSuccess)
             ThrowError(res.Message);
-        await SendCreatedAtAsync($"/UserExam/{res.Data.Id}",res.Data,res,cancellation:ct);
+        await SendCreatedAtAsync($"/UserExam/{res.Data.Id}", res.Data, res, cancellation: ct);
     }
 }

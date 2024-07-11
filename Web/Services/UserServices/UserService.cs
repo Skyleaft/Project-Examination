@@ -9,31 +9,32 @@ using Web.Common.Database;
 
 namespace Web.Services.UserServices;
 
-public class UserService:IUser
+public class UserService : IUser
 {
-    private readonly UserManager<ApplicationUser> _userManager;
     private readonly AppDbContext _appDbContext;
-    
+    private readonly UserManager<ApplicationUser> _userManager;
+
     public UserService(UserManager<ApplicationUser> userManager, AppDbContext appDbContext)
     {
         _userManager = userManager;
         _appDbContext = appDbContext;
     }
-    public async Task<PaginatedResponse<ApplicationUser>> Find(FindRequest r,CancellationToken ct)
+
+    public async Task<PaginatedResponse<ApplicationUser>> Find(FindRequest r, CancellationToken ct)
     {
-        var data =await _appDbContext.Users.WhereIf(!string.IsNullOrEmpty(r.Search),
+        var data = await _appDbContext.Users.WhereIf(!string.IsNullOrEmpty(r.Search),
                 x => x.NamaLengkap.ToLower()
                     .Contains(r.Search.ToLower()))
-            .OrderBy(x=>x.UserName)
-            .ToPaginatedListAsync(r.Page, r.PageSize,r.OrderBy,r.Direction,ct);
+            .OrderBy(x => x.UserName)
+            .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
     }
-    
+
     public async Task<CreatedResponse<UserDTO>> Register(UserAddDTO r, CancellationToken? ct)
     {
         var finduser = await _userManager.FindByNameAsync(r.UserName);
-        if(finduser!=null) return new CreatedResponse<UserDTO>(false,"Username sudah ada");
-        var user = new ApplicationUser()
+        if (finduser != null) return new CreatedResponse<UserDTO>(false, "Username sudah ada");
+        var user = new ApplicationUser
         {
             NamaLengkap = r.NamaLengkap,
             UserName = r.UserName,
@@ -48,8 +49,9 @@ public class UserService:IUser
         if (createUser.Succeeded)
         {
             await _userManager.AddToRoleAsync(user, r.Role);
-            return new CreatedResponse<UserDTO>(true, "Berhasil membuat user",user.Adapt<UserDTO>());
+            return new CreatedResponse<UserDTO>(true, "Berhasil membuat user", user.Adapt<UserDTO>());
         }
+
         return new CreatedResponse<UserDTO>(false, createUser.Errors.First().Description);
     }
 
@@ -59,7 +61,7 @@ public class UserService:IUser
         var oldData = finduser.Adapt<UserDTO>();
         var rol = await _userManager.GetRolesAsync(finduser);
         oldData.Role = rol.First();
-        
+
         finduser.NamaLengkap = r.NamaLengkap;
         finduser.Email = r.Email;
         finduser.Gender = r.Gender;
@@ -75,13 +77,8 @@ public class UserService:IUser
         }
 
         if (updated.Succeeded)
-        {
-            return  new ServiceResponse(true, "Berhasil mengupdate user");
-        }
-        else
-        {
-            return  new ServiceResponse(false, updated.Errors.First().Description);
-        }
+            return new ServiceResponse(true, "Berhasil mengupdate user");
+        return new ServiceResponse(false, updated.Errors.First().Description);
     }
 
     public async Task<ServiceResponse> Delete(string id, CancellationToken? ct)
@@ -107,7 +104,6 @@ public class UserService:IUser
         var updated = await _userManager.UpdateAsync(finduser);
         if (updated.Succeeded)
             return new ServiceResponse(true, "Berhasil mengaktifkan user");
-        else
-            return new ServiceResponse(false, updated.Errors.First().Description);
+        return new ServiceResponse(false, updated.Errors.First().Description);
     }
 }

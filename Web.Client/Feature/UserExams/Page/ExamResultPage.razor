@@ -1,17 +1,16 @@
 ﻿@page "/exam/examresult/{Id:Guid}"
+@using Blazored.SessionStorage
 @using global::Shared.BankSoal
 @using global::Shared.RoomSet
 @using global::Shared.TakeExam
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@using MudBlazor.Extensions.Core
 @using Web.Client.Interfaces
 @layout UserExamLayout
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Superuser,User")]
 @inject IDialogService Dialog
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject ProtectedSessionStorage ProtectedSessionStore
+@inject ISessionStorageService SessionStorage
 
 <NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="OnBeforeNavBack"/>
 
@@ -33,7 +32,6 @@
                                 </MudButton>
                             }
                         }
-                        
                     }
 
                 </MudStack>
@@ -131,7 +129,6 @@
                     </table>
                     <MudSpacer/>
                 </div>
-                
             }
         }
 
@@ -155,7 +152,7 @@
     private UserExam userExam;
     private Room room;
     private bool isLoading = true;
-    string privateKey = "zlxkjcoijasdfnwqwesfvlaksnoaiscnzxnocqanqwf";
+    readonly string privateKey = "zlxkjcoijasdfnwqwesfvlaksnoaiscnzxnocqanqwf";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -174,7 +171,7 @@
             StateHasChanged();
         }
     }
-    
+
     private Variant CheckSoalIsAnswer(Soal soal)
     {
         if (userExam.UserAnswers == null)
@@ -183,16 +180,16 @@
             return Variant.Outlined;
         return Variant.Filled;
     }
-    
+
     private async Task OnBackHome()
     {
-        await ProtectedSessionStore.DeleteAsync(privateKey);
-        _navigationManager.NavigateTo("/userroom",true);
+        await SessionStorage.RemoveItemAsync(privateKey);
+        _navigationManager.NavigateTo("/userroom", true);
     }
 
     private async Task OnBeforeNavBack(LocationChangingContext locationChangingContext)
     {
-        if (locationChangingContext.TargetLocation.Contains($"/exam/userexam/{Id}",StringComparison.OrdinalIgnoreCase))
+        if (locationChangingContext.TargetLocation.Contains($"/exam/userexam/{Id}", StringComparison.OrdinalIgnoreCase))
         {
             locationChangingContext.PreventNavigation();
         }

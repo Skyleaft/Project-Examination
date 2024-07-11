@@ -1,7 +1,6 @@
 ﻿using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using Shared.Users;
-using Web.Client.Interfaces;
 using Web.Common.Database;
 
 namespace Web.Services.ReferenceServices.Endpoints.GetAllProvinsi;

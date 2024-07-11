@@ -2,11 +2,10 @@
 using Shared.BankSoal;
 using Shared.Common;
 using Web.Client.Interfaces;
-using Web.Client.Shared.Models;
 
 namespace Web.Services.ExamServices.Endpoints.Create;
 
-public class Endpoint : Endpoint<Exam,CreatedResponse<Exam>>
+public class Endpoint : Endpoint<Exam, CreatedResponse<Exam>>
 {
     private readonly IExam _examService;
 
@@ -20,9 +19,9 @@ public class Endpoint : Endpoint<Exam,CreatedResponse<Exam>>
         Post("/exam");
     }
 
-    public override async Task HandleAsync(Exam r,CancellationToken ct)
+    public override async Task HandleAsync(Exam r, CancellationToken ct)
     {
         var res = await _examService.Create(r);
-        await SendCreatedAtAsync($"/exam/{res.Data.Id}",res.Data,res,cancellation:ct);
+        await SendCreatedAtAsync($"/exam/{res.Data.Id}", res.Data, res, cancellation: ct);
     }
 }

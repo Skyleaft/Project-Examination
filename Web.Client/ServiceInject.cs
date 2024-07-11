@@ -13,7 +13,7 @@ public static class ServiceInject
     {
         services.AddScoped<IUser, UserService>();
         services.AddScoped<IExam, ExamService>();
-        services.AddScoped<IReferences,ReferenceService>();
+        services.AddScoped<IReferences, ReferenceService>();
         services.AddScoped<IRoom, RoomService>();
         services.AddScoped<IUserExam, UserExamService>();
         return services;

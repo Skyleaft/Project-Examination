@@ -1,15 +1,14 @@
-﻿@page "/userclient/register";
-@using System.Net.Mail
+﻿@page "/userclient/register"
 @using System.Text
 @using global::Shared.Common
 @using global::Shared.Users
-@using MailKit.Security
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using MimeKit
+@using MimeKit.Text
 @using Web.Client.Feature.UserManagements
-@using SmtpClient = MailKit.Net.Smtp.SmtpClient
 @using Web.Client.Interfaces
+;
 @layout BlankLayout
 @inject HttpClient HttpClient
 
@@ -17,7 +16,7 @@
 <EditForm Model="userModel" method="post" OnValidSubmit="OnValidSubmit" FormName="register">
     <DataAnnotationsValidator/>
     <MudGrid Class="align-content-center justify-center">
-        <MudItem xs=12 md=8>
+        <MudItem xs="12" md="8">
             <MudCard Class="pa-4">
                 <MudCardHeader>
                     <MudStack Row="true">
@@ -155,18 +154,18 @@
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] IMailService _mailService { get; set; }
 
-    private UserAddDTO userModel = new UserAddDTO()
+    private UserAddDTO userModel = new()
     {
         Role = "User"
     };
 
 
-    Provinsi SelectedProv = null;
-    Kota SelectedKota = null;
+    Provinsi SelectedProv;
+    Kota SelectedKota;
 
-    List<Provinsi> dataProv = new List<Provinsi>();
-    List<Kota> dataKota = new List<Kota>();
-    List<Kota> filterKota = new List<Kota>();
+    List<Provinsi> dataProv = new();
+    List<Kota> dataKota = new();
+    List<Kota> filterKota = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -194,7 +193,7 @@
                 DialogService.ShowMessageBox(
                     "Error",
                     "Ada Error di Email Service",
-                    yesText: "Ok");
+                    "Ok");
             }
             else
             {
@@ -202,7 +201,7 @@
                 DialogService.ShowMessageBox(
                     "Info",
                     "Akun Berhasil Didaftarkan, Silahkan Cek Email Anda",
-                    yesText: "Ok");
+                    "Ok");
             }
         }
         else
@@ -211,7 +210,7 @@
             DialogService.ShowMessageBox(
                 "Error",
                 created.Message,
-                yesText: "Ok");
+                "Ok");
         }
     }
 
@@ -228,7 +227,7 @@
         email.From.Add(MailboxAddress.Parse("info@mzstudio.space"));
         email.To.Add(MailboxAddress.Parse(userModel.Email));
         email.Subject = "Konfirmasi Email Aplikasi Ujian Online";
-        email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+        email.Body = new TextPart(TextFormat.Html)
         {
             Text = $@"
 <!DOCTYPE html>
@@ -354,7 +353,7 @@
 
     private void ToLogin()
     {
-       _navigationManager.NavigateTo("/",true);
+        _navigationManager.NavigateTo("/", true);
     }
 
 }

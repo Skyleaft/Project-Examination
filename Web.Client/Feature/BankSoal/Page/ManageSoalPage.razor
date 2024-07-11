@@ -1,19 +1,19 @@
-﻿@page "/BankSoal";
+﻿@page "/BankSoal"
+;
+@implements IBrowserViewportObserver
 @using global::Shared.BankSoal
 @using global::Shared.Common
 @using Microsoft.AspNetCore.Authorization
-@using Web.Client.Interfaces
 @using Web.Client.Feature.BankSoal.Component
-@implements IBrowserViewportObserver
+@using Web.Client.Interfaces
 @implements IAsyncDisposable
 @attribute [Authorize(Roles = "Superuser,Dosen,Operator")]
 <h3>Kumpulan Soal</h3>
 
 
-
 <MudPaper Class="pa-8">
     <div class="d-none d-flex align-center flex-grow-1 mr-2 mb-6">
-        
+
         <MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
             <MudSpacer/>
         </MudHidden>
@@ -23,11 +23,13 @@
         <MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
             <MudSpacer/>
         </MudHidden>
-        <MudButton Variant="Variant.Filled" 
+        <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
                    Class="mr-3 py-3"
-                   StartIcon="@Icons.Material.Filled.Add" 
-                   OnClick="CreateSoalClient">Buat Soal Baru</MudButton>
+                   StartIcon="@Icons.Material.Filled.Add"
+                   OnClick="CreateSoalClient">
+            Buat Soal Baru
+        </MudButton>
         <MudTextField Label="Cari Soal"
                       @bind-Value="request.Search"
                       Variant="Variant.Outlined"
@@ -43,7 +45,6 @@
                     <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
                     <MudSpacer/>
                 </div>
-                
             }
             else
             {
@@ -54,10 +55,10 @@
                     {
                         strImage = $"data:image;base64,{Convert.ToBase64String(item.Thumbnail)}";
                     }
+
                     <ExamCard data="@item" strImage="@strImage" RefreshData="@PageChanged"/>
                 }
             }
-            
         }
     </MudPaper>
     <div class="d-none d-flex align-center flex-grow-1 mt-8">
@@ -71,28 +72,27 @@
 @code {
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IExam examRepo { get; set; }
-    [Inject]
-    private IBrowserViewportService BrowserViewportService { get; set; }
+    [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
 
     string search;
     private Breakpoint curentBreak;
-    private bool isLoading=true;
-    
-    
-    private FindRequest request = new FindRequest()
+    private bool isLoading = true;
+
+
+    private readonly FindRequest request = new()
     {
         Page = 1,
-        PageSize=15
+        PageSize = 15
     };
 
-    PaginatedResponse<Exam> dataExam=new PaginatedResponse<Exam>();
-    
-    
+    PaginatedResponse<Exam> dataExam = new();
+
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await BrowserViewportService.SubscribeAsync(this, fireImmediately: true);
+            await BrowserViewportService.SubscribeAsync(this, true);
             dataExam = await examRepo.Find(request, new CancellationToken());
             isLoading = false;
             StateHasChanged();
@@ -105,7 +105,7 @@
     {
         _navigationManager.NavigateTo("/client/BankSoal/Create", true);
     }
-    
+
     private async Task PageChanged(int page)
     {
         isLoading = true;
@@ -115,8 +115,11 @@
         StateHasChanged();
     }
 
-    public async ValueTask DisposeAsync() => await BrowserViewportService.UnsubscribeAsync(this);
-    
+    public async ValueTask DisposeAsync()
+    {
+        await BrowserViewportService.UnsubscribeAsync(this);
+    }
+
     public Task NotifyBrowserViewportChangeAsync(BrowserViewportEventArgs browserViewportEventArgs)
     {
         if (browserViewportEventArgs.IsImmediate)

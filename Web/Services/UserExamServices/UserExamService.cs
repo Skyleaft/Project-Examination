@@ -12,13 +12,15 @@ namespace Web.Services.UserExamServices;
 
 public class UserExamService : IUserExam
 {
-    private readonly AppDbContext _dbContext;
     private readonly AuthenticationStateProvider _authenticationStateProvider;
+    private readonly AppDbContext _dbContext;
+
     public UserExamService(AuthenticationStateProvider authenticationStateProvider, AppDbContext dbContext)
     {
         _authenticationStateProvider = authenticationStateProvider;
         _dbContext = dbContext;
     }
+
     public async Task<CreatedResponse<UserExam>> Create(CreateUserExamDTO r)
     {
         var check = await _dbContext.UserExam
@@ -34,20 +36,15 @@ public class UserExamService : IUserExam
     public async Task<ServiceResponse> Update(UserExam r)
     {
         var userExam = await Get(r.Id);
-        if (userExam == null)
-        {
-            return new ServiceResponse(false, "data tidak ditemukan");
-        }
-        
+        if (userExam == null) return new ServiceResponse(false, "data tidak ditemukan");
+
         _dbContext.Entry(userExam).CurrentValues.SetValues(r);
-        
+
         // Delete children
         foreach (var existingChild in userExam.UserAnswers)
-        {
             if (!r.UserAnswers.Any(c => c.Id == existingChild.Id))
                 _dbContext.UserAnswer.Remove(existingChild);
-        }
-        
+
         // Update and Insert children
         foreach (var answer in r.UserAnswers)
         {
@@ -55,16 +52,13 @@ public class UserExamService : IUserExam
                 .FirstOrDefault(x => x.Id == answer.Id);
 
             if (existingChild != null)
-            {
                 // Update child
                 _dbContext.Entry(existingChild).CurrentValues.SetValues(answer);
-            }
-                
+
             else
-            {
                 await _dbContext.UserAnswer.AddAsync(answer);
-            }
         }
+
         await _dbContext.SaveChangesAsync();
         return new ServiceResponse(true, "data berhasil diupdate");
     }
@@ -72,10 +66,7 @@ public class UserExamService : IUserExam
     public async Task<ServiceResponse> Delete(Guid Id)
     {
         var find = await _dbContext.UserExam.FindAsync(Id);
-        if (find == null)
-        {
-            return new ServiceResponse(false, "data tidak ditemukan");
-        }
+        if (find == null) return new ServiceResponse(false, "data tidak ditemukan");
 
         _dbContext.UserExam.Remove(find);
         await _dbContext.SaveChangesAsync();
@@ -86,16 +77,13 @@ public class UserExamService : IUserExam
     {
         var find = await _dbContext
             .UserExam
-            .Include(x=>x.UserAnswers)
-            .ThenInclude(y=>y.SoalJawaban)
-            .Include(x=>x.UserAnswers)
-            .ThenInclude(y=>y.Soal)
-            .ThenInclude(d=>d.PilihanJawaban)
+            .Include(x => x.UserAnswers)
+            .ThenInclude(y => y.SoalJawaban)
+            .Include(x => x.UserAnswers)
+            .ThenInclude(y => y.Soal)
+            .ThenInclude(d => d.PilihanJawaban)
             .FirstOrDefaultAsync(x => x.Id == Id);
-        if (find == null)
-        {
-            return null;
-        }
+        if (find == null) return null;
 
         return find;
     }
@@ -108,13 +96,14 @@ public class UserExamService : IUserExam
             var user = auth.User;
             UserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
+
         var data = await _dbContext
             .UserExam
-            .Include(x=>x.UserAnswers)
-            .ThenInclude(y=>y.SoalJawaban)
-            .Include(x=>x.UserAnswers)
-            .ThenInclude(y=>y.Soal)
-            .Where(x=>x.UserId == UserId)
+            .Include(x => x.UserAnswers)
+            .ThenInclude(y => y.SoalJawaban)
+            .Include(x => x.UserAnswers)
+            .ThenInclude(y => y.Soal)
+            .Where(x => x.UserId == UserId)
             .OrderBy(x => x.StartDate)
             .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
@@ -124,21 +113,20 @@ public class UserExamService : IUserExam
     {
         var data = await _dbContext
             .UserExam
-            .Include(x=>x.User)
-            .ThenInclude(y=>y.Kota)
-            .Include(x=>x.UserAnswers)
-            .ThenInclude(y=>y.SoalJawaban)
-            .Include(x=>x.UserAnswers)
-            .ThenInclude(y=>y.Soal)
+            .Include(x => x.User)
+            .ThenInclude(y => y.Kota)
+            .Include(x => x.UserAnswers)
+            .ThenInclude(y => y.SoalJawaban)
+            .Include(x => x.UserAnswers)
+            .ThenInclude(y => y.Soal)
             .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
     }
 
     public async Task<bool> SaveTimeLeft(Guid Id, TimeSpan timeLeft)
     {
-        var data = await _dbContext.
-            UserExam
-            .FirstOrDefaultAsync(x=>x.Id == Id);
+        var data = await _dbContext.UserExam
+            .FirstOrDefaultAsync(x => x.Id == Id);
         if (data == null)
             return false;
         data.TimeLeft = timeLeft;

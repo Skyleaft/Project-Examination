@@ -7,20 +7,25 @@ namespace Web.Client.Shared.Extensions;
 
 public class QuilImageCompress : IQuillModule
 {
-    public IJSObjectReference JsReference { get; private set; }
-    
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    public IJSObjectReference JsReference { get; }
 
-    public Task<object> GetQuillJsCreationConfigAsync(IJSRuntime jsRuntime, MudExRichTextEdit editor) =>
-        Task.FromResult<object>(new
+    public ValueTask DisposeAsync()
+    {
+        return ValueTask.CompletedTask;
+    }
+
+    public Task<object> GetQuillJsCreationConfigAsync(IJSRuntime jsRuntime, MudExRichTextEdit editor)
+    {
+        return Task.FromResult<object>(new
         {
             imageCompress = new
             {
                 quality = 0.1,
-                maxWidth= 100,
-                maxHeight= 100
+                maxWidth = 100,
+                maxHeight = 100
             }
         });
+    }
 
     public async Task<IJSObjectReference> OnLoadedAsync(IJSRuntime jsRuntime, MudExRichTextEdit editor)
     {

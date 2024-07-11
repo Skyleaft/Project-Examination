@@ -1,5 +1,4 @@
-﻿@using global::Shared.Common
-@using global::Shared.RoomSet
+﻿@using global::Shared.RoomSet
 @using global::Shared.TakeExam
 @using Web.Client.Interfaces
 @inject IDialogService Dialog
@@ -41,11 +40,11 @@
                     {
                         <MudText Typo="Typo.body2">Ujian Belum Dibuka</MudText>
                     }
-                    else if (room.JadwalStart>DateTime.Now)
+                    else if (room.JadwalStart > DateTime.Now)
                     {
                         <MudText Typo="Typo.body2">Ujian Belum Dimulai</MudText>
                     }
-                    else if (room.JadwalEnd<DateTime.Now)
+                    else if (room.JadwalEnd < DateTime.Now)
                     {
                         <MudText Typo="Typo.body2">Ujian Telah Berakhir</MudText>
                     }
@@ -54,7 +53,7 @@
                         <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnLihat">Lihat</MudButton>
                     }
                 }
-                
+
 
             </MudCardActions>
         </MudCard>
@@ -64,30 +63,30 @@
 
 @code {
     [Parameter] public UserExam data { get; set; }
-    
+
     [Parameter] public EventCallback<int> RefreshData { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IRoom _roomRepo { get; set; }
     private Room room;
-    private string strImage ="/images/room-bg.jpg";
-    DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
+    private string strImage = "/images/room-bg.jpg";
+    DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 
     protected override async Task OnInitializedAsync()
     {
-        
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
             room = await _roomRepo.Get(data.RoomId);
-            
+
             if (room.Thumbnail != null)
             {
                 strImage = $"data:image;base64,{Convert.ToBase64String(room.Thumbnail)}";
             }
+
             StateHasChanged();
         }
     }

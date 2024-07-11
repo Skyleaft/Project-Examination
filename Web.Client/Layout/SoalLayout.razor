@@ -1,11 +1,10 @@
-﻿
-@using Web.Client.Services
+﻿@using Web.Client.Services
 @using Web.Client.Shared.Theme
 @inherits LayoutComponentBase
 <MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="LayoutService.SetDarkMode"/>
 
 
-<MudSnackbarProvider />
+<MudSnackbarProvider/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 
@@ -28,12 +27,12 @@
     [Inject] private LayoutService LayoutService { get; set; }
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
-    
+
     private void Back()
     {
-        _navigationManager.NavigateTo("/BankSoal",true);
+        _navigationManager.NavigateTo("/BankSoal", true);
     }
-    
+
     protected override Task OnInitializedAsync()
     {
         LayoutService.SetBaseTheme(Themes.LandingPageTheme());
@@ -49,11 +48,11 @@
         {
             await ApplyUserPreferences();
             await _mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
-            
+
             StateHasChanged();
         }
     }
-    
+
     private async Task ApplyUserPreferences()
     {
         var defaultDarkMode = await _mudThemeProvider.GetSystemPreference();
@@ -64,11 +63,15 @@
     {
         await LayoutService.OnSystemPreferenceChanged(newValue);
     }
-    
+
     public void Dispose()
     {
         LayoutService.MajorUpdateOccurred -= LayoutServiceOnMajorUpdateOccured;
     }
-    private void LayoutServiceOnMajorUpdateOccured(object sender, EventArgs e) => StateHasChanged();
-    
+
+    private void LayoutServiceOnMajorUpdateOccured(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
 }

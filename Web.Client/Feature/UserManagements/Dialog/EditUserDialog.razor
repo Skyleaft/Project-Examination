@@ -1,12 +1,6 @@
-﻿@using System.Net
-@using global::Shared.Common
+﻿@using global::Shared.Common
 @using global::Shared.Users
-@using Web.Client.Shared.Models
-@using Web.Client.Services
-@using Web.Client.Feature.References
 @using Web.Client.Interfaces
-@using Mapster
-
 <EditForm Model="@userModel" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator/>
     <MudDialog>
@@ -62,21 +56,21 @@
                                                  ToStringFunc="@(e => e == null ? null : $"{e.NamaProvinsi}")"
                                                  SearchFunc="@SearchProv"/>
                                 @{
-                                if (SelectedProv != null)
-                                {
-                                FilterKota(SelectedProv.Id);
-                                <MudAutocomplete T="Kota" Label="Kota"
-                                                 Variant="Variant.Outlined"
-                                                 AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
-                                                 Strict="false"
-                                                 Value="SelectedKota"
-                                                 ValueChanged="kota => { SelectedKota = kota; userModel.KotaId = kota.Id; }"
-                                                 ToStringFunc="@(e => e == null ? null : $"{e.NamaKota}")"
-                                                 SearchFunc="@SearchKota"/>
-                                }
+                                    if (SelectedProv != null)
+                                    {
+                                        FilterKota(SelectedProv.Id);
+                                        <MudAutocomplete T="Kota" Label="Kota"
+                                                         Variant="Variant.Outlined"
+                                                         AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                                         Strict="false"
+                                                         Value="SelectedKota"
+                                                         ValueChanged="kota => { SelectedKota = kota; userModel.KotaId = kota.Id; }"
+                                                         ToStringFunc="@(e => e == null ? null : $"{e.NamaKota}")"
+                                                         SearchFunc="@SearchKota"/>
+                                    }
                                 }
                             </MudStack>
-                            
+
 
                         </MudCardContent>
                     </MudCard>
@@ -132,7 +126,7 @@
                                               @bind-Value="userModel.UserName"
                                               For="@(() => userModel.UserName)"/>
                             </MudStack>
-                            
+
                         </MudCardContent>
                     </MudCard>
                 </MudItem>
@@ -140,7 +134,7 @@
 
             </MudGrid>
 
-            
+
         </DialogContent>
         <DialogActions>
             <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -155,18 +149,23 @@
     [Inject] IReferences _reference { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] HttpClient _httpClient { get; set; }
-    [Parameter] public UserEditDTO userModel { get; set; } = new UserEditDTO();
+    [Parameter] public UserEditDTO userModel { get; set; } = new();
 
-    Provinsi SelectedProv = null;
-    Kota SelectedKota = null;
-    List<Provinsi> dataProv = new List<Provinsi>();
-    List<Kota> dataKota = new List<Kota>();
-    List<Kota> filterKota = new List<Kota>();
-    void Cancel() => MudDialog.Cancel();
+    Provinsi SelectedProv;
+    Kota SelectedKota;
+    List<Provinsi> dataProv = new();
+    List<Kota> dataKota = new();
+    List<Kota> filterKota = new();
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
     bool success;
 
     string fotostring;
-    
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -188,6 +187,7 @@
             await stream.CopyToAsync(memstream);
             userModel.Photo = memstream.ToArray();
         }
+
         StateHasChanged();
     }
 
@@ -211,7 +211,7 @@
             DialogService.ShowMessageBox(
                 "Info",
                 data.Message,
-                yesText: "Ok");
+                "Ok");
         }
         else
         {
@@ -219,7 +219,7 @@
             DialogService.ShowMessageBox(
                 "Error",
                 data.Message,
-                yesText: "Ok");
+                "Ok");
         }
     }
 

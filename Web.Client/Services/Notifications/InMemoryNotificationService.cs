@@ -24,19 +24,6 @@ public class InMemoryNotificationService : INotificationService
         _messages = new List<NotificationMessage>();
     }
 
-    private async Task<DateTime> GetLastReadTimestamp()
-    {
-        if (await _localStorageService.ContainKeyAsync(LocalStorageKey) == false)
-        {
-            return DateTime.MinValue;
-        }
-        else
-        {
-            var timestamp = await _localStorageService.GetItemAsync<DateTime>(LocalStorageKey);
-            return timestamp;
-        }
-    }
-
     public async Task<bool> AreNewNotificationsAvailable()
     {
         var timestamp = await GetLastReadTimestamp();
@@ -53,18 +40,17 @@ public class InMemoryNotificationService : INotificationService
     public async Task MarkNotificationsAsRead(string id)
     {
         var message = await GetMessageById(id);
-        if (message == null) { return; }
+        if (message == null) return;
 
         var timestamp = await _localStorageService.GetItemAsync<DateTime>(LocalStorageKey);
         if (message.PublishDate > timestamp)
-        {
             await _localStorageService.SetItemAsync(LocalStorageKey, message.PublishDate);
-        }
-
     }
 
-    public Task<NotificationMessage> GetMessageById(string id) =>
-        Task.FromResult(_messages.FirstOrDefault(x => x.Id == id));
+    public Task<NotificationMessage> GetMessageById(string id)
+    {
+        return Task.FromResult(_messages.FirstOrDefault(x => x.Id == id));
+    }
 
     public async Task<IDictionary<NotificationMessage, bool>> GetNotifications()
     {
@@ -77,6 +63,17 @@ public class InMemoryNotificationService : INotificationService
     {
         _messages.Add(message);
         return Task.CompletedTask;
+    }
+
+    private async Task<DateTime> GetLastReadTimestamp()
+    {
+        if (await _localStorageService.ContainKeyAsync(LocalStorageKey) == false)
+        {
+            return DateTime.MinValue;
+        }
+
+        var timestamp = await _localStorageService.GetItemAsync<DateTime>(LocalStorageKey);
+        return timestamp;
     }
 
 

@@ -8,9 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Remove="compilerconfig.json" />
-      <Content Remove="wwwroot\css\Layout\_mainlayout.css" />
-      <Content Remove="wwwroot\css\Layout\_mainlayout.min.css" />
+        <Content Remove="compilerconfig.json"/>
+        <Content Remove="wwwroot\css\Layout\_mainlayout.css"/>
+        <Content Remove="wwwroot\css\Layout\_mainlayout.min.css"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -20,63 +20,63 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\ProjectExamination.ServiceDefaults\ProjectExamination.ServiceDefaults.csproj" />
-        <ProjectReference Include="..\Web.Client\Web.Client.csproj" />
+        <ProjectReference Include="..\ProjectExamination.ServiceDefaults\ProjectExamination.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\Web.Client\Web.Client.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="FastEndpoints" Version="5.26.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.6" />
-      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.5" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.5">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.0" />
-      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
+        <PackageReference Include="FastEndpoints" Version="5.27.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.0"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4"/>
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Shared\Appbar.razor" />
-      <_ContentIncludedByDefault Remove="Shared\MainLayout.razor" />
-      <_ContentIncludedByDefault Remove="Shared\MudBlazorLogo.razor" />
-      <_ContentIncludedByDefault Remove="Shared\NotAuthorizedPage.razor" />
-      <_ContentIncludedByDefault Remove="Shared\NotFoundPage.razor" />
-      <_ContentIncludedByDefault Remove="Features\Auth\Pages\AuthPage.razor" />
-      <_ContentIncludedByDefault Remove="Features\Dashboards\Pages\Dashboard.razor" />
-      <_ContentIncludedByDefault Remove="Components\Pages\Counter.razor" />
-      <_ContentIncludedByDefault Remove="Components\Pages\Error.razor" />
-      <_ContentIncludedByDefault Remove="Components\Pages\Weather.razor" />
-      <_ContentIncludedByDefault Remove="Components\Features\BankSoal\Page.razor" />
-      <_ContentIncludedByDefault Remove="Common\NotificationContent\Announcement_v7_In_Development.razor" />
-      <_ContentIncludedByDefault Remove="Components\Layout\Appbar.razor" />
-      <_ContentIncludedByDefault Remove="Components\Layout\AppbarButtons.razor" />
-      <_ContentIncludedByDefault Remove="Components\Layout\BlankLayout.razor" />
-      <_ContentIncludedByDefault Remove="Components\Layout\LoginLayout.razor" />
-      <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor" />
-      <_ContentIncludedByDefault Remove="Components\Layout\NavMenu.razor" />
-      <_ContentIncludedByDefault Remove="Components\Features\UserManagement\Dialog\AddUserDialog.razor" />
-      <_ContentIncludedByDefault Remove="Components\Features\UserManagement\Dialog\EditUserDialog.razor" />
-      <_ContentIncludedByDefault Remove="Components\Features\UserManagement\View\UserManagement.razor" />
-      <_ContentIncludedByDefault Remove="Components\Features\Register\Page.razor" />
+        <_ContentIncludedByDefault Remove="Shared\Appbar.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\MainLayout.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\MudBlazorLogo.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\NotAuthorizedPage.razor"/>
+        <_ContentIncludedByDefault Remove="Shared\NotFoundPage.razor"/>
+        <_ContentIncludedByDefault Remove="Features\Auth\Pages\AuthPage.razor"/>
+        <_ContentIncludedByDefault Remove="Features\Dashboards\Pages\Dashboard.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Pages\Counter.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Pages\Error.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Pages\Weather.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Features\BankSoal\Page.razor"/>
+        <_ContentIncludedByDefault Remove="Common\NotificationContent\Announcement_v7_In_Development.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Layout\Appbar.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Layout\AppbarButtons.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Layout\BlankLayout.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Layout\LoginLayout.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Layout\NavMenu.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Features\UserManagement\Dialog\AddUserDialog.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Features\UserManagement\Dialog\EditUserDialog.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Features\UserManagement\View\UserManagement.razor"/>
+        <_ContentIncludedByDefault Remove="Components\Features\Register\Page.razor"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="compilerconfig.json" />
-      <None Include="wwwroot\css\Layout\_mainlayout.css" />
-      <None Include="wwwroot\css\Layout\_mainlayout.min.css" />
+        <None Include="compilerconfig.json"/>
+        <None Include="wwwroot\css\Layout\_mainlayout.css"/>
+        <None Include="wwwroot\css\Layout\_mainlayout.min.css"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Common\Extensions\" />
-      <Folder Include="Components\Shared\" />
-      <Folder Include="Migrations\" />
+        <Folder Include="Common\Extensions\"/>
+        <Folder Include="Components\Shared\"/>
+        <Folder Include="Migrations\"/>
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Components\Auth\Components\StatusMessage.razor" />
-      <AdditionalFiles Include="Components\Auth\Pages\ChangePassword.razor" />
-      <AdditionalFiles Include="Components\Auth\Pages\Lockout.razor" />
+        <AdditionalFiles Include="Components\Auth\Components\StatusMessage.razor"/>
+        <AdditionalFiles Include="Components\Auth\Pages\ChangePassword.razor"/>
+        <AdditionalFiles Include="Components\Auth\Pages\Lockout.razor"/>
     </ItemGroup>
 
 </Project>

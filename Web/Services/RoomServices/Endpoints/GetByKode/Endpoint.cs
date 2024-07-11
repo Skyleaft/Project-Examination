@@ -1,11 +1,10 @@
 ﻿using FastEndpoints;
-using Shared.BankSoal;
 using Shared.RoomSet;
 using Web.Client.Interfaces;
 
 namespace Web.Services.RoomServices.Endpoints.GetByKode;
 
-public class Endpoint : Endpoint<string,Room>
+public class Endpoint : Endpoint<string, Room>
 {
     private readonly IRoom _repo;
 
@@ -19,7 +18,7 @@ public class Endpoint : Endpoint<string,Room>
         Get("/room");
     }
 
-    public override async Task HandleAsync(string kode,CancellationToken ct)
+    public override async Task HandleAsync(string kode, CancellationToken ct)
     {
         var param = Query<string>("kode");
         var res = await _repo.Get(param);

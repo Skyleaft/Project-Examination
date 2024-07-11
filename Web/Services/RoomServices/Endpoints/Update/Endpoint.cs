@@ -1,12 +1,11 @@
 ﻿using FastEndpoints;
-using Shared.BankSoal;
 using Shared.RoomSet;
 using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
 
 namespace Web.Services.RoomServices.Endpoints.Update;
 
-public class Endpoint : Endpoint<Room,ServiceResponse>
+public class Endpoint : Endpoint<Room, ServiceResponse>
 {
     private readonly IRoom _repo;
 
@@ -19,12 +18,11 @@ public class Endpoint : Endpoint<Room,ServiceResponse>
     {
         Put("/room/{Id}");
     }
-    
 
-    public override async Task HandleAsync(Room r,CancellationToken ct)
+
+    public override async Task HandleAsync(Room r, CancellationToken ct)
     {
         var res = await _repo.Update(r);
         await SendAsync(res, cancellation: ct);
     }
 }
-

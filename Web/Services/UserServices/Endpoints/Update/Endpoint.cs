@@ -12,9 +12,9 @@ public class Endpoint(IUser repo) : Endpoint<UserEditDTO, ServiceResponse>
         Put("/user/{Id}");
     }
 
-    public override async Task HandleAsync(UserEditDTO r,CancellationToken ct)
+    public override async Task HandleAsync(UserEditDTO r, CancellationToken ct)
     {
-        var res = await repo.Update(r,ct);
+        var res = await repo.Update(r, ct);
         await SendAsync(res, cancellation: ct);
     }
 }

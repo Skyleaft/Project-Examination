@@ -1,7 +1,6 @@
 ﻿using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
 using MudBlazor;
 using Shared.Users;
 using Web.Client.Services;
@@ -11,20 +10,26 @@ namespace Web.Client.Layout;
 
 public partial class MainLayout : LayoutComponentBase, IDisposable
 {
-    [CascadingParameter]
-    private Task<AuthenticationState>? authenticationState { get; set; }
-    [Inject] private LayoutService LayoutService { get; set; }
-    [Inject] NavigationManager navManager { get; set; }
-    [Inject] ISnackbar Snackbar { get; set; }
-    [Inject] private ISessionStorageService _sessionStorageService { get; set; }
+    private bool _drawerOpen = true;
     private MudThemeProvider _mudThemeProvider;
     private NavMenu _navMenuRef;
-    private bool _drawerOpen = true;
-    private bool _topMenuOpen = false;
+    private bool _topMenuOpen;
+    private readonly string avatarSource = "";
     private ApplicationUser CurrentUser;
-    private string avatarSource = "";
     private bool isLoaded;
-    
+
+    [CascadingParameter] private Task<AuthenticationState>? authenticationState { get; set; }
+
+    [Inject] private LayoutService LayoutService { get; set; }
+    [Inject] private NavigationManager navManager { get; set; }
+    [Inject] private ISnackbar Snackbar { get; set; }
+    [Inject] private ISessionStorageService _sessionStorageService { get; set; }
+
+    public void Dispose()
+    {
+        LayoutService.MajorUpdateOccurred -= LayoutServiceOnMajorUpdateOccured;
+    }
+
     protected override Task OnInitializedAsync()
     {
         LayoutService.SetBaseTheme(Themes.LandingPageTheme());
@@ -41,7 +46,7 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
             isLoaded = false;
             await ApplyUserPreferences();
             await _mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
-            
+
             var authState = await AuthenticationStateProvider
                 .GetAuthenticationStateAsync();
             var user = authState.User;
@@ -56,23 +61,24 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
             StateHasChanged();
         }
     }
-    
+
     private void ToggleDrawer()
     {
         _drawerOpen = !_drawerOpen;
     }
+
     private void OpenTopMenu()
     {
         _topMenuOpen = true;
     }
-    
+
     private void OnDrawerOpenChanged(bool value)
     {
         _topMenuOpen = false;
         _drawerOpen = value;
         StateHasChanged();
     }
-    
+
     private async Task ApplyUserPreferences()
     {
         var defaultDarkMode = await _mudThemeProvider.GetSystemPreference();
@@ -84,9 +90,8 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
         await LayoutService.OnSystemPreferenceChanged(newValue);
     }
 
-    public void Dispose()
+    private void LayoutServiceOnMajorUpdateOccured(object sender, EventArgs e)
     {
-        LayoutService.MajorUpdateOccurred -= LayoutServiceOnMajorUpdateOccured;
+        StateHasChanged();
     }
-    private void LayoutServiceOnMajorUpdateOccured(object sender, EventArgs e) => StateHasChanged();
 }

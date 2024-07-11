@@ -41,7 +41,7 @@ else
                     <MudField Variant="Variant.Outlined" Class="mt-3" Label="Pengaturan Soal">
                         <div class="d-flex flex-row flex-grow-1 gap-4">
                             <MudSwitch @bind-Value="@model.IsRandomize"
-                                   Label="Acak Soal?" Color="Color.Success"/>
+                                       Label="Acak Soal?" Color="Color.Success"/>
                             <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg">
                                 <ActivatorContent>
                                     <MudFab Color="Color.Primary"
@@ -51,17 +51,17 @@ else
                                 <SelectedTemplate>
                                     @if (context != null)
                                     {
-                                    <MudText>@context.Name</MudText>
+                                        <MudText>@context.Name</MudText>
                                     }
                                     else
                                     {
-                                    <MudText>No File</MudText>
+                                        <MudText>No File</MudText>
                                     }
                                 </SelectedTemplate>
                             </MudFileUpload>
                         </div>
                     </MudField>
-                    
+
 
                     <MudTextField Variant="Variant.Outlined"
                                   T="int"
@@ -75,20 +75,22 @@ else
                                   Value="@model.TotalPoint"
                                   ReadOnly
                                   Label="Total Point"/>
-                    <MudButton Variant="Variant.Filled" 
+                    <MudButton Variant="Variant.Filled"
                                StartIcon="@Icons.Material.Filled.Save"
                                FullWidth="true"
                                Color="Color.Primary"
                                Class="pa-3 py-2 mt-4"
-                               OnClick="OnSaveExam">Simpan</MudButton>
+                               OnClick="OnSaveExam">
+                        Simpan
+                    </MudButton>
                 </MudCardContent>
                 <MudCardActions >
                 </MudCardActions>
             </MudCard>
         </MudItem>
-        
+
         <MudItem xs="12" md="6">
-            
+
         </MudItem>
     </MudGrid>
 
@@ -133,7 +135,7 @@ else
         </MudItem>
 
         @{
-            if (model.Soals != null && model.Soals.Count > 0 && currentSoal!=null)
+            if (model.Soals != null && model.Soals.Count > 0 && currentSoal != null)
             {
                 <MudItem xs="12" md="5">
                     <MudCard>
@@ -161,7 +163,7 @@ else
                                         currentSoal.isMultipleJawaban = false;
                                 }
                                 <MudSwitch T="bool" @bind-Value="@currentSoal.isMultipleJawaban" Color="Color.Success">
-                                    @(currentSoal.isMultipleJawaban == true ? "Ya" : "Tidak")
+                                    @(currentSoal.isMultipleJawaban ? "Ya" : "Tidak")
                                 </MudSwitch>
                             </MudField>
                         </MudCardContent>
@@ -200,10 +202,10 @@ else
                         </MudCardHeader>
                         <MudCardContent>
                             @{
-                                int i = 0;
+                                var i = 0;
                                 foreach (var jawaban in currentSoal.PilihanJawaban)
                                 {
-                                    string urutan = $"Jawaban {alpha[i]}";
+                                    var urutan = $"Jawaban {alpha[i]}";
 
                                     <div class="d-flex flex-grow-1 align-content-center gap-2">
                                         <MudNumericField @bind-Value="@jawaban.Point"
@@ -227,7 +229,7 @@ else
                                             <MudSwitch
                                                 @bind-Value="@jawaban.IsBenar"
                                                 Color="Color.Success">
-                                                @(jawaban.IsBenar == true ? "Benar" : "Salah")
+                                                @(jawaban.IsBenar ? "Benar" : "Salah")
                                             </MudSwitch>
                                         </div>
 
@@ -260,7 +262,7 @@ else
                                     5
                                 </MudButton>
                             </MudStack>
-                            
+
 
                         </MudCardContent>
                         <MudCardActions >
@@ -283,20 +285,20 @@ else
     [Parameter] public int Id { get; set; }
 
     bool isLoading = true;
-    bool _readOnly = false;
+    readonly bool _readOnly = false;
     bool _updateValueOnChange;
     MudExRichTextEdit Editor;
     private string pertanyaan;
     private string curentUser;
-    private string[] alpha = { "A", "B", "C", "D", "E", "F", "G" };
+    private readonly string[] alpha = { "A", "B", "C", "D", "E", "F", "G" };
     private string imageUrl;
 
-    private IQuillModule[] _modules = new[]
+    private IQuillModule[] _modules =
     {
         new QuilImageCompress()
     };
 
-    private Exam model = new Exam()
+    private Exam model = new()
     {
         Soals = new List<Soal>()
     };
@@ -347,7 +349,7 @@ else
         {
             model.Soals.Remove(currentSoal);
 
-            for (int i = 0; i < model.Soals.Count; i++)
+            for (var i = 0; i < model.Soals.Count; i++)
             {
                 model.Soals[i].Nomor = i + 1;
             }
@@ -361,7 +363,7 @@ else
     private void AddSoal()
     {
         var totalSoal = model.Soals.Count;
-        var createdSoal = new Soal()
+        var createdSoal = new Soal
         {
             Id = Guid.NewGuid(),
             Nomor = totalSoal + 1,
@@ -392,11 +394,12 @@ else
                 {
                     model = created.Data;
                 }
+
                 dial.Close();
                 DialogService.ShowMessageBox(
                     "Info",
                     "Soal Berhasil di Simpan",
-                    yesText: "Ok");
+                    "Ok");
             }
             else
             {
@@ -407,7 +410,7 @@ else
                     DialogService.ShowMessageBox(
                         "Info",
                         "Soal Berhasil di Update",
-                        yesText: "Ok");
+                        "Ok");
                 }
                 else
                 {
@@ -415,7 +418,7 @@ else
                     DialogService.ShowMessageBox(
                         "Error",
                         edited.Message,
-                        yesText: "Ok");
+                        "Ok");
                 }
             }
         }
@@ -424,7 +427,7 @@ else
             DialogService.ShowMessageBox(
                 "Info",
                 "Nama Paket Soal Tidak Boleh Kosong",
-                yesText: "Ok");
+                "Ok");
         }
     }
 
@@ -432,7 +435,7 @@ else
     {
         if (currentSoal.PilihanJawaban.Count < 6)
         {
-            currentSoal.PilihanJawaban.Add(new SoalJawaban()
+            currentSoal.PilihanJawaban.Add(new SoalJawaban
             {
                 Id = Guid.NewGuid(),
                 SoalId = currentSoal.Id
@@ -443,25 +446,26 @@ else
             DialogService.ShowMessageBox(
                 "Info",
                 "Jawaban Melebihi Kapasitas",
-                yesText: "Ok");
+                "Ok");
         }
 
         StateHasChanged();
     }
+
     private void Add5Jawaban()
     {
-        if (currentSoal.PilihanJawaban.Count==0)
+        if (currentSoal.PilihanJawaban.Count == 0)
         {
-            for (int i = 1; i < 6; i++)
+            for (var i = 1; i < 6; i++)
             {
-                currentSoal.PilihanJawaban.Add(new SoalJawaban()
+                currentSoal.PilihanJawaban.Add(new SoalJawaban
                 {
                     Id = Guid.NewGuid(),
                     SoalId = currentSoal.Id
                 });
             }
-            
         }
+
         StateHasChanged();
     }
 
@@ -469,7 +473,7 @@ else
     {
         if (!string.IsNullOrEmpty(imageUrl))
         {
-            await this.Editor.InsertImage(imageUrl);
+            await Editor.InsertImage(imageUrl);
         }
 
         StateHasChanged();

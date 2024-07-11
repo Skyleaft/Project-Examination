@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
+using MudExtensions.Services;
 using Shared.Common;
 using Shared.Users;
 using Web;
@@ -15,12 +16,10 @@ using Web.Client.Services;
 using Web.Client.Services.Notifications;
 using Web.Client.Services.UserPreferences;
 using Web.Client.Shared.Extensions;
+using Web.Client.Shared.Models;
 using Web.Common.Database;
 using Web.Components;
 using Web.Components.Auth;
-using MudExtensions.Services;
-using Web.Client.Shared.Models;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +32,8 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 builder.Services.InjectService();
 
-builder.Services.ConfigureHttpJsonOptions(options => {
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
     options.SerializerOptions.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
 });
 
@@ -56,10 +56,10 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 
-var connectionString = builder.Configuration.GetConnectionString("mzserver") 
+var connectionString = builder.Configuration.GetConnectionString("mzserver")
                        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<AppDbContext>(o =>
-    o.UseNpgsql(connectionString),optionsLifetime:ServiceLifetime.Scoped);
+    o.UseNpgsql(connectionString), optionsLifetime: ServiceLifetime.Scoped);
 
 builder.Services.AddIdentityCore<ApplicationUser>(o =>
         {
@@ -91,23 +91,16 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
-app.UseFastEndpoints(c =>
-{
-    c.Endpoints.RoutePrefix = "api";
-}); 
+app.UseFastEndpoints(c => { c.Endpoints.RoutePrefix = "api"; });
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    //app.UseHsts();
-}
+    app.UseExceptionHandler("/Error", true);
+// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+//app.UseHsts();
 else
-{
     //app.UseMigrationsEndPoint();
     app.UseWebAssemblyDebugging();
-}
 
 //app.UseHttpsRedirection();
 
@@ -117,23 +110,17 @@ app.UseAntiforgery();
 using (var scope = app.Services.CreateScope())
 {
     var notificationService = scope.ServiceProvider.GetService<INotificationService>();
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();  
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();  
-    
-    string[] roles = { "Superuser","Operator","Dosen","User" };
-    if (roleManager.Roles.Count() == 0)
-    {
-        foreach (var role in roles)
-        {
-            if (!(await roleManager.RoleExistsAsync(role)))  
-            {  
-                await roleManager.CreateAsync(new IdentityRole(role));  
-            } 
-        }
-    }
-    
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-    var superuser = new ApplicationUser()
+    string[] roles = { "Superuser", "Operator", "Dosen", "User" };
+    if (roleManager.Roles.Count() == 0)
+        foreach (var role in roles)
+            if (!await roleManager.RoleExistsAsync(role))
+                await roleManager.CreateAsync(new IdentityRole(role));
+
+
+    var superuser = new ApplicationUser
     {
         UserName = "sysadmin",
         NormalizedUserName = "SYSADMIN",
@@ -142,25 +129,20 @@ using (var scope = app.Services.CreateScope())
         Email = "milzan_malik@outlook.com",
         NormalizedEmail = "MILZAN_MALIK@OUTLOOK.COM",
         EmailConfirmed = true,
-        SecurityStamp = Guid.NewGuid().ToString("D"),
+        SecurityStamp = Guid.NewGuid().ToString("D")
     };
 
     if (await userManager.FindByNameAsync(superuser.UserName) == null)
     {
         var created = await userManager.CreateAsync(superuser, "@superuser");
-        if (created.Succeeded)
-        {
-            await userManager.AddToRoleAsync(superuser, "Superuser");
-        }
+        if (created.Succeeded) await userManager.AddToRoleAsync(superuser, "Superuser");
         //await userManager.AddToRoleAsync(superuser, "Superuser");
     }
-    
-    
-    if (notificationService is InMemoryNotificationService inMemoryService)
-    {
-        inMemoryService.Preload();
-    }
+
+
+    if (notificationService is InMemoryNotificationService inMemoryService) inMemoryService.Preload();
 }
+
 app.UseStatusCodePagesWithRedirects("/StatusCode/{0}");
 
 app.MapRazorComponents<App>()

@@ -1,22 +1,20 @@
-﻿@using System.Text.Json
-@using Blazored.LocalStorage
-@using global::Shared.Users
-@using Microsoft.AspNetCore.Authentication
-@using Microsoft.AspNetCore.Components.Endpoints
-@using Microsoft.AspNetCore.Identity
-@using Web.Components.Auth.Components
-@inject AuthenticationStateProvider authStateProvicder
+﻿@inject AuthenticationStateProvider authStateProvicder
 @inject NavigationManager navManager
 @page "/Account/Login"
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@using Shared.Users
+@using Web.Components.Auth.Components
 @attribute [AllowAnonymous]
 @layout LoginLayout
 @inject SignInManager<ApplicationUser> signInManager
 @inject IdentityRedirectManager RedirectManager
 
-<EditForm Model="model" method="post" OnValidSubmit="OnValidSubmit" FormName="login" >
+<EditForm Model="model" method="post" OnValidSubmit="OnValidSubmit" FormName="login">
     <DataAnnotationsValidator/>
     <MudGrid Class="align-content-center justify-center">
-        <MudItem xs=9 md=5 lg=3>
+        <MudItem xs="9" md="5" lg="3">
             <MudCard Class="pa-4">
                 <MudCardHeader>
                     <CardHeaderContent>
@@ -40,11 +38,11 @@
                     </div>
                     <MudTextField T="string" Label="Username" Class="mt-3" ShrinkLabel name="model.Username" Required="true" RequiredError="Username is required!"
                                   @bind-Value="model.UserName" InputType="InputType.Text" Variant="Variant.Outlined"/>
-                    <MudTextField T="string" Label="Password" Class="mt-3" ShrinkLabel name="model.Password" Required="true" RequiredError="Password is required!" 
+                    <MudTextField T="string" Label="Password" Class="mt-3" ShrinkLabel name="model.Password" Required="true" RequiredError="Password is required!"
                                   @bind-Value="model.Password" InputType="InputType.Password" Variant="Variant.Outlined"/>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto mt-4" FullWidth Style="height:60px">Login</MudButton>
-                <MudButton Variant="Variant.Text" Href="userclient/register" FullWidth Class="mt-2">Daftar</MudButton>
-                    </MudCardContent>
+                    <MudButton Variant="Variant.Text" Href="userclient/register" FullWidth Class="mt-2">Daftar</MudButton>
+                </MudCardContent>
             </MudCard>
         </MudItem>
     </MudGrid>
@@ -53,16 +51,15 @@
 
 @code {
     [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
-    [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
-    [SupplyParameterFromQuery] private bool? isLogout { get; set; }
-    [SupplyParameterFromForm]
-    private LoginDTO model { get; set; } = new();
+    [SupplyParameterFromQuery] private string? ReturnUrl { get; }
+    [SupplyParameterFromQuery] private bool? isLogout { get; }
+    [SupplyParameterFromForm] private LoginDTO model { get; } = new();
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] HttpClient httpClient { get; set; }
     [Inject] ILocalStorageService _localStorageService { get; set; }
     private string? errorMessage;
-    
+
     private bool isVisible;
 
     protected override async Task OnInitializedAsync()
@@ -72,12 +69,13 @@
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
         }
-        
-        if (isLogout!=null && isLogout==true)
+
+        if (isLogout != null && isLogout == true)
         {
             await signInManager.SignOutAsync();
             //navManager.NavigateTo($"Account/Login", forceLoad: true);
         }
+
         if (HttpContext.User.Identity.IsAuthenticated)
         {
             RedirectManager.RedirectTo(ReturnUrl);
@@ -91,7 +89,7 @@
 
         try
         {
-            var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, true, lockoutOnFailure: false);
+            var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, true, false);
             if (result.Succeeded)
             {
                 //dial.Close();
@@ -103,7 +101,6 @@
             }
             else if (result.IsNotAllowed)
             {
-                
             }
             else
             {
@@ -117,9 +114,7 @@
         }
         catch (Exception ex)
         {
-            
         }
-        
     }
 
 }

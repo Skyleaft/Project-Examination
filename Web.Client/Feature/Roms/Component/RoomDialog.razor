@@ -31,10 +31,10 @@
 
                     <MudSelect Label="Soal" T="int" @bind-Value="room.ExamId" Variant="Variant.Outlined">
                         @{
-                        foreach (var item in _exams)
-                        {
-                        <MudSelectItem T="int" Value="item.Id">@item.Nama</MudSelectItem>
-                        }
+                            foreach (var item in _exams)
+                            {
+                                <MudSelectItem T="int" Value="item.Id">@item.Nama</MudSelectItem>
+                            }
                         }
                     </MudSelect>
                     <MudNumericField @bind-Value="room.Durasi" Label="Durasi Ujian" Variant="Variant.Outlined" Min="0" Max="600"/>
@@ -72,7 +72,7 @@
                         </MudFileUpload>
                     </MudToolBar>
 
-                    
+
                 </MudStack>
 
             </MudPaper>
@@ -90,26 +90,31 @@
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] private IExam _examRepo { get; set; }
     [Inject] private IRoom _roomRepo { get; set; }
+
     [Parameter]
     public
-        Room room { get; set; } = new Room()
+        Room room { get; set; } = new()
     {
         ExamId = 1
     };
 
     [Parameter] public bool isEdit { get; set; }
 
-    void Cancel() => MudDialog.Cancel();
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
     int examid;
 
 
-    List<Exam> _exams = new List<Exam>();
+    List<Exam> _exams = new();
     DateTime? dateStart = DateTime.Today;
     DateTime? dateEnd = DateTime.Today;
 
     TimeSpan? timeStart = new TimeSpan(00, 00, 00);
     TimeSpan? timeEnd = new TimeSpan(00, 00, 00);
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
@@ -124,14 +129,14 @@
                     room.CreatedBy = auth.User.Identity.Name;
             }
 
-            
+
             StateHasChanged();
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
-        var data = await _examRepo.Find(new FindRequest()
+        var data = await _examRepo.Find(new FindRequest
         {
             Page = 1,
             PageSize = 200
@@ -144,6 +149,7 @@
             timeStart = room.JadwalStart.TimeOfDay;
             timeEnd = room.JadwalEnd.TimeOfDay;
         }
+
         StateHasChanged();
     }
 
@@ -164,7 +170,7 @@
                 DialogService.ShowMessageBox(
                     "Info",
                     edited.Message,
-                    yesText: "Ok");
+                    "Ok");
             }
             else
             {
@@ -172,7 +178,7 @@
                 DialogService.ShowMessageBox(
                     "Error",
                     edited.Message,
-                    yesText: "Ok");
+                    "Ok");
             }
         }
         else
@@ -185,7 +191,7 @@
                 DialogService.ShowMessageBox(
                     "Info",
                     created.Message,
-                    yesText: "Ok");
+                    "Ok");
             }
             else
             {
@@ -193,7 +199,7 @@
                 DialogService.ShowMessageBox(
                     "Error",
                     created.Message,
-                    yesText: "Ok");
+                    "Ok");
             }
         }
     }

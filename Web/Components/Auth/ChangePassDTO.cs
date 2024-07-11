@@ -9,6 +9,7 @@ public class ChangePassDTO
     [MaxLength(30)]
     [DataType(DataType.Password)]
     public string Password { get; set; } = null!;
+
     [Required]
     [MinLength(6)]
     [MaxLength(30)]

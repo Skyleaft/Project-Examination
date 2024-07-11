@@ -1,17 +1,15 @@
-
-using System.Text.Json.Serialization;
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
+using MudExtensions.Services;
 using Web.Client;
 using Web.Client.Services;
 using Web.Client.Services.Notifications;
 using Web.Client.Services.UserPreferences;
 using Web.Client.Shared.Auth;
 using Web.Client.Shared.Extensions;
-using MudExtensions.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -22,7 +20,7 @@ builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticat
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredSessionStorage();
 
-builder.Services.AddHttpClient("ServerAPI", 
+builder.Services.AddHttpClient("ServerAPI",
     client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
     .CreateClient("ServerAPI"));
