@@ -13,7 +13,7 @@
 @inject HttpClient HttpClient
 
 
-<EditForm Model="userModel" method="post" OnValidSubmit="OnValidSubmit" FormName="register">
+<EditForm Model="userModel" OnValidSubmit="OnValidSubmit" FormName="register">
     <DataAnnotationsValidator/>
     <MudGrid Class="align-content-center justify-center">
         <MudItem xs="12" md="8">
@@ -203,7 +203,10 @@
             }
             else
             {
-                userModel = null;
+                userModel = new()
+                {
+                    Role = "User"
+                };
                 _snackbar.Add(
                     @<div>
                         <h3>Info!!</h3>
@@ -223,6 +226,7 @@
                 created.Message,
                 "Ok");
         }
+        StateHasChanged();
     }
 
     private async Task<bool> SendEmail(string userId)

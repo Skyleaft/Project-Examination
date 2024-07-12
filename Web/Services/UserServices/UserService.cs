@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Shared.Common;
 using Shared.Users;
 using Web.Client.Feature.UserManagements;
@@ -22,7 +23,11 @@ public class UserService : IUser
 
     public async Task<PaginatedResponse<ApplicationUser>> Find(FindRequest r, CancellationToken ct)
     {
-        var data = await _appDbContext.Users.WhereIf(!string.IsNullOrEmpty(r.Search),
+        var data = await _appDbContext
+            .Users
+            .Include(x=>x.Kota)
+            .ThenInclude(y=>y.Provinsi)
+            .WhereIf(!string.IsNullOrEmpty(r.Search),
                 x => x.NamaLengkap.ToLower()
                     .Contains(r.Search.ToLower()))
             .OrderBy(x => x.UserName)

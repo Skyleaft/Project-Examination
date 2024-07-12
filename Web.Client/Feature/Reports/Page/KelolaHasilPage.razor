@@ -3,7 +3,9 @@
 @using global::Shared.Report
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Interfaces
+@using Web.Client.Services
 @inject IDialogService Dialog
+@inject IJSRuntime js
 @attribute [Authorize(Roles = "Superuser,Dosen,Operator")]
 
 <h3>Kelola Hasil Ujian</h3>
@@ -15,10 +17,28 @@
         <MudTextField T="string"
                       ValueChanged="@(s => OnSearch(s))"
                       Placeholder="Search"
+                      Variant="Variant.Outlined"
                       Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search"
                       IconSize="Size.Medium" Class="mt-0">
         </MudTextField>
+        <MudSpacer/>
+        <MudStack Row="true" >
+            <MudSelect Dense="true" T="int"
+                       Style="min-width: 180px"
+                       Label="Export Type" @bind-Value="exportType"
+                       Class="px-2"
+                       Variant="Variant.Outlined">
+                <MudSelectItem Value="0">Current Page</MudSelectItem>
+                <MudSelectItem Value="1">All Data</MudSelectItem>
+                <MudSelectItem Value="2">Selected</MudSelectItem>
+            </MudSelect>
+            <MudIconButton Variant="Variant.Text"
+                           OnClick="OnExportClick"
+                           Class="px-5"
+                           Icon="@Icons.Material.Rounded.Download"
+                           Color="Color.Primary"></MudIconButton>
+        </MudStack>
     </ToolBarContent>
     <HeaderContent>
         <MudTh>
@@ -75,6 +95,7 @@
     private IEnumerable<ExamReport> pagedData;
     private int totalItems;
     private string searchString = "";
+    int exportType = 0;
 
     DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
 
@@ -94,7 +115,7 @@
     private async Task<TableData<ExamReport>> ServerReload(TableState state, CancellationToken ct)
     {
         var req = new FindRequest();
-        req.Page = state.Page;
+        req.Page = state.Page+1;
         req.PageSize = state.PageSize;
         req.Search = searchString;
         req.OrderBy = state.SortLabel;
@@ -113,6 +134,48 @@
     {
         searchString = text;
         table.ReloadServerData();
+    }
+    
+    private async Task OnExportClick()
+    {
+        var data=table.FilteredItems;
+        if (exportType == 0)
+        {
+            data = table.FilteredItems;
+        }
+        else if( exportType==1)
+        {
+            var load = await table.ServerData.Invoke(new TableState()
+            {
+                Page = 0,
+                PageSize = 3000,
+                SortDirection = SortDirection.None,
+                SortLabel = ""
+            },new CancellationToken());
+            data = load.Items.ToList();
+        }
+        else
+        {
+            data = table.SelectedItems;
+        }
+        
+        var filterd =data.Select((x, i) => new
+        {
+            No = i + 1,
+            x.NamaLengkap,
+            x.Gender,
+            x.AsalKota,
+            x.NomorTelepon,
+            Jadwal = x.Jadwal.ToString("dd/MM/yyyy"),
+            x.Score,
+            x.MaxScore,
+            x.Nilai
+        }).ToList();
+        var excelFile = ExcelService.GenerateExcelWorkbook(filterd);
+        js.InvokeVoidAsync("saveAsFile",
+            $"hasil_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.xlsx",
+            Convert.ToBase64String(excelFile)
+        );
     }
 
 
