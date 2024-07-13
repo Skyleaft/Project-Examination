@@ -110,8 +110,15 @@
             </MudGrid>
         </DialogContent>
         <DialogActions>
-            <MudButton OnClick="Cancel">Cancel</MudButton>
-            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Register</MudButton>
+            <MudStack Row="true" Spacing="2" Class="ma-2 my-3">
+                <MudButton OnClick="Cancel">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Submit"
+                           Color="Color.Primary"
+                           Class="pa-4"
+                           StartIcon="@Icons.Material.Rounded.Save"
+                           Variant="Variant.Filled">Simpan</MudButton>
+
+            </MudStack>
         </DialogActions>
     </MudDialog>
 </EditForm>

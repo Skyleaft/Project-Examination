@@ -126,7 +126,11 @@
         var form = await Dialog.ShowAsync<RoomDialog>("Buat Room", maxWidth);
         var result = await form.Result;
         if (!result.Canceled)
+        {
+            await Task.Delay(400);
             await PageChanged(1);
+        }
+            
     }
 
     public async ValueTask DisposeAsync()

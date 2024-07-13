@@ -84,29 +84,20 @@
                         </MudCardHeader>
                         <MudCardContent>
                             <MudStack Spacing="3">
-                                <MudCard>
-                                    <MudCardMedia Image="/images/blazor.png" Height="100"/>
-                                    <MudCardContent>
-
-                                    </MudCardContent>
-                                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg">
+                                <div class="d-flex justify-center">
+                                    <MudImage ObjectFit="ObjectFit.Cover" Height="150" Src="@imagePath"  Elevation="25" Class="rounded-lg mx-4"/>
+                                </div>
+                                <div class="d-flex align-center mb-5 mt-2">
+                                    <MudSpacer/>
+                                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg, .jpeg">
                                         <ActivatorContent>
                                             <MudFab Color="Color.Primary"
                                                     StartIcon="@Icons.Material.Filled.Image"
                                                     Label="Unggah Foto"/>
                                         </ActivatorContent>
-                                        @* <SelectedTemplate> *@
-                                        @*     @if (context != null) *@
-                                        @*     { *@
-                                        @*     <MudText>@context.Name</MudText> *@
-                                        @*     } *@
-                                        @*     else *@
-                                        @*     { *@
-                                        @*     <MudText>No File</MudText> *@
-                                        @*     } *@
-                                        @* </SelectedTemplate> *@
                                     </MudFileUpload>
-                                </MudCard>
+                                    <MudSpacer/>
+                                </div>
                                 <MudSelect T="string" Label="Role"
                                            @bind-Value="userModel.Role"
                                            Variant="Variant.Outlined"
@@ -137,8 +128,15 @@
 
         </DialogContent>
         <DialogActions>
-            <MudButton OnClick="Cancel">Cancel</MudButton>
-            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Edit</MudButton>
+            <MudStack Row="true" Spacing="2" Class="ma-2 my-3">
+                <MudButton OnClick="Cancel">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Submit"
+                           Color="Color.Primary"
+                           Class="pa-4"
+                           StartIcon="@Icons.Material.Rounded.Save"
+                           Variant="Variant.Filled">Simpan</MudButton>
+
+            </MudStack>
         </DialogActions>
     </MudDialog>
 </EditForm>
@@ -150,6 +148,7 @@
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] HttpClient _httpClient { get; set; }
     [Parameter] public UserEditDTO userModel { get; set; } = new();
+    string imagePath = "/images/userdef.png";
 
     Provinsi SelectedProv;
     Kota SelectedKota;
@@ -186,9 +185,9 @@
         {
             await stream.CopyToAsync(memstream);
             userModel.Photo = memstream.ToArray();
+            imagePath = $"data:image;base64,{Convert.ToBase64String(userModel.Photo)}";
         }
-
-        StateHasChanged();
+        
     }
 
     public async Task FilterKota(string ProvID)

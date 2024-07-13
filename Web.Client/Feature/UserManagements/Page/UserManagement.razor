@@ -10,45 +10,56 @@
 @inject IJSRuntime js
 @attribute [Authorize(Roles = "Superuser,Operator")]
 
-<h3>UserManagement</h3>
+<MudText Typo="Typo.h4" Align="Align.Center">Kelola User</MudText>
+<MudPaper Elevation="2" Class="my-2 pa-2">
+    <MudGrid>
+        <MudItem lg="3" xs="12">
+            <MudStack>
+                <MudButton OnClick="@(e => OpenDialog())"
+                           Variant="Variant.Outlined"
+                           FullWidth="true"
+                           Class="py-4"
+                           StartIcon="@Icons.Material.Outlined.PersonAdd"
+                           Color="Color.Primary">
+                    Tambah
+                </MudButton>
+            </MudStack>
+            
+        </MudItem>
+        <MudItem lg="6" xs="12">
+            <MudTextField T="string"
+                          ValueChanged="@(s => OnSearch(s))"
+                          Placeholder="Search"
+                          Variant="Variant.Outlined"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          IconSize="Size.Medium">
+            </MudTextField>
+        </MudItem>
+        <MudItem lg="3" xs="12">
+            <MudStack Row="true">
+                <MudSelect Dense="true" T="int"
+                           Label="Export Type"
+                           @bind-Value="exportType"
+                           Variant="Variant.Outlined">
+                    <MudSelectItem Value="0">Current Page</MudSelectItem>
+                    <MudSelectItem Value="1">All Data</MudSelectItem>
+                    <MudSelectItem Value="2">Selected</MudSelectItem>
+                </MudSelect>
+                <MudIconButton Variant="Variant.Text"
+                               OnClick="OnExportClick"
+                               Class="px-5"
+                               Icon="@Icons.Material.Rounded.Download"
+                               Color="Color.Primary">
+                </MudIconButton>
+            </MudStack>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
 
 <MudTable ServerData="ServerReload"
           Dense="true" Hover="true" @ref="table" MultiSelection="true">
     <ToolBarContent>
-        <MudButton OnClick="@(e => OpenDialog())"
-                   Variant="Variant.Outlined"
-                   Class="py-2"
-                   StartIcon="@Icons.Material.Outlined.PersonAdd"
-                   Color="Color.Primary">
-            Tambah
-        </MudButton>
-        <MudSpacer/>
-        <MudTextField T="string"
-                      ValueChanged="@(s => OnSearch(s))"
-                      Placeholder="Cari Data...."
-                      Variant="Variant.Outlined"
-                      Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      IconSize="Size.Medium" Class="mt-0">
-        </MudTextField>
-        <MudSpacer/>
-        <MudStack Row="true">
-            <MudSelect Dense="true" T="int"
-                       Style="min-width: 180px"
-                       Label="Export Type" @bind-Value="exportType"
-                       Class="px-2"
-                       Variant="Variant.Outlined">
-                <MudSelectItem Value="0">Current Page</MudSelectItem>
-                <MudSelectItem Value="1">All Data</MudSelectItem>
-                <MudSelectItem Value="2">Selected</MudSelectItem>
-            </MudSelect>
-            <MudIconButton Variant="Variant.Text"
-                           OnClick="OnExportClick"
-                           Class="px-5"
-                           Icon="@Icons.Material.Rounded.Download"
-                           Color="Color.Primary">
-            </MudIconButton>
-        </MudStack>
 
     </ToolBarContent>
     <HeaderContent>

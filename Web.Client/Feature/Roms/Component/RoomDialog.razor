@@ -9,7 +9,7 @@
     <DataAnnotationsValidator/>
     <MudDialog>
         <DialogContent>
-            <MudPaper Class="pa-4 ma-2 mb-2">
+            <MudPaper Class="pa-4 ma-2 mb-4">
                 <MudStack Spacing="4">
                     <MudTextField Label="Nama Ruangan" HelperText="Max. 40 characters"
                                   Variant="Variant.Outlined"
@@ -37,8 +37,8 @@
                             }
                         }
                     </MudSelect>
-                    <MudNumericField @bind-Value="room.Durasi" Label="Durasi Ujian" Variant="Variant.Outlined" Min="0" Max="600"/>
-                    <MudToolBar Class="pa-2">
+                    
+                    <MudStack Row="true" Spacing="2" Class="pa-2">
                         <MudDatePicker Variant="Variant.Outlined"
                                        Label="Jadwal Mulai"
                                        MinDate="DateTime.Now.AddDays(-1)"
@@ -47,13 +47,20 @@
                                        Label="Jadwal Selesai"
                                        MinDate="DateTime.Now.AddDays(-1)"
                                        MaxDate="DateTime.Now.AddMonths(2)" @bind-Date="dateEnd"/>
-                    </MudToolBar>
-                    <MudToolBar Class="pa-2">
+                    </MudStack>
+                    <MudStack Row="true" Spacing="2" Class="pa-2">
                         <MudTimePicker Variant="Variant.Outlined" Label="Waktu Mulai" AmPm="true" Class="ml-3" @bind-Time="timeStart"/>
                         <MudTimePicker Variant="Variant.Outlined" Label="Waktu Selesai" AmPm="true" @bind-Time="timeEnd"/>
-                    </MudToolBar>
-                    <MudToolBar>
-                        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg">
+                    </MudStack>
+                    <MudNumericField @bind-Value="room.Durasi" Label="Durasi Ujian" HelperText="Masukan Dalam Satuan Menit" 
+                                     Variant="Variant.Outlined" 
+                                     Min="0" Max="600"/>
+                    <div class="d-flex justify-center">
+                        <MudImage ObjectFit="ObjectFit.Cover" Height="200" Src="@imagePath"  Elevation="25" Class="rounded-lg mx-4"/>
+                    </div>
+                    <div class="d-flex align-center mb-5 mt-2">
+                        <MudSpacer/>
+                        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg, .jpeg">
                             <ActivatorContent>
                                 <MudFab Color="Color.Primary"
                                         StartIcon="@Icons.Material.Filled.Image"
@@ -70,7 +77,9 @@
                             @*     } *@
                             @* </SelectedTemplate> *@
                         </MudFileUpload>
-                    </MudToolBar>
+                        <MudSpacer/>
+                    </div>
+                    
 
 
                 </MudStack>
@@ -78,8 +87,16 @@
             </MudPaper>
         </DialogContent>
         <DialogActions>
-            <MudButton OnClick="Cancel">Cancel</MudButton>
-            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Simpan</MudButton>
+            <MudStack Row="true" Spacing="2" Class="ma-2 my-3">
+                <MudButton OnClick="Cancel">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" 
+                           Color="Color.Primary"
+                           Class="pa-4"
+                           StartIcon="@Icons.Material.Rounded.Save"
+                           Variant="Variant.Filled">Simpan</MudButton>
+                
+            </MudStack>
+            
         </DialogActions>
     </MudDialog>
 </EditForm>
@@ -107,6 +124,7 @@
 
     int examid;
 
+    string imagePath = "/images/room-bg.jpg";
 
     List<Exam> _exams = new();
     DateTime? dateStart = DateTime.Today;
@@ -158,7 +176,7 @@
         room.JadwalStart = dateStart.Value + timeStart.Value;
         room.JadwalEnd = dateEnd.Value + timeEnd.Value;
         var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
-        var dial = await DialogService.ShowAsync<BluryDialog>("Registering...", options);
+        var dial = await DialogService.ShowAsync<BluryDialog>("Harap Tunggu...", options);
 
         if (isEdit)
         {
@@ -211,6 +229,7 @@
         {
             await stream.CopyToAsync(memstream);
             room.Thumbnail = memstream.ToArray();
+            imagePath = $"data:image;base64,{Convert.ToBase64String(room.Thumbnail)}";
         }
     }
 
