@@ -100,14 +100,14 @@ app.UseFastEndpoints(c => { c.Endpoints.RoutePrefix = "api"; });
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
+{
     app.UseExceptionHandler("/Error", true);
-// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-//app.UseHsts();
+    app.UseHsts();
+}
 else
-    //app.UseMigrationsEndPoint();
     app.UseWebAssemblyDebugging();
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
