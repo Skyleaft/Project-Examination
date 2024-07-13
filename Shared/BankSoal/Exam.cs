@@ -16,12 +16,7 @@ public class Exam : IGenericModifier
 
     public int TotalPoint
     {
-        get
-        {
-            if (Soals != null)
-                return Soals.Sum(x => x.MaxPoint);
-            return 0;
-        }
+        get { return Soals?.Sum(x => x.MaxPoint) ?? 0; }
     }
 
     public byte[]? Thumbnail { get; set; }

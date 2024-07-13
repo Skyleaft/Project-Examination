@@ -3,6 +3,7 @@ using Shared.Common;
 using Shared.Report;
 using Web.Client.Interfaces;
 using Web.Common.Database;
+using ZstdSharp.Unsafe;
 
 namespace Web.Services.ReportServices;
 
@@ -28,6 +29,7 @@ public class ReportService(AppDbContext _dbContext) : IReport
                      x.AsalKota.ToLower().Contains(r.Search.ToLower()) ||
                      x.NamaRoom.ToLower().Contains(r.Search.ToLower())
             )
+            .Where(x=>x.NamaRoom.Contains(r.Filter))
             .OrderBy(x => x.Jadwal)
             .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;

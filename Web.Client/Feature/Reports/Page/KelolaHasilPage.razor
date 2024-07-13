@@ -1,6 +1,7 @@
 ﻿@page "/report/manage"
 @using global::Shared.Common
 @using global::Shared.Report
+@using global::Shared.RoomSet
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Interfaces
 @using Web.Client.Services
@@ -11,8 +12,15 @@
 <h3>Kelola Hasil Ujian</h3>
 
 <MudTable ServerData="ServerReload"
-          Dense="true" Hover="true" @ref="table">
+          Dense="true" Hover="true" @ref="table" MultiSelection="true">
     <ToolBarContent>
+        <MudAutocomplete T="Room" Label="Filter Ruangan"
+                         Variant="Variant.Outlined"
+                         AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                         Strict="false"
+                         ValueChanged="OnFilter"
+                         ToStringFunc="@(e => e == null ? null : $"{e.Nama} - {e.Kode}")"
+                         SearchFunc="SearchFunc"/>
         <MudSpacer/>
         <MudTextField T="string"
                       ValueChanged="@(s => OnSearch(s))"
@@ -23,7 +31,7 @@
                       IconSize="Size.Medium" Class="mt-0">
         </MudTextField>
         <MudSpacer/>
-        <MudStack Row="true" >
+        <MudStack Row="true">
             <MudSelect Dense="true" T="int"
                        Style="min-width: 180px"
                        Label="Export Type" @bind-Value="exportType"
@@ -91,13 +99,34 @@
     [Inject] IUser _userService { get; set; }
     [Inject] IUserExam _userExamService { get; set; }
     [Inject] IReport _report { get; set; }
+    [Inject] IRoom _rooms { get;set; }
+    [Inject] ISnackbar _snackbar { get; set; }
     private MudTable<ExamReport> table;
     private IEnumerable<ExamReport> pagedData;
+    private List<Room> RoomsRef = new List<Room>();
     private int totalItems;
     private string searchString = "";
     int exportType = 0;
+    Room selectedRoom;
 
     DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(1000);
+        RoomsRef = await _rooms.AllRefference(new CancellationToken());
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            
+            StateHasChanged();
+        }
+        
+    }
 
 
     private string setGender(Gender gender)
@@ -120,6 +149,8 @@
         req.Search = searchString;
         req.OrderBy = state.SortLabel;
         req.Direction = (int)state.SortDirection;
+        if (selectedRoom != null)
+            req.Filter = selectedRoom.Nama;
         var data = await _report.Find(req, new CancellationToken());
         await Task.Delay(100);
         var tabledata = new TableData<ExamReport>
@@ -141,10 +172,24 @@
         var data=table.FilteredItems;
         if (exportType == 0)
         {
+            if (data.Count()==0)
+            {
+                _snackbar.Add(
+                    @<div>
+                        <h3>Info ERROR!!</h3>
+                        <ul>
+                            <li>Data Tabel Kosong</li>
+                            <li>Harap isi tabel terlebih dahulu</li>
+                        </ul>
+                    </div>
+                    , Severity.Error);
+                return;
+            }
             data = table.FilteredItems;
         }
         else if( exportType==1)
         {
+            selectedRoom = null;
             var load = await table.ServerData.Invoke(new TableState()
             {
                 Page = 0,
@@ -156,6 +201,32 @@
         }
         else
         {
+            if (data.Count()==0)
+            {
+                _snackbar.Add(
+                    @<div>
+                        <h3>Info ERROR!!</h3>
+                        <ul>
+                            <li>Data Tabel Kosong</li>
+                            <li>Harap isi tabel terlebih dahulu</li>
+                        </ul>
+                    </div>
+                    , Severity.Error);
+                return;
+            }
+            else if (table.SelectedItems.Count==0)
+            {
+                _snackbar.Add(
+                    @<div>
+                        <h3>Info!!</h3>
+                        <ul>
+                            <li>Data Belum Dipilih</li>
+                            <li>Harap pilih data yang mau di export</li>
+                        </ul>
+                    </div>
+                    , Severity.Warning);
+                return;
+            }
             data = table.SelectedItems;
         }
         
@@ -178,5 +249,24 @@
         );
     }
 
+
+    private async Task<IEnumerable<Room>> SearchFunc(string search, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(search))
+            return RoomsRef;
+        return RoomsRef
+            .Where(x => x.Nama
+                .Contains(search, StringComparison.CurrentCultureIgnoreCase))
+            .ToList();
+    }
+
+    private void OnFilter(Room obj)
+    {
+        if (obj != null)
+        {
+            selectedRoom = obj;
+            table.ReloadServerData();
+        }
+    }
 
 }

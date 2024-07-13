@@ -6,4 +6,5 @@ public class FindRequest
     public int PageSize { get; set; }
     public string OrderBy { get; set; }
     public int Direction { get; set; }
+    public string? Filter { get; set; } = "";
 }

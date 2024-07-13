@@ -92,6 +92,7 @@ public class RoomService : IRoom
 
         var data = await _dbContext
             .Room
+            .AsNoTracking()
             .WhereIf(!string.IsNullOrEmpty(r.Search),
                 x => x.Nama.ToLower().Contains(r.Search.ToLower()) ||
                      x.Kode.ToLower().Contains(r.Search.ToLower())
@@ -99,6 +100,22 @@ public class RoomService : IRoom
             .Where(x => x.CreatedBy == Username)
             .OrderBy(x => x.CreatedOn)
             .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
+        return data;
+    }
+
+    public async Task<List<Room>> AllRefference(CancellationToken ct)
+    {
+        var data = await _dbContext
+            .Room
+            .AsNoTracking()
+            .OrderBy(x => x.CreatedOn)
+            .Select(x => new Room()
+            {
+                Id = x.Id,
+                Nama = x.Nama,
+                Kode = x.Kode
+            })
+            .ToListAsync();
         return data;
     }
 }

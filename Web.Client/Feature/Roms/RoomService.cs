@@ -73,4 +73,9 @@ public class RoomService(HttpClient _httpClient) : IRoom
 
         return data;
     }
+
+    public Task<List<Room>> AllRefference(CancellationToken ct)
+    {
+        throw new NotImplementedException();
+    }
 }
