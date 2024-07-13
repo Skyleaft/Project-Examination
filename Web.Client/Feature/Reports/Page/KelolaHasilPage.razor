@@ -53,9 +53,6 @@
             <MudTableSortLabel SortLabel="NamaLengkap" T="ExamReport">Nama Lengkap</MudTableSortLabel>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="Gender" T="ExamReport">Jenis Kelamin</MudTableSortLabel>
-        </MudTh>
-        <MudTh>
             <MudTableSortLabel SortLabel="AsalKota" T="ExamReport">Asal</MudTableSortLabel>
         </MudTh>
         <MudTh>
@@ -76,7 +73,6 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="NamaLengkap">@context.NamaLengkap</MudTd>
-        <MudTd DataLabel="Jenis Kelamin">@setGender(context.Gender)</MudTd>
         <MudTd DataLabel="Asal">@context.AsalKota</MudTd>
         <MudTd DataLabel="Nomor Telepon">@setHideNoTelp(context.NomorTelepon)</MudTd>
         <MudTd DataLabel="Nama Ruangan">@context.NamaRoom</MudTd>
@@ -234,8 +230,6 @@
         {
             No = i + 1,
             x.NamaLengkap,
-            x.Gender,
-            x.AsalKota,
             x.NomorTelepon,
             Jadwal = x.Jadwal.ToString("dd/MM/yyyy"),
             x.Score,

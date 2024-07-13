@@ -52,6 +52,11 @@ public class RoomService(HttpClient _httpClient) : IRoom
         return data;
     }
 
+    public Room GetSync(Guid Id)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<Room> Get(string kode)
     {
         var res = await _httpClient.GetAsync($"/api/room?kode={kode}");

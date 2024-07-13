@@ -27,9 +27,9 @@
 else
 {
     <MudGrid>
-        <MudItem md="9">
+        <MudItem md="9" xs="12">
 
-            <div id="scroll_soal" class="ma-0" style="height:85vh;overflow: auto;">
+            <div id="scroll_soal" class="ma-0" style="height:84vh;overflow: auto;">
                 @{
                     foreach (var item in soalPaging.Items)
                     {
@@ -45,16 +45,16 @@ else
                         {
                             <MudPaper Class="pa-4 ma-2 my-3">
                                 <div class="d-flex flex-grow-1 gap-1">
-                                    <MudPaper Class="flex-none d-flex py-3" Width="25px" Elevation="0">
+                                    <MudPaper Class="flex-none d-flex" Width="25px" Elevation="0">
                                         <MudText Typo="Typo.body1">@item.Soal.Nomor</MudText>
                                     </MudPaper>
                                     <MudPaper Class="flex-1 d-flex flex-column" Elevation="0">
                                         <MudText Class="m-2">@((MarkupString)item.Soal.Pertanyaan)</MudText>
-                                        <MudRadioGroup T="SoalJawaban?" Class="ml-3" ValueChanged="OnPilihJawaban" Value="item.SoalJawaban">
+                                        <MudRadioGroup T="SoalJawaban?" Class="mt-1" ValueChanged="OnPilihJawaban" Value="item.SoalJawaban">
                                             @{
                                                 foreach (var jawaban in item.Soal.PilihanJawaban)
                                                 {
-                                                    <MudItem xs="12">
+                                                    <MudItem xs="12" Class="my-1">
                                                         <MudRadio Value="jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
                                                     </MudItem>
                                                 }
@@ -77,7 +77,7 @@ else
             </div>
 
         </MudItem>
-        <MudItem md="3">
+        <MudItem md="3" xs="12">
             <MudPaper Class="pa-4">
                 <div id="unique_id_scroll_section" class="ma-0" style="height:200px;overflow: auto;">
                     <MudStack Wrap="Wrap.Wrap" Spacing="4" Row="@true" AlignItems="AlignItems.Start">
@@ -168,7 +168,7 @@ else
                     //testasd = DateTime.Now.ToString();
                     if (userExam != null)
                     {
-                        await SessionStorage.SetItemAsync(privateKey, _watch.Value);
+                        await SessionStorage.SetItemAsync(privateKey, _watch.Value.TotalMilliseconds);
                     }
 
                     // Call this to force the server to send a new updated view
@@ -189,16 +189,16 @@ else
             if (auth is not null)
             {
             }
-
-
+            
             userExam = await _userExamRepo.Get(new Guid(Id));
             room = await _roomRepo.Get(userExam.RoomId);
             soalPaging = await userExam.UserAnswers.OrderBy(x => x.Soal.Nomor).ToPagingList(1, 10);
 
-            var timeleft = await SessionStorage.GetItemAsync<TimeSpan>(privateKey);
-            if (timeleft != null)
+            var timeleft = await SessionStorage.GetItemAsStringAsync(privateKey);
+            if (!string.IsNullOrEmpty(timeleft))
             {
-                userExam.TimeLeft = timeleft;
+                var timestr = TimeSpan.FromMilliseconds(double.Parse(timeleft));
+                userExam.TimeLeft = timestr;
             }
 
             isLoading = false;

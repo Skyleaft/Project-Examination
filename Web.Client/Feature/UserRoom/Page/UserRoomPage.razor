@@ -2,6 +2,7 @@
 @attribute [Authorize(Roles = "Superuser,User")]
 @implements IBrowserViewportObserver
 @using global::Shared.Common
+@using global::Shared.RoomSet
 @using global::Shared.TakeExam
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Feature.UserRoom.Components
@@ -11,8 +12,14 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <MudPaper Class="pa-8">
+    <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+        <MudText Typo="Typo.h5">Kelas Ujian yang Diikuti</MudText>
+    </MudHidden>
     <div class="d-none d-flex align-center flex-grow-1 mr-2 mb-6">
-        <MudText Typo="Typo.h3">Kelas Ujian yang Diikuti</MudText>
+        <MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
+            <MudText Typo="Typo.h3">Kelas Ujian yang Diikuti</MudText>
+        </MudHidden>
+
 
         <MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
             <MudSpacer/>
@@ -31,7 +38,7 @@
             Cari Ruangan Ujian
         </MudButton>
     </div>
-    <MudPaper Class="d-flex flex-wrap justify-xs-center justify-md-start gap-4" Height="400px" Elevation="0">
+    <MudPaper Class="d-flex flex-wrap justify-xs-center justify-md-start gap-4" Elevation="0">
         @{
             if (isLoading)
             {
@@ -43,10 +50,16 @@
             }
             else
             {
-                foreach (var item in data.Items)
+                if (data.Items.Count() != 0)
                 {
-                    <UserRoomCard data="@item" RefreshData="@PageChanged"/>
+                    foreach (var item in data.Items)
+                    {
+                        <UserRoomCard data="@item" RefreshData="@PageChanged"/>
+                    }
                 }
+
+
+
             }
         }
     </MudPaper>
@@ -61,6 +74,7 @@
 @code {
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IUserExam _repo { get; set; }
+    [Inject] IRoom _rooms { get; set; }
     [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
 
     string search;
@@ -73,11 +87,12 @@
         PageSize = 15
     };
 
-    PaginatedResponse<UserExam> data = new();
+    PaginatedResponse<UserExam> data=new();
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
             await BrowserViewportService.SubscribeAsync(this);
@@ -85,14 +100,17 @@
             isLoading = false;
             StateHasChanged();
         }
-
-        await base.OnAfterRenderAsync(firstRender);
     }
 
     protected override async Task OnInitializedAsync()
     {
         var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authstate.User;
+    }
+
+    private Room getRoom(Guid RoomId)
+    {
+        return _rooms.Get(RoomId).Result;
     }
 
 

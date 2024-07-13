@@ -68,6 +68,21 @@ public class RoomService : IRoom
         return find;
     }
 
+    public Room GetSync(Guid Id)
+    {
+        var find = _dbContext
+            .Room
+            .AsNoTracking()
+            .Include(x => x.Exam)
+            .ThenInclude(y => y.Soals.OrderBy(o => o.Nomor))
+            .ThenInclude(z => z.PilihanJawaban)
+            .Include(x => x.ListPeserta)
+            .FirstOrDefault(x => x.Id == Id);
+        if (find == null) return null;
+
+        return find;
+    }
+
     public async Task<Room> Get(string kode)
     {
         var find = await _dbContext

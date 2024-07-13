@@ -5,7 +5,7 @@
     <MudSpacer/>
     <NavLink ActiveClass="d-flex align-center" href="/">
         @* <MudBlazorLogo Class="docs-mudblazor-logo" /> *@
-        <MudText Color="Color.Primary" Typo="Typo.h5">Aplikasi Exam</MudText>
+        <MudText Color="Color.Primary" Typo="Typo.h5" Class="flex-grow-1">SIAP LULUS P3K</MudText>
     </NavLink>
     <MudSpacer/>
     <MudTooltip Delay="1000" Text="Search">
@@ -15,7 +15,7 @@
 <div class="d-none d-md-flex align-center flex-grow-1">
     <NavLink ActiveClass="d-flex align-center me-4" href="/">
         @* <MudBlazorLogo Class="docs-mudblazor-logo" /> *@
-        <MudText Color="Color.Primary" Typo="Typo.h5">Aplikasi Exam</MudText>
+        <MudText Color="Color.Primary" Typo="Typo.h5">SIAP LULUS P3K</MudText>
     </NavLink>
     <MudSpacer/>
     @if (DisplaySearchBar)
@@ -29,6 +29,7 @@
         @*     </ItemTemplate> *@
         @* </MudAutocomplete> *@
         <MudDivider FlexItem="true" Vertical="true" DividerType="DividerType.Middle" Class="mx-4 my-4"/>
+        
     }
     else
     {
@@ -36,6 +37,7 @@
             <MudIconButton Icon="@Icons.Material.Rounded.Search" Color="Color.Inherit" OnClick="@(() => OpenSearchDialog())"/>
         </MudTooltip>
     }
+    
     <AppbarButtons _avaSource="@avaSource"/>
 </div>
 

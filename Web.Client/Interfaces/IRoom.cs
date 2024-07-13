@@ -10,6 +10,7 @@ public interface IRoom
     public Task<ServiceResponse> Update(Room r);
     public Task<ServiceResponse> Delete(Guid Id);
     public Task<Room> Get(Guid Id);
+    public Room GetSync(Guid Id);
     public Task<Room> Get(string kode);
     public Task<PaginatedResponse<Room>> Find(FindRequest r, CancellationToken ct, string? Username = "");
     public Task<List<Room>> AllRefference(CancellationToken ct);

@@ -60,7 +60,7 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailS
 var connectionString = builder.Configuration.GetConnectionString("mzserver")
                        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<AppDbContext>(o =>
-    o.UseNpgsql(connectionString), optionsLifetime: ServiceLifetime.Scoped);
+    o.UseNpgsql(connectionString), optionsLifetime: ServiceLifetime.Transient);
 
 builder.Services.AddIdentityCore<ApplicationUser>(o =>
         {
@@ -134,6 +134,7 @@ using (var scope = app.Services.CreateScope())
         Email = "milzan_malik@outlook.com",
         NormalizedEmail = "MILZAN_MALIK@OUTLOOK.COM",
         EmailConfirmed = true,
+        KotaId = "1",
         SecurityStamp = Guid.NewGuid().ToString("D")
     };
 
