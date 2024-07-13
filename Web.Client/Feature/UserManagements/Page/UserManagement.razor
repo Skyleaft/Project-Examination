@@ -13,7 +13,7 @@
 <h3>UserManagement</h3>
 
 <MudTable ServerData="ServerReload"
-          Dense="true" Hover="true" @ref="table"  MultiSelection="true">
+          Dense="true" Hover="true" @ref="table" MultiSelection="true">
     <ToolBarContent>
         <MudButton OnClick="@(e => OpenDialog())"
                    Variant="Variant.Outlined"
@@ -32,21 +32,22 @@
                       IconSize="Size.Medium" Class="mt-0">
         </MudTextField>
         <MudSpacer/>
-        <MudStack Row="true" >
-            <MudSelect Dense="true" T="int" 
+        <MudStack Row="true">
+            <MudSelect Dense="true" T="int"
                        Style="min-width: 180px"
-                       Label="Export Type" @bind-Value="exportType" 
+                       Label="Export Type" @bind-Value="exportType"
                        Class="px-2"
                        Variant="Variant.Outlined">
                 <MudSelectItem Value="0">Current Page</MudSelectItem>
                 <MudSelectItem Value="1">All Data</MudSelectItem>
                 <MudSelectItem Value="2">Selected</MudSelectItem>
             </MudSelect>
-            <MudIconButton Variant="Variant.Text" 
-                           OnClick="OnExportClick" 
+            <MudIconButton Variant="Variant.Text"
+                           OnClick="OnExportClick"
                            Class="px-5"
                            Icon="@Icons.Material.Rounded.Download"
-                           Color="Color.Primary"></MudIconButton>
+                           Color="Color.Primary">
+            </MudIconButton>
         </MudStack>
 
     </ToolBarContent>
@@ -98,6 +99,7 @@
 
 @code {
     [Inject] IUser _userService { get; set; }
+    [Inject] ISnackbar _snackbar { get; set; }
     private IEnumerable<ApplicationUser> pagedData;
     private MudTable<ApplicationUser> table;
 
@@ -184,12 +186,25 @@
 
     private async Task OnExportClick()
     {
-        var data=table.FilteredItems;
+        var data = table.FilteredItems;
         if (exportType == 0)
         {
+            if (data.Count()==0)
+            {
+                _snackbar.Add(
+                    @<div>
+                        <h3>Info ERROR!!</h3>
+                        <ul>
+                            <li>Data Tabel Kosong</li>
+                            <li>Harap isi tabel terlebih dahulu</li>
+                        </ul>
+                    </div>
+                    , Severity.Error);
+                return;
+            }
             data = table.FilteredItems;
         }
-        else if( exportType==1)
+        else if (exportType == 1)
         {
             var load = await table.ServerData.Invoke(new TableState()
             {
@@ -197,15 +212,42 @@
                 PageSize = 3000,
                 SortDirection = SortDirection.None,
                 SortLabel = ""
-            },new CancellationToken());
+            }, new CancellationToken());
             data = load.Items.ToList();
         }
         else
         {
+            if (data.Count() == 0)
+            {
+                _snackbar.Add(
+                    @<div>
+                        <h3>Info ERROR!!</h3>
+                        <ul>
+                            <li>Data Tabel Kosong</li>
+                            <li>Harap isi tabel terlebih dahulu</li>
+                        </ul>
+                    </div>
+                    , Severity.Error);
+                return;
+            }
+            else if (table.SelectedItems.Count == 0)
+            {
+                _snackbar.Add(
+                    @<div>
+                        <h3>Info!!</h3>
+                        <ul>
+                            <li>Data Belum Dipilih</li>
+                            <li>Harap pilih data yang mau di export</li>
+                        </ul>
+                    </div>
+                    , Severity.Warning);
+                return;
+            }
+
             data = table.SelectedItems;
         }
-        
-        var filterd =data.Select((x, i) => new
+
+        var filterd = data.Select((x, i) => new
         {
             No = i + 1,
             x.NamaLengkap,
