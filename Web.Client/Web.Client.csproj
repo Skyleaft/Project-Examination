@@ -40,7 +40,6 @@
     <ItemGroup>
         <AdditionalFiles Include="Feature\BankSoal\Component\RichToolBarContent.razor"/>
         <AdditionalFiles Include="Feature\Dashboards\Pages\Dashboard.razor"/>
-        <AdditionalFiles Include="Feature\Register\Page.razor"/>
         <AdditionalFiles Include="Feature\UserManagements\Dialog\AddUserDialog.razor"/>
         <AdditionalFiles Include="Feature\UserManagements\Dialog\EditUserDialog.razor"/>
         <AdditionalFiles Include="Feature\UserManagements\Page\UserManagement.razor"/>

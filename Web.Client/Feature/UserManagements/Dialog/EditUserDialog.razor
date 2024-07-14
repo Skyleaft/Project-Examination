@@ -1,6 +1,7 @@
 ﻿@using global::Shared.Common
 @using global::Shared.Users
 @using Web.Client.Interfaces
+@inject IJSRuntime JSRuntime
 <EditForm Model="@userModel" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator/>
     <MudDialog>
@@ -116,6 +117,9 @@
                                               ReadOnly
                                               @bind-Value="userModel.UserName"
                                               For="@(() => userModel.UserName)"/>
+                                <MudButton Variant="Variant.Outlined" FullWidth="true" OnClick="OnResetPassword">
+                                    Reset Password
+                                </MudButton>
                             </MudStack>
 
                         </MudCardContent>
@@ -143,6 +147,7 @@
 
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IUser _userService { get; set; }
     [Inject] IReferences _reference { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
@@ -240,6 +245,19 @@
             .Where(x => x.NamaKota
                 .Contains(search, StringComparison.CurrentCultureIgnoreCase))
             .ToList();
+    }
+
+    private async Task OnResetPassword()
+    {
+        var token = await _userService.GenerateResetPassword(userModel.Id.ToString());
+        if (!string.IsNullOrEmpty(token))
+        {
+            var reseturi = _navigationManager.GetUriWithQueryParameters(
+                _navigationManager.ToAbsoluteUri("userclient/ResetPassword").AbsoluteUri,
+                new Dictionary<string, object?> { ["userId"] = userModel.Id, ["code"] = token });
+            var parameters = new DialogParameters<ResetPassDialog> { { x => x.urlReset, reseturi } };
+            DialogService.ShowAsync<ResetPassDialog>("Reset URL",parameters);
+        }
     }
 
 }

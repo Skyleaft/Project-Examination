@@ -8,12 +8,11 @@
 @using MimeKit.Text
 @using Web.Client.Feature.UserManagements
 @using Web.Client.Interfaces
-;
 @layout BlankLayout
 @inject HttpClient HttpClient
 
 
-<EditForm Model="userModel" OnValidSubmit="OnValidSubmit" FormName="register">
+<EditForm Model="userModel" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit" FormName="register">
     <DataAnnotationsValidator/>
     <MudGrid Class="align-content-center justify-center">
         <MudItem xs="12" md="8">
@@ -178,18 +177,49 @@
         }
     }
 
+    private async Task OnInvalidSubmit(EditContext obj)
+    {
+        if (userModel.KotaId == null)
+        {
+            _snackbar.Add(
+                @<div>
+                    <h3>Validasi ERROR!!</h3>
+                    <ul>
+                        <li>Kota</li>
+                        <li>Asal Kota Harus Diisi</li>
+                    </ul>
+                </div>
+                , Severity.Warning);
+        }
+        else if (userModel.Pekerjaan == null)
+        {
+            _snackbar.Add(
+                @<div>
+                    <h3>Validasi ERROR!!</h3>
+                    <ul>
+                        <li>Pekerjaan</li>
+                        <li>Pekerjaan Harus Diisi</li>
+                    </ul>
+                </div>
+                , Severity.Warning);
+        }
+    }
+
     private async Task OnValidSubmit(EditContext obj)
     {
         var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
         var dial = await DialogService.ShowAsync<BluryDialog>("Sedang Mendaftar...", options);
 
         var created = await _userService.Register(userModel, new CancellationToken());
+        await Task.Delay(300);
         if (created.isSuccess)
         {
-            var mail = await SendEmail(created.Data.Id.ToString());
             dial.Close();
+            dial = await DialogService.ShowAsync<BluryDialog>("Sedang Mengirim Verifikasi Email...", options);
+            var mail = await SendEmail(created.Data.Id.ToString());
             if (!mail)
             {
+                dial.Close();
                 _snackbar.Add(
                     @<div>
                         <h3>Info ERROR!!</h3>
@@ -202,6 +232,7 @@
             }
             else
             {
+                dial.Close();
                 userModel = new()
                 {
                     Role = "User"
@@ -225,7 +256,6 @@
                 created.Message,
                 "Ok");
         }
-        StateHasChanged();
     }
 
     private async Task<bool> SendEmail(string userId)

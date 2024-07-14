@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Shared.Common;
 using Shared.Users;
+using Web.Client.Feature.Register;
 using Web.Client.Feature.UserManagements;
 using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
@@ -110,5 +111,21 @@ public class UserService : IUser
         if (updated.Succeeded)
             return new ServiceResponse(true, "Berhasil mengaktifkan user");
         return new ServiceResponse(false, updated.Errors.First().Description);
+    }
+
+    public async Task<ServiceResponse> ResetPassword(PasswordReset data)
+    {
+        var finduser = await _userManager.FindByIdAsync(data.UserID);
+        var res = await _userManager.ResetPasswordAsync(finduser, data.Token, data.ConfirmPassword);
+        if (res.Succeeded)
+            return new ServiceResponse(true, "Berhasil Mengubah Password");
+        return new ServiceResponse(false, res.Errors.First().Description);
+    }
+
+    public async Task<string> GenerateResetPassword(string userID)
+    {
+        var finduser = await _userManager.FindByIdAsync(userID);
+        var token = await _userManager.GeneratePasswordResetTokenAsync(finduser);
+        return token;
     }
 }

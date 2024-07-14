@@ -1,5 +1,6 @@
 ﻿using Shared.Common;
 using Shared.Users;
+using Web.Client.Feature.Register;
 using Web.Client.Feature.UserManagements;
 using Web.Client.Shared.Models;
 
@@ -13,4 +14,6 @@ public interface IUser
     public Task<ServiceResponse> Delete(string id, CancellationToken? ct);
     public Task<UserDTO> Get(string id);
     public Task<ServiceResponse> ForceActivate(string userID);
+    public Task<ServiceResponse> ResetPassword(PasswordReset data);
+    public Task<string> GenerateResetPassword(string userID);
 }

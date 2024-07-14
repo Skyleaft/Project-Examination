@@ -21,8 +21,8 @@
 </MudCard>
 
 @code {
-    [Parameter] public Room data { get; set; }
-    [Parameter] public string strImage { get; set; }
+    [Parameter] public Room? data { get; set; }
+    [Parameter] public string? strImage { get; set; }
     [Parameter] public EventCallback<int> RefreshData { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IRoom _roomRepo { get; set; }
@@ -46,7 +46,6 @@
             "Warning",
             $"Yakin Mau Dihapus Data :{data.Nama}",
             "Delete", cancelText: "Cancel");
-        StateHasChanged();
         if (result != null)
         {
             var res = await _roomRepo.Delete(data.Id);
@@ -57,7 +56,6 @@
                     res.Message,
                     "Ok");
                 await RefreshData.InvokeAsync(1);
-                StateHasChanged();
             }
             else
             {

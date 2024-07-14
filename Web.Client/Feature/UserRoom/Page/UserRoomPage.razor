@@ -107,12 +107,7 @@
         var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authstate.User;
     }
-
-    private Room getRoom(Guid RoomId)
-    {
-        return _rooms.Get(RoomId).Result;
-    }
-
+    
 
     private async Task PageChanged(int page)
     {

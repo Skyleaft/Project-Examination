@@ -89,6 +89,12 @@
 
         try
         {
+            var finduser = await signInManager.UserManager.FindByNameAsync(model.UserName);
+            if (finduser == null)
+            {
+                errorMessage = "Error: Username Tidak Ditemukan!";
+                return;
+            }
             var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, true, false);
             if (result.Succeeded)
             {
@@ -109,10 +115,11 @@
             }
             else if (result.IsNotAllowed)
             {
+                errorMessage = "Error: Email Belum dikonfirmasi, silahkan cek email anda";
             }
             else
             {
-                errorMessage = "Error: Invalid login attempt.";
+                errorMessage = "Error: Password Salah silahkan coba lagi";
                 //dial.Close();
                 // DialogService.ShowMessageBox(
                 //     "Info",

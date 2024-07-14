@@ -23,10 +23,10 @@ public class UserExamService : IUserExam
 
     public async Task<CreatedResponse<UserExam>> Create(CreateUserExamDTO r)
     {
-        var check = await _dbContext.UserExam
-            .FirstOrDefaultAsync(x => x.UserId == r.UserId && x.RoomId == r.RoomId);
+        var check =  _dbContext.UserExam.AsNoTracking()
+            .FirstOrDefault(x => x.UserId == r.UserId && x.RoomId == r.RoomId);
         if (check != null)
-            return new CreatedResponse<UserExam>(false, "(Duplicated) Anda Sudah Berada Dikelas Tersebut");
+            return new CreatedResponse<UserExam>(false, "(Duplicated) Anda Sudah Berada Diruangan Tersebut");
         var data = r.Adapt<UserExam>();
         var created = await _dbContext.UserExam.AddAsync(data);
         await _dbContext.SaveChangesAsync();

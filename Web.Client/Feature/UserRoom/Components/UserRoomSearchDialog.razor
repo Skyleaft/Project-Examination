@@ -63,6 +63,7 @@
     [Inject] private IUserExam _userExam { get; set; }
     [Inject] private IRoom _roomRepo { get; set; }
     [Inject] private NavigationManager _navigationManager { get; set; }
+    [Inject] ISnackbar _snackbar { get; set; }
 
     private Room room;
 
@@ -126,14 +127,21 @@
             };
 
             var created = await _userExam.Create(data);
+            await Task.Delay(400);
             if (created.isSuccess)
             {
                 dial.Close();
+                
                 MudDialog.Close(DialogResult.Ok(true));
-                DialogService.ShowMessageBox(
-                    "Info",
-                    "Anda Telah Terdaftar di Kelas Ujian",
-                    "Ok");
+                _snackbar.Add(
+                    @<div>
+                        <h3>Info!!</h3>
+                        <ul>
+                            <li>Success</li>
+                            <li>Anda telah terdaftar sebagai peserta Ujian</li>
+                        </ul>
+                    </div>
+                    , Severity.Success);
             }
             else
             {
@@ -154,10 +162,11 @@
         if (!string.IsNullOrEmpty(kodeRoom))
         {
             room = await _roomRepo.Get(kodeRoom);
+            await Task.Delay(400);
             if (room == null)
             {
                 DialogService.ShowMessageBox(
-                    "Error",
+                    "Info",
                     "Kode Ruangan Tidak Ditemukan!",
                     "Ok");
             }

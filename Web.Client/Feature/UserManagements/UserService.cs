@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using Shared.Common;
 using Shared.Users;
+using Web.Client.Feature.Register;
 using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
 
@@ -62,5 +63,15 @@ public class UserService : IUser
     {
         var res = await _httpClient.GetFromJsonAsync<ServiceResponse>($"/api/user/activate/{userID}");
         return res;
+    }
+
+    public Task<ServiceResponse> ResetPassword(PasswordReset data)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<string> GenerateResetPassword(string userID)
+    {
+        throw new NotImplementedException();
     }
 }

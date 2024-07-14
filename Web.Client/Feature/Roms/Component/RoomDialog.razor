@@ -41,16 +41,16 @@
                     <MudStack Row="true" Spacing="2" Class="pa-2">
                         <MudDatePicker Variant="Variant.Outlined"
                                        Label="Jadwal Mulai"
-                                       MinDate="DateTime.Now.AddDays(-1)"
-                                       MaxDate="DateTime.Now.AddMonths(2)" Class="ml-3" @bind-Date="dateStart"/>
+                                       MinDate="DateTime.UtcNow.AddDays(-2)"
+                                       MaxDate="DateTime.UtcNow.AddMonths(23)" Class="ml-3" @bind-Date="dateStart"/>
                         <MudDatePicker Variant="Variant.Outlined"
                                        Label="Jadwal Selesai"
-                                       MinDate="DateTime.Now.AddDays(-1)"
-                                       MaxDate="DateTime.Now.AddMonths(2)" @bind-Date="dateEnd"/>
+                                       MinDate="DateTime.UtcNow.AddDays(-2)"
+                                       MaxDate="DateTime.UtcNow.AddMonths(3)" @bind-Date="dateEnd"/>
                     </MudStack>
                     <MudStack Row="true" Spacing="2" Class="pa-2">
-                        <MudTimePicker Variant="Variant.Outlined" Label="Waktu Mulai" AmPm="true" Class="ml-3" @bind-Time="timeStart"/>
-                        <MudTimePicker Variant="Variant.Outlined" Label="Waktu Selesai" AmPm="true" @bind-Time="timeEnd"/>
+                        <MudTimePicker Variant="Variant.Outlined" Label="Waktu Mulai" Class="ml-3" @bind-Time="timeStart"/>
+                        <MudTimePicker Variant="Variant.Outlined" Label="Waktu Selesai" @bind-Time="timeEnd"/>
                     </MudStack>
                     <MudNumericField @bind-Value="room.Durasi" Label="Durasi Ujian" HelperText="Masukan Dalam Satuan Menit" 
                                      Variant="Variant.Outlined" 
@@ -66,16 +66,6 @@
                                         StartIcon="@Icons.Material.Filled.Image"
                                         Label="Unggah Pratinjau"/>
                             </ActivatorContent>
-                            @* <SelectedTemplate> *@
-                            @*     @if (context != null) *@
-                            @*     { *@
-                            @*     <MudText>@context.Name</MudText> *@
-                            @*     } *@
-                            @*     else *@
-                            @*     { *@
-                            @*     <MudText>No File</MudText> *@
-                            @*     } *@
-                            @* </SelectedTemplate> *@
                         </MudFileUpload>
                         <MudSpacer/>
                     </div>

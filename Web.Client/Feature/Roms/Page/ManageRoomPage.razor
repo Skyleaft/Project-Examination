@@ -117,8 +117,8 @@
         isLoading = true;
         request.Page = page;
         dataRoom = await _repo.Find(request, new CancellationToken());
+        await Task.Delay(400);
         isLoading = false;
-        StateHasChanged();
     }
 
     private async Task AddRoomDialog()
