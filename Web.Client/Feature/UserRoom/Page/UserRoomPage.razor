@@ -112,10 +112,10 @@
     private async Task PageChanged(int page)
     {
         isLoading = true;
+        await Task.Delay(300);
         request.Page = page;
         data = await _repo.Find(request, new CancellationToken());
         isLoading = false;
-        StateHasChanged();
     }
 
 

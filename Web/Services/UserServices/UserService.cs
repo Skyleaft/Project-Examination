@@ -40,6 +40,8 @@ public class UserService : IUser
     {
         var finduser = await _userManager.FindByNameAsync(r.UserName);
         if (finduser != null) return new CreatedResponse<UserDTO>(false, "Username sudah ada");
+        var nohp = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == r.PhoneNumber);
+        if (nohp != null) return new CreatedResponse<UserDTO>(false, "Nomor Telepon Sudah Digunakan");
         var user = new ApplicationUser
         {
             NamaLengkap = r.NamaLengkap,

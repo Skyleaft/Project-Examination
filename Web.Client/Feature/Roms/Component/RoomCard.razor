@@ -37,7 +37,11 @@
         var form = await Dialog.ShowAsync<RoomDialog>("Ubah Room", parameters, maxWidth);
         var result = await form.Result;
         if (!result.Canceled)
+        {
+            await Task.Delay(400);
             await RefreshData.InvokeAsync(1);
+
+        }
     }
 
     private async Task OnDelete()

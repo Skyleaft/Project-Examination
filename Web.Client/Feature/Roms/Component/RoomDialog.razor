@@ -97,6 +97,7 @@
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] private IExam _examRepo { get; set; }
     [Inject] private IRoom _roomRepo { get; set; }
+    [Inject] ISnackbar _snackbar { get; set; }
 
     [Parameter]
     public
@@ -136,7 +137,13 @@
                 else
                     room.CreatedBy = auth.User.Identity.Name;
             }
-
+            if (isEdit)
+            {
+                dateStart = room.JadwalStart.ToLocalTime();
+                dateEnd = room.JadwalEnd.ToLocalTime();
+                timeStart = room.JadwalStart.ToLocalTime().TimeOfDay;
+                timeEnd = room.JadwalEnd.ToLocalTime().TimeOfDay;
+            }
 
             StateHasChanged();
         }
@@ -150,21 +157,14 @@
             PageSize = 200
         }, new CancellationToken());
         _exams = data.Items;
-        if (isEdit)
-        {
-            dateStart = room.JadwalStart;
-            dateEnd = room.JadwalEnd;
-            timeStart = room.JadwalStart.TimeOfDay;
-            timeEnd = room.JadwalEnd.TimeOfDay;
-        }
-
-        StateHasChanged();
+        
+        
     }
 
     private async Task OnValidSubmit(EditContext context)
     {
-        room.JadwalStart = dateStart.Value + timeStart.Value;
-        room.JadwalEnd = dateEnd.Value + timeEnd.Value;
+        room.JadwalStart = dateStart.Value.ToUniversalTime() + timeStart.Value;
+        room.JadwalEnd = dateEnd.Value.ToUniversalTime() + timeEnd.Value;
         var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
         var dial = await DialogService.ShowAsync<BluryDialog>("Harap Tunggu...", options);
 
@@ -175,10 +175,15 @@
             {
                 dial.Close();
                 MudDialog.Close(DialogResult.Ok(true));
-                DialogService.ShowMessageBox(
-                    "Info",
-                    edited.Message,
-                    "Ok");
+                _snackbar.Add(
+                    @<div>
+                        <h3>Info!!</h3>
+                        <ul>
+                            <li>Success</li>
+                            <li>@edited.Message</li>
+                        </ul>
+                    </div>
+                    , Severity.Success);
             }
             else
             {

@@ -29,8 +29,6 @@ builder.AddServiceDefaults();
 builder.Services.AddMudServices();
 builder.Services.AddMudExtensions();
 builder.Services.AddSystemd();
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
 builder.Services.InjectService();
 
 builder.Services.ConfigureHttpJsonOptions(options =>

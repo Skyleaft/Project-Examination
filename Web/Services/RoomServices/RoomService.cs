@@ -21,7 +21,7 @@ public class RoomService : IRoom
 
     public async Task<CreatedResponse<Room>> Create(Room r)
     {
-        r.CreatedOn = DateTime.Now;
+        r.CreatedOn = DateTime.UtcNow;
         var find = await _dbContext.Room.FirstOrDefaultAsync(x => x.Kode.Equals(r.Kode));
         if (find != null)
             return new CreatedResponse<Room>(false, "Kode Ruangan Sudah Digunakan");
@@ -32,10 +32,11 @@ public class RoomService : IRoom
 
     public async Task<ServiceResponse> Update(Room r)
     {
-        var room = await Get(r.Id);
+        var room = await _dbContext
+            .Room.AsNoTracking().FirstOrDefaultAsync(x => x.Id == r.Id);
         if (room == null) return new ServiceResponse(false, "data tidak ditemukan");
 
-        r.LastModifiedOn = DateTime.Now;
+        r.LastModifiedOn = DateTime.UtcNow;
         _dbContext.Room.Update(r);
         //_dbContext.Entry(room).CurrentValues.SetValues(r);
 

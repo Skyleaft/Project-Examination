@@ -29,8 +29,8 @@
                     <MudText Typo="Typo.h6">@room.Nama</MudText>
                     <MudText Typo="Typo.body2">Kode Ruangan :<b>@room.Kode</b></MudText>
                     <MudStack Row="true" Spacing="2">
-                        <MudText Typo="Typo.body2">Mulai : @room.JadwalStart.ToString("dd/MM/yyyy HH:mm")</MudText>
-                        <MudText Typo="Typo.body2">Selesai : @room.JadwalEnd.ToString("dd/MM/yyyy HH:mm")</MudText>
+                        <MudText Typo="Typo.body2">Mulai : @room.JadwalStart.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+                        <MudText Typo="Typo.body2">Selesai : @room.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
                     </MudStack>
                 </MudPaper>
 
@@ -43,11 +43,11 @@
                     {
                         <MudText Typo="Typo.body2">Ujian Belum Dibuka</MudText>
                     }
-                    else if (room.JadwalStart.ToUniversalTime() > DateTime.UtcNow)
+                    else if (room.JadwalStart > DateTime.UtcNow)
                     {
                         <MudText Typo="Typo.body2">Ujian Belum Dimulai</MudText>
                     }
-                    else if (room.JadwalEnd.ToUniversalTime() < DateTime.UtcNow)
+                    else if (room.JadwalEnd < DateTime.UtcNow)
                     {
                         <MudText Typo="Typo.body2">Ujian Telah Berakhir</MudText>
                     }

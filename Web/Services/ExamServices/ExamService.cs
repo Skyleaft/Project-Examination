@@ -18,7 +18,7 @@ public class ExamService : IExam
 
     public async Task<CreatedResponse<Exam>> Create(Exam r)
     {
-        r.CreatedOn = DateTime.Now;
+        r.CreatedOn = DateTime.UtcNow;
         var created = await _dbContext.Exam.AddAsync(r);
         await _dbContext.SaveChangesAsync();
         return new CreatedResponse<Exam>(true, "Data Berhasil Ditambahkan", created.Entity);
@@ -29,7 +29,7 @@ public class ExamService : IExam
         var exam = await Get(r.Id);
         if (exam == null) return new ServiceResponse(false, "data tidak ditemukan");
 
-        r.LastModifiedOn = DateTime.Now;
+        r.LastModifiedOn = DateTime.UtcNow;
         _dbContext.Entry(exam).CurrentValues.SetValues(r);
 
         // Delete children

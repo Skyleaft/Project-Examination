@@ -23,8 +23,8 @@
         <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
         <MudText Typo="Typo.body2">Kode Ruangan :<b>@data.Kode</b></MudText>
         <MudStack Row="true" Spacing="2">
-            <MudText Typo="Typo.body2">Mulai : @data.JadwalStart.ToString("dd/MM/yyyy HH:mm")</MudText>
-            <MudText Typo="Typo.body2">Selesai : @data.JadwalEnd.ToString("dd/MM/yyyy HH:mm")</MudText>
+            <MudText Typo="Typo.body2">Mulai : @data.JadwalStart.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+            <MudText Typo="Typo.body2">Selesai : @data.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
         </MudStack>
         <MudText Typo="Typo.body2"> Jumlah Peserta :@data.TotalPeserta</MudText>
 

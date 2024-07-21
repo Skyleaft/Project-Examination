@@ -98,6 +98,10 @@
             if (auth is not null)
             {
             }
+            dateStart = room.JadwalStart.ToLocalTime();
+            dateEnd = room.JadwalEnd.ToLocalTime();
+            timeStart = room.JadwalStart.ToLocalTime().TimeOfDay;
+            timeEnd = room.JadwalEnd.ToLocalTime().TimeOfDay;
 
             StateHasChanged();
         }
@@ -105,12 +109,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        dateStart = room.JadwalStart;
-        dateEnd = room.JadwalEnd;
-        timeStart = room.JadwalStart.TimeOfDay;
-        timeEnd = room.JadwalEnd.TimeOfDay;
+        
 
-        StateHasChanged();
     }
 
 

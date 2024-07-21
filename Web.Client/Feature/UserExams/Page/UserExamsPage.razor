@@ -237,7 +237,7 @@ else
 
     private async Task ForceEnd()
     {
-        userExam.EndDate = DateTime.Now;
+        userExam.EndDate = DateTime.UtcNow;
         userExam.IsOngoing = false;
         userExam.IsDone = true;
         userExam.TimeLeft = _watch.Value;
@@ -262,7 +262,7 @@ else
             _watch.Stop();
             userExam.IsDone = true;
             userExam.IsOngoing = false;
-            userExam.EndDate = DateTime.Now;
+            userExam.EndDate = DateTime.UtcNow;
             userExam.TimeLeft = _watch.Value;
             var res = await _userExamRepo.Update(userExam);
             if (res.Flag)

@@ -83,7 +83,7 @@
                             </td>
                             <td>
                                 <MudText Typo="Typo.body1">
-                                    @userExam.EndDate.Value.ToString("dd/MM/yyyy - HH:mm")
+                                    @userExam.EndDate.Value.ToLocalTime().ToString("dd/MM/yyyy - HH:mm")
                                 </MudText>
                             </td>
                         </tr>

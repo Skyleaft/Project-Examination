@@ -103,7 +103,7 @@
                                     <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
                                 </td>
                                 <td>
-                                    <MudText Typo="Typo.body1">@room.JadwalStart.ToString("dd/mm/yyyy HH:mm") -> @room.JadwalEnd.ToString("dd/mm/yyyy HH:mm")</MudText>
+                                    <MudText Typo="Typo.body1">@room.JadwalStart.ToLocalTime().ToString("dd/MM/yyyy HH:mm") -> @room.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
                                 </td>
                             </tr>
                             <tr>
@@ -179,7 +179,7 @@
         }
         else
         {
-            userExam.StartDate = DateTime.Now;
+            userExam.StartDate = DateTime.UtcNow;
             userExam.IsOngoing = true;
             var res = await _userExamRepo.Update(userExam);
             if (res.Flag)
