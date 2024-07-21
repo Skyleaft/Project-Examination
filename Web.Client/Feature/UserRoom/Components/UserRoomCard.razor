@@ -43,11 +43,11 @@
                     {
                         <MudText Typo="Typo.body2">Ujian Belum Dibuka</MudText>
                     }
-                    else if (room.JadwalStart > DateTime.UtcNow)
+                    else if (room.JadwalStart.ToLocalTime() > DateTime.Now.ToLocalTime())
                     {
                         <MudText Typo="Typo.body2">Ujian Belum Dimulai</MudText>
                     }
-                    else if (room.JadwalEnd < DateTime.UtcNow)
+                    else if (room.JadwalEnd.ToLocalTime() < DateTime.Now.ToLocalTime())
                     {
                         <MudText Typo="Typo.body2">Ujian Telah Berakhir</MudText>
                     }
