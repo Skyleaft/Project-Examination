@@ -1,10 +1,12 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+RUN ln -sf /usr/share/zoneinfo/posix/Asia/Jakarta /etc/localtime
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+RUN ln -sf /usr/share/zoneinfo/posix/Asia/Jakarta /etc/localtime
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
@@ -24,6 +26,5 @@ RUN dotnet publish "Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAp
 
 FROM base AS final
 WORKDIR /app
-RUN ln -sf /usr/share/zoneinfo/posix/Asia/Jakarta /etc/localtime
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Web.dll"]
