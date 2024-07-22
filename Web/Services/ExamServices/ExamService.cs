@@ -19,8 +19,8 @@ public class ExamService : IExam
     public async Task<CreatedResponse<Exam>> Create(Exam r)
     {
         r.CreatedOn = DateTime.UtcNow;
-        var created = await _dbContext.Exam.AddAsync(r);
-        await _dbContext.SaveChangesAsync();
+        var created =  _dbContext.Exam.Add(r);
+         _dbContext.SaveChanges();
         return new CreatedResponse<Exam>(true, "Data Berhasil Ditambahkan", created.Entity);
     }
 
@@ -50,37 +50,37 @@ public class ExamService : IExam
             {
                 // Update child
                 _dbContext.Entry(existingChild).CurrentValues.SetValues(soal);
-                await _dbContext.SoalJawaban.AddRangeAsync(soal.PilihanJawaban);
+                 _dbContext.SoalJawaban.AddRange(soal.PilihanJawaban);
             }
 
             else
             {
-                await _dbContext.Soal.AddAsync(soal);
-                await _dbContext.SoalJawaban.AddRangeAsync(soal.PilihanJawaban);
+                 _dbContext.Soal.Add(soal);
+                 _dbContext.SoalJawaban.AddRange(soal.PilihanJawaban);
             }
         }
 
-        await _dbContext.SaveChangesAsync();
+         _dbContext.SaveChanges();
         return new ServiceResponse(true, "data berhasil diupdate");
     }
 
     public async Task<ServiceResponse> Delete(int Id)
     {
-        var find = await _dbContext.Exam.FindAsync(Id);
+        var find = _dbContext.Exam.Find(Id);
         if (find == null) return new ServiceResponse(false, "data tidak ditemukan");
 
-        _dbContext.Exam.Remove(find);
-        await _dbContext.SaveChangesAsync();
+        _dbContext.Exam.Remove(find); 
+        _dbContext.SaveChanges();
         return new ServiceResponse(true, "data berhasil dihapus");
     }
 
     public async Task<Exam> Get(int Id)
     {
-        var find = await _dbContext
+        var find =  _dbContext
             .Exam
             .Include(x => x.Soals.OrderBy(s => s.Nomor))
             .ThenInclude(xs => xs.PilihanJawaban)
-            .FirstOrDefaultAsync(x => x.Id == Id);
+            .FirstOrDefault(x => x.Id == Id);
         if (find == null) return null;
 
         return find;
@@ -92,7 +92,7 @@ public class ExamService : IExam
                 x => x.Nama.ToLower()
                     .Contains(r.Search.ToLower()))
             .OrderBy(x => x.Id)
-            .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
+            .ToPaginatedList(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
     }
 }

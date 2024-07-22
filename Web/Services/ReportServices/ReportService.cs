@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Dynamic.Core;
+using Microsoft.EntityFrameworkCore;
 using Shared.Common;
 using Shared.Report;
 using Web.Client.Interfaces;
@@ -11,10 +12,10 @@ public class ReportService(AppDbContext _dbContext) : IReport
 {
     public async Task<ExamReport> Get(Guid Id)
     {
-        var find = await _dbContext
+        var find = _dbContext
             .ExamReport
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == Id);
+            .FirstOrDefault(x => x.Id == Id);
         if (find == null) return null;
 
         return find;
@@ -31,7 +32,7 @@ public class ReportService(AppDbContext _dbContext) : IReport
             )
             .Where(x=>x.NamaRoom.Contains(r.Filter))
             .OrderBy(x => x.Jadwal)
-            .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
+            .ToPaginatedList(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
     }
 }

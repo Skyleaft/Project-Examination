@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq.Dynamic.Core;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Shared.Common;
 using Shared.RoomSet;
@@ -22,48 +24,48 @@ public class RoomService : IRoom
     public async Task<CreatedResponse<Room>> Create(Room r)
     {
         r.CreatedOn = DateTime.UtcNow;
-        var find = await _dbContext.Room.FirstOrDefaultAsync(x => x.Kode.Equals(r.Kode));
+        var find = _dbContext.Room.FirstOrDefault(x => x.Kode.Equals(r.Kode));
         if (find != null)
             return new CreatedResponse<Room>(false, "Kode Ruangan Sudah Digunakan");
-        var created = await _dbContext.Room.AddAsync(r);
-        await _dbContext.SaveChangesAsync();
+        var created = _dbContext.Room.Add(r); 
+        _dbContext.SaveChanges();
         return new CreatedResponse<Room>(true, "Data Berhasil Ditambahkan", created.Entity);
     }
 
     public async Task<ServiceResponse> Update(Room r)
     {
-        var room = await _dbContext
-            .Room.AsNoTracking().FirstOrDefaultAsync(x => x.Id == r.Id);
+        var room =  _dbContext
+            .Room.AsNoTracking().FirstOrDefault(x => x.Id == r.Id);
         if (room == null) return new ServiceResponse(false, "data tidak ditemukan");
 
         r.LastModifiedOn = DateTime.UtcNow;
         _dbContext.Room.Update(r);
         //_dbContext.Entry(room).CurrentValues.SetValues(r);
-
-        await _dbContext.SaveChangesAsync();
+        _dbContext.SaveChanges();
         return new ServiceResponse(true, "data berhasil diupdate");
     }
 
     public async Task<ServiceResponse> Delete(Guid Id)
     {
-        var find = await _dbContext.Room.FindAsync(Id);
+        var find =  _dbContext.Room.Find(Id);
         if (find == null) return new ServiceResponse(false, "data tidak ditemukan");
 
-        _dbContext.Room.Remove(find);
-        await _dbContext.SaveChangesAsync();
+        _dbContext.Room.Remove(find); 
+        _dbContext.SaveChanges();
         return new ServiceResponse(true, "data berhasil dihapus");
     }
-
+    
     public async Task<Room> Get(Guid Id)
     {
-        var find = await _dbContext
+        var find = _dbContext
             .Room
             .AsNoTracking()
+            .AsSplitQuery()
+            .Where(x => x.Id == Id)
             .Include(x => x.Exam)
             .ThenInclude(y => y.Soals.OrderBy(o => o.Nomor))
             .ThenInclude(z => z.PilihanJawaban)
-            .Include(x => x.ListPeserta)
-            .FirstOrDefaultAsync(x => x.Id == Id);
+            .FirstOrDefault();
         if (find == null) return null;
 
         return find;
@@ -74,11 +76,12 @@ public class RoomService : IRoom
         var find = _dbContext
             .Room
             .AsNoTracking()
+            .AsSplitQuery()
+            .Where(x => x.Id == Id)
             .Include(x => x.Exam)
             .ThenInclude(y => y.Soals.OrderBy(o => o.Nomor))
             .ThenInclude(z => z.PilihanJawaban)
-            .Include(x => x.ListPeserta)
-            .FirstOrDefault(x => x.Id == Id);
+            .FirstOrDefault();
         if (find == null) return null;
 
         return find;
@@ -109,19 +112,20 @@ public class RoomService : IRoom
         var data = await _dbContext
             .Room
             .AsNoTracking()
+            .Include(x=>x.ListPeserta)
             .WhereIf(!string.IsNullOrEmpty(r.Search),
                 x => x.Nama.ToLower().Contains(r.Search.ToLower()) ||
                      x.Kode.ToLower().Contains(r.Search.ToLower())
             )
             .Where(x => x.CreatedBy == Username)
             .OrderBy(x => x.CreatedOn)
-            .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
+            .ToPaginatedList(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
     }
 
     public async Task<List<Room>> AllRefference(CancellationToken ct)
     {
-        var data = await _dbContext
+        var data = _dbContext
             .Room
             .AsNoTracking()
             .OrderBy(x => x.CreatedOn)
@@ -131,7 +135,7 @@ public class RoomService : IRoom
                 Nama = x.Nama,
                 Kode = x.Kode
             })
-            .ToListAsync();
+            .ToList();
         return data;
     }
 }

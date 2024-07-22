@@ -119,6 +119,7 @@
         dataRoom = await _repo.Find(request, new CancellationToken());
         await Task.Delay(400);
         isLoading = false;
+        StateHasChanged();
     }
 
     private async Task AddRoomDialog()
@@ -127,7 +128,7 @@
         var result = await form.Result;
         if (!result.Canceled)
         {
-            await Task.Delay(400);
+            await Task.Delay(200);
             await PageChanged(1);
         }
             

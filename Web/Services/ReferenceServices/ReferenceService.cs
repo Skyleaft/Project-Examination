@@ -25,8 +25,8 @@ public class ReferenceService : IReferences
         var data = await _storageService.GetItemAsync<List<Provinsi>>(key);
         if (data == null)
         {
-            var fetch = await _appDbContext.Provinsi.ToListAsync();
-            var fetkota = await _appDbContext.Kota.ToListAsync();
+            var fetch =  _appDbContext.Provinsi.ToList();
+            var fetkota =  _appDbContext.Kota.ToList();
             cache.Set(key, fetch, TimeSpan.FromDays(1));
             cache.Set("ref-kota", fetkota, TimeSpan.FromDays(1));
             data = fetch;
@@ -50,7 +50,7 @@ public class ReferenceService : IReferences
         var data = cache.Get<List<Kota>>(key);
         if (data == null)
         {
-            var fetch = await _appDbContext.Kota.ToListAsync();
+            var fetch = _appDbContext.Kota.ToList();
             cache.Set(key, fetch, TimeSpan.FromDays(1));
             data = fetch;
         }

@@ -32,7 +32,7 @@ public class UserService : IUser
                 x => x.NamaLengkap.ToLower()
                     .Contains(r.Search.ToLower()))
             .OrderBy(x => x.UserName)
-            .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
+            .ToPaginatedList(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
     }
 
@@ -40,7 +40,7 @@ public class UserService : IUser
     {
         var finduser = await _userManager.FindByNameAsync(r.UserName);
         if (finduser != null) return new CreatedResponse<UserDTO>(false, "Username sudah ada");
-        var nohp = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == r.PhoneNumber);
+        var nohp = _userManager.Users.FirstOrDefault(x => x.PhoneNumber == r.PhoneNumber);
         if (nohp != null) return new CreatedResponse<UserDTO>(false, "Nomor Telepon Sudah Digunakan");
         var user = new ApplicationUser
         {
@@ -51,7 +51,8 @@ public class UserService : IUser
             PhoneNumber = r.PhoneNumber,
             Photo = r.Photo,
             Pekerjaan = r.Pekerjaan,
-            KotaId = r.KotaId
+            KotaId = r.KotaId,
+            CreatedDate = DateTime.UtcNow
         };
         var createUser = await _userManager.CreateAsync(user, r.Password);
         if (createUser.Succeeded)

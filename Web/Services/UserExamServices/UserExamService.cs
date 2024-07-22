@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Linq.Dynamic.Core;
+using System.Security.Claims;
 using Mapster;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -28,8 +29,8 @@ public class UserExamService : IUserExam
         if (check != null)
             return new CreatedResponse<UserExam>(false, "(Duplicated) Anda Sudah Berada Diruangan Tersebut");
         var data = r.Adapt<UserExam>();
-        var created = await _dbContext.UserExam.AddAsync(data);
-        await _dbContext.SaveChangesAsync();
+        var created =  _dbContext.UserExam.Add(data); 
+        _dbContext.SaveChanges();
         return new CreatedResponse<UserExam>(true, "Data Berhasil Ditambahkan", created.Entity);
     }
 
@@ -37,29 +38,55 @@ public class UserExamService : IUserExam
     {
         var userExam = await Get(r.Id);
         if (userExam == null) return new ServiceResponse(false, "data tidak ditemukan");
-
-        _dbContext.Entry(userExam).CurrentValues.SetValues(r);
-
+        
+        var entry = _dbContext.Entry(userExam);
+        entry.Entity.EndDate = r.EndDate;
+        entry.Entity.StartDate = r.StartDate;
+        entry.Entity.RoomId = r.RoomId;
+        entry.Entity.UserId = r.UserId;
+        entry.Entity.IsDone =r.IsDone;
+        entry.Entity.IsOngoing = r.IsOngoing;
+        entry.Entity.TimeLeft = r.TimeLeft;
+        
+        // if (r.UserAnswers != null)
+        // {
+        //     var existingAnswers = userExam.UserAnswers.ToList();
+        //     var updatedAnswers = r.UserAnswers.Where(a => existingAnswers.Any(ea => ea.Id == a.Id)).ToList();
+        //     var newAnswers = r.UserAnswers.Where(a => !existingAnswers.Any(ea => ea.Id == a.Id)).ToList();
+        //
+        //     _dbContext.UserAnswer.UpdateRange(updatedAnswers);
+        //     _dbContext.UserAnswer.AddRange(newAnswers);
+        //
+        //     var answersToRemove = existingAnswers.Where(ea => !r.UserAnswers.Any(a => a.Id == ea.Id)).ToList();
+        //     _dbContext.UserAnswer.RemoveRange(answersToRemove);
+        // }
+        
+        
+        // _dbContext.Entry(userExam).CurrentValues.SetValues(r);
+        //
         // Delete children
-        foreach (var existingChild in userExam.UserAnswers)
-            if (!r.UserAnswers.Any(c => c.Id == existingChild.Id))
-                _dbContext.UserAnswer.Remove(existingChild);
-
-        // Update and Insert children
-        foreach (var answer in r.UserAnswers)
+        if (userExam.UserAnswers != null)
         {
-            var existingChild = userExam.UserAnswers
-                .FirstOrDefault(x => x.Id == answer.Id);
-
-            if (existingChild != null)
-                // Update child
-                _dbContext.Entry(existingChild).CurrentValues.SetValues(answer);
-
-            else
-                await _dbContext.UserAnswer.AddAsync(answer);
+            foreach (var existingChild in userExam.UserAnswers)
+                if (r.UserAnswers != null && r.UserAnswers.All(c => c.Id != existingChild.Id))
+                    _dbContext.UserAnswer.Remove(existingChild);
+        
+            // Update and Insert children
+            if (r.UserAnswers != null)
+                foreach (var answer in r.UserAnswers)
+                {
+                    var existingChild = userExam.UserAnswers
+                        .FirstOrDefault(x => x.Id == answer.Id);
+        
+                    if (existingChild != null)
+                        // Update child
+                        _dbContext.Entry(existingChild).CurrentValues.SetValues(answer);
+        
+                    else
+                        _dbContext.UserAnswer.Add(answer);
+                }
         }
-
-        await _dbContext.SaveChangesAsync();
+        _dbContext.SaveChanges();
         return new ServiceResponse(true, "data berhasil diupdate");
     }
 
@@ -68,21 +95,23 @@ public class UserExamService : IUserExam
         var find = await _dbContext.UserExam.FindAsync(Id);
         if (find == null) return new ServiceResponse(false, "data tidak ditemukan");
 
-        _dbContext.UserExam.Remove(find);
-        await _dbContext.SaveChangesAsync();
+        _dbContext.UserExam.Remove(find); 
+         _dbContext.SaveChanges();
         return new ServiceResponse(true, "data berhasil dihapus");
     }
 
     public async Task<UserExam> Get(Guid Id)
     {
-        var find = await _dbContext
+        var find = _dbContext
             .UserExam
-            .Include(x => x.UserAnswers)
+            .AsSplitQuery()
+            .Where(x => x.Id == Id)
+            .Include(x => x.UserAnswers)!
             .ThenInclude(y => y.SoalJawaban)
-            .Include(x => x.UserAnswers)
+            .Include(x => x.UserAnswers)!
             .ThenInclude(y => y.Soal)
             .ThenInclude(d => d.PilihanJawaban)
-            .FirstOrDefaultAsync(x => x.Id == Id);
+            .FirstOrDefault();
         if (find == null) return null;
 
         return find;
@@ -99,13 +128,14 @@ public class UserExamService : IUserExam
 
         var data = await _dbContext
             .UserExam
-            .Include(x => x.UserAnswers)
+            .AsNoTracking()
+            .Include(x => x.UserAnswers)!
             .ThenInclude(y => y.SoalJawaban)
-            .Include(x => x.UserAnswers)
+            .Include(x => x.UserAnswers)!
             .ThenInclude(y => y.Soal)
             .Where(x => x.UserId == UserId)
             .OrderBy(x => x.StartDate)
-            .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
+            .ToPaginatedList(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
     }
 
@@ -119,18 +149,18 @@ public class UserExamService : IUserExam
             .ThenInclude(y => y.SoalJawaban)
             .Include(x => x.UserAnswers)
             .ThenInclude(y => y.Soal)
-            .ToPaginatedListAsync(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
+            .ToPaginatedList(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
     }
 
     public async Task<bool> SaveTimeLeft(Guid Id, TimeSpan timeLeft)
     {
-        var data = await _dbContext.UserExam
-            .FirstOrDefaultAsync(x => x.Id == Id);
+        var data = _dbContext.UserExam.AsNoTracking()
+            .FirstOrDefault(x => x.Id == Id);
         if (data == null)
             return false;
-        data.TimeLeft = timeLeft;
-        await _dbContext.SaveChangesAsync();
+        data.TimeLeft = timeLeft; 
+        _dbContext.SaveChanges();
         return true;
     }
 }

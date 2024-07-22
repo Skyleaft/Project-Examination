@@ -5,7 +5,6 @@
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Interfaces
 @layout UserExamLayout
-@rendermode InteractiveServer
 @attribute [Authorize(Roles = "Superuser,User")]
 @inject IDialogService Dialog
 @inject AuthenticationStateProvider AuthenticationStateProvider

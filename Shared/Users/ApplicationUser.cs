@@ -13,4 +13,6 @@ public class ApplicationUser :IdentityUser
     public string? Pekerjaan { get; set; }
     public Kota? Kota { get; set; }
     public string? KotaId { get; set; }
+    public DateTime? CreatedDate { get; set; }
+    public DateTime? LastLogin { get; set; }
 }

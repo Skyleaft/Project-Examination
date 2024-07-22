@@ -58,7 +58,8 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailS
 var connectionString = builder.Configuration.GetConnectionString("mzserver")
                        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<AppDbContext>(o =>
-    o.UseNpgsql(connectionString), optionsLifetime: ServiceLifetime.Transient);
+    o.UseNpgsql(connectionString, options=>options.EnableRetryOnFailure()), 
+    optionsLifetime: ServiceLifetime.Scoped);
 
 builder.Services.AddIdentityCore<ApplicationUser>(o =>
         {

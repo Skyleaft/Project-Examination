@@ -16,6 +16,7 @@ public static class ServiceInject
         services.AddScoped<IReferences, ReferenceService>();
         services.AddScoped<IRoom, RoomService>();
         services.AddScoped<IUserExam, UserExamService>();
+        //services.AddScoped<IReport, ReportService>();
         return services;
     }
 }

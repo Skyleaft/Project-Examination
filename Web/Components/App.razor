@@ -75,7 +75,7 @@
 
             if (HttpContext.Request.Path.StartsWithSegments("/exam"))
             {
-                return new InteractiveServerRenderMode(true);
+                return new InteractiveServerRenderMode(false);
             }
 
             return new InteractiveServerRenderMode(true);
