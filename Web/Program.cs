@@ -26,6 +26,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
+builder.Services.AddMudBlazorSnackbar();
+builder.Services.AddMudBlazorResizeListener();
+builder.Services.AddMudBlazorResizeObserver();
+builder.Services.AddMudBlazorResizeObserverFactory();
+builder.Services.AddMudPopoverService();
 builder.Services.AddMudServices();
 builder.Services.AddMudExtensions();
 builder.Services.AddSystemd();

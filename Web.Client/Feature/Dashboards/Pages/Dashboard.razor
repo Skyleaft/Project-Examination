@@ -28,7 +28,9 @@
         </MudGrid>
     </MudItem>
     <MudItem xs="12" sm="6">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 100%"></MudPaper>
+        <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+            <MudChart ChartType="ChartType.Line" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="100%" ChartOptions="options"></MudChart>
+        </MudPaper>
     </MudItem>
     <MudItem xs="12" sm="6" md="4">
         <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
@@ -45,7 +47,21 @@
     private string? authMessage;
     private string? surname;
     private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
+    Random random = new Random();
+    private ChartOptions options = new ChartOptions();
+    public List<ChartSeries> Series = new List<ChartSeries>()
+    {
+        new ChartSeries() { Name = "Manajerial", Data = new double[] { 77 ,0,0,0,0,0} },
+        new ChartSeries() { Name = "Sosio Kultural", Data = new double[] { 33,0,0,0,0,0 } },
+        new ChartSeries() { Name = "Wawancara", Data = new double[] { 56 ,0,0,0,0,0} },
+    };
+    public string[] XAxisLabels = { "Seri 1", "Seri 2", "Seri 3", "Seri 4", "Seri 5", "Seri 6"};
 
+    protected override void OnInitialized()
+    {
+        options.InterpolationOption = InterpolationOption.NaturalSpline;
+    }
+    
     private async Task GetClaimsPrincipalData()
     {
         var authState = await AuthenticationStateProvider

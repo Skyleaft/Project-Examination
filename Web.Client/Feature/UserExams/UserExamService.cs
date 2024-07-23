@@ -53,6 +53,12 @@ public class UserExamService(HttpClient _httpClient) : IUserExam
         return data;
     }
 
+    public async Task<UserExam> GetOnly(Guid Id)
+    {
+        var data = await _httpClient.GetFromJsonAsync<UserExam>($"/api/userexam/getonly/{Id}");
+        return data;
+    }
+
     public async Task<PaginatedResponse<UserExam>> Find(FindRequest r, CancellationToken ct, string? UserId = "")
     {
         var res = await _httpClient.PostAsJsonAsync("api/userexam/find", r, ct);
@@ -74,5 +80,29 @@ public class UserExamService(HttpClient _httpClient) : IUserExam
     public Task<bool> SaveTimeLeft(Guid Id, TimeSpan timeLeft)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r)
+    {
+        var res = await _httpClient.PutAsJsonAsync($"api/userexam/userAnswer/{r.UserAnswerId}", r);
+        if (res.IsSuccessStatusCode)
+        {
+            var content = await res.Content.ReadFromJsonAsync<ServiceResponse>();
+            return content;
+        }
+
+        if (res.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var content = await res.Content.ReadFromJsonAsync<BadResponse>();
+            return new ServiceResponse(false, JsonSerializer.Serialize(content.Errors));
+        }
+
+        return new ServiceResponse(false, res.ReasonPhrase);
+    }
+
+    public async Task<List<UserAnswer>> GetUserAnswers(Guid UserExamId)
+    {
+        var data = await _httpClient.GetFromJsonAsync<List<UserAnswer>>($"/api/userexam/{UserExamId}/userAnswer");
+        return data;
     }
 }

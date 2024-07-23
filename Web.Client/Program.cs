@@ -31,6 +31,11 @@ builder.Services.AddScoped<INotificationService, InMemoryNotificationService>();
 builder.Services.AddScoped<LayoutService>();
 builder.Services.AddScoped<Navigation>();
 
+builder.Services.AddMudBlazorSnackbar();
+builder.Services.AddMudBlazorResizeListener();
+builder.Services.AddMudBlazorResizeObserver();
+builder.Services.AddMudBlazorResizeObserverFactory();
+builder.Services.AddMudPopoverService();
 builder.Services.AddMudServices();
 builder.Services.AddMudExtensions();
 

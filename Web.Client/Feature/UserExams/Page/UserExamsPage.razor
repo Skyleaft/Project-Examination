@@ -4,6 +4,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IDialogService Dialog
 @inject ISessionStorageService SessionStorage
+@using System.Text.Json
 @using Blazored.SessionStorage
 @using global::Shared.BankSoal
 @using global::Shared.Common
@@ -11,6 +12,7 @@
 @using global::Shared.TakeExam
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Interfaces
+@using Web.Client.Feature.UserExams.Component
 
 <NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="OnBeforeNavBack"/>
 
@@ -41,33 +43,7 @@ else
                         }
                         else
                         {
-                            <MudPaper Class="pa-4 ma-2 my-3">
-                                <div class="d-flex flex-grow-1 gap-1">
-                                    <MudStack Class="pa-2 mr-2">
-                                        <MudText Typo="Typo.body1">@item.Soal.Nomor</MudText>
-                                    </MudStack>
-                                    <MudPaper Class="flex-1 d-flex flex-column" Elevation="0">
-                                        <MudText Class="m-2">@((MarkupString)item.Soal.Pertanyaan)</MudText>
-                                        <MudRadioGroup T="SoalJawaban" Class="mt-1" ValueChanged="OnPilihJawaban" Value="item.SoalJawaban">
-                                            @{
-                                                foreach (var jawaban in item.Soal!.PilihanJawaban!)
-                                                {
-                                                    <MudItem xs="12" Class="my-1">
-                                                        <MudRadio Value="jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
-                                                    </MudItem>
-                                                }
-                                            }
-                                        </MudRadioGroup>
-                                    </MudPaper>
-                                    <MudStack>
-                                        <MudSpacer/>
-                                        <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Rounded.Close" OnClick="() => ClearJawaban(item)"></MudIconButton>
-                                        <MudSpacer/>
-                                    </MudStack>
-                                    
-                                </div>
-
-                            </MudPaper>
+                            <SoalCard data="item" UpdateJawaban="async (sj)=>await OnUpdateJawaban(sj,item)"/>
                         }
                     }
                 }
@@ -156,13 +132,14 @@ else
     TimeSpan _timer;
 
     bool isLoading = true;
-    bool reRender;
+    bool reRender = true;
     string testasd;
     bool isLoadTime = true;
     readonly string privateKey = "zlxkjcoijasdfnwqwesfvlaksnoaiscnzxnocqanqwf";
 
     protected override async Task OnInitializedAsync()
     {
+        await delayStart();
     }
     
 
@@ -178,6 +155,11 @@ else
             
             userExam = await _userExamRepo.Get(new Guid(Id));
             room = await _roomRepo.Get(userExam.RoomId);
+            //jawabanUser = await _userExamRepo.GetUserAnswers(userExam.Id);
+            // foreach (var item in jawabanUser)
+            // {
+            //     item.Soal = room.Exam.Soals.Find(x => x.Id == item.SoalId);
+            // }
             soalPaging = await userExam.UserAnswers.OrderBy(x => x.Soal.Nomor).ToPagingList(1, 10);
             _timer = userExam.TimeLeft;
             
@@ -187,15 +169,22 @@ else
             //     var timestr = TimeSpan.FromMilliseconds(double.Parse(timeleft));
             //     userExam.TimeLeft = timestr;
             // }
-            
-            
+            reRender = false;
             isLoading = false;
             isLoadTime = false;
 
 
             StateHasChanged();
         }
+
         
+
+    }
+
+    private async Task delayStart()
+    {
+        await Task.Delay(1000);
+        _watch.Start();
     }
 
     private Variant CheckSoalIsAnswer(Soal soal)
@@ -270,38 +259,27 @@ else
     }
 
 
-    private async Task OnPilihJawaban(SoalJawaban? obj)
+    private async Task OnUpdateJawaban(SoalJawaban? obj, UserAnswer userAnswer)
     {
-        if (obj == null)
-            return;
-        userExam.UserAnswers!.Find(x => x.SoalId == obj.SoalId)!.SoalJawaban = obj;
-        userExam.UserAnswers!.Find(x => x.SoalId == obj.SoalId)!.SoalJawabanId = obj.Id;
         await _watch.Stop();
+        //Console.WriteLine(JsonSerializer.Serialize(obj));
+        var dto = new UpdateJawabanDTO()
+        {
+            SoalJawabanId = obj?.Id??null,
+            UserExamId = userExam.Id,
+            UserAnswerId = userAnswer.Id,
+            TimeLeft = _watch.Value
+        };
         
-        userExam.TimeLeft = _watch.Value;
-        
-        var res = await _userExamRepo.Update(userExam);
+        var res = await _userExamRepo.UpdateJawaban(dto);
         if (res.Flag)
         {
             _watch.Start();
         }
         else
         {
-            _watch.Start();
         }
         _watch.Start();
-        StateHasChanged();
-    }
-
-
-    private void ClearJawaban(UserAnswer? currentSoal)
-    {
-        if (userExam.UserAnswers != null)
-        {
-            userExam.UserAnswers.Find(x => x.Id == currentSoal.Id)!.SoalJawaban = null;
-            userExam.UserAnswers.Find(x => x.Id == currentSoal.Id)!.SoalJawabanId = null;
-        }
-        StateHasChanged();
     }
 
 }

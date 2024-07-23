@@ -1,4 +1,5 @@
-﻿using Shared.Common;
+﻿using MudBlazor;
+using Shared.Common;
 using Shared.TakeExam;
 using Web.Client.Shared.Models;
 
@@ -10,9 +11,12 @@ public interface IUserExam
     public Task<ServiceResponse> Update(UserExam r);
     public Task<ServiceResponse> Delete(Guid Id);
     public Task<UserExam> Get(Guid Id);
+    public Task<UserExam> GetOnly(Guid Id);
     public Task<PaginatedResponse<UserExam>> Find(FindRequest r, CancellationToken ct, string? UserId = "");
     public Task<PaginatedResponse<UserExam>> FindReport(FindRequest r, CancellationToken ct);
     public Task<bool> SaveTimeLeft(Guid Id, TimeSpan timeLeft);
+    public Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r);
+    public Task<List<UserAnswer>> GetUserAnswers(Guid UserExamId);
 }
 
 public class CreateUserExamDTO
@@ -26,4 +30,13 @@ public class CreateUserExamDTO
     public DateTime? EndDate { get; set; }
     public TimeSpan TimeLeft { get; set; }
     public List<UserAnswer>? UserAnswers { get; set; }
+}
+
+public class UpdateJawabanDTO
+{
+    public Guid UserAnswerId { get; set; }
+    public Guid UserExamId { get; set; }
+    public Guid? SoalJawabanId { get; set; }
+    public TimeSpan TimeLeft { get; set; }
+
 }

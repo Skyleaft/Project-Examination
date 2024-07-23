@@ -117,6 +117,17 @@ public class UserExamService : IUserExam
         return find;
     }
 
+    public async Task<UserExam> GetOnly(Guid Id)
+    {
+        var find = _dbContext
+            .UserExam
+            .AsNoTracking()
+            .FirstOrDefault(x => x.Id == Id);
+        if (find == null) return null;
+
+        return find;
+    }
+
     public async Task<PaginatedResponse<UserExam>> Find(FindRequest r, CancellationToken ct, string? UserId = "")
     {
         if (string.IsNullOrEmpty(UserId))
@@ -162,5 +173,28 @@ public class UserExamService : IUserExam
         data.TimeLeft = timeLeft; 
         _dbContext.SaveChanges();
         return true;
+    }
+
+    public async Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r)
+    {
+        var data = _dbContext.UserAnswer.FirstOrDefault(x => x.Id == r.UserAnswerId);
+        if (data == null)
+                return new ServiceResponse(false, "data tidak ditemukan");
+        var exam = _dbContext.UserExam.FirstOrDefault(x => x.Id == r.UserExamId);
+        var entry = _dbContext.Entry(data);
+        entry.Entity.SoalJawabanId = r.SoalJawabanId;
+        
+        var entryExam = _dbContext.Entry(exam);
+        entryExam.Entity.TimeLeft = r.TimeLeft;
+        _dbContext.SaveChanges();
+        return new ServiceResponse(true, "data berhasil diupdate");
+    }
+
+    public async Task<List<UserAnswer>> GetUserAnswers(Guid UserExamId)
+    {
+        var data = _dbContext.UserAnswer
+            .Where(x => x.UserExamId == UserExamId)
+            .ToList();
+        return data;
     }
 }
