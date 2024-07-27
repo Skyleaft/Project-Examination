@@ -68,10 +68,10 @@
             <MudTableSortLabel SortLabel="NomorTelepon" T="ExamReport">Nomor Telepon</MudTableSortLabel>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="NamaRoom" T="ExamReport">Ruangan</MudTableSortLabel>
+            <MudTableSortLabel SortLabel="NamaRoom" T="ExamReport">Sesi Ujian</MudTableSortLabel>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="Jadwal" T="ExamReport">Jadwal</MudTableSortLabel>
+            <MudTableSortLabel SortLabel="Jadwal" T="ExamReport">Tanggal</MudTableSortLabel>
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="Score" T="ExamReport">Skor</MudTableSortLabel>
@@ -84,8 +84,8 @@
         <MudTd DataLabel="NamaLengkap">@context.NamaLengkap</MudTd>
         <MudTd DataLabel="Asal">@context.AsalKota</MudTd>
         <MudTd DataLabel="Nomor Telepon">@setHideNoTelp(context.NomorTelepon)</MudTd>
-        <MudTd DataLabel="Nama Ruangan">@context.NamaRoom</MudTd>
-        <MudTd DataLabel="Jadwal">@context.Jadwal.ToString("dd/MM/yyyy")</MudTd>
+        <MudTd DataLabel="Sesi Ujian">@context.NamaRoom</MudTd>
+        <MudTd DataLabel="Tanggal">@context.Jadwal.ToString("dd/MM/yyyy")</MudTd>
         <MudTd DataLabel="Skor">@($"{context.Score} / {context.MaxScore}")</MudTd>
         <MudTd DataLabel="Nilai">@context.Nilai</MudTd>
     </RowTemplate>
@@ -241,6 +241,7 @@
             x.NamaLengkap,
             x.NomorTelepon,
             Jadwal = x.Jadwal.ToString("dd/MM/yyyy"),
+            SesiUjian=x.NamaRoom,
             x.Score,
             x.MaxScore,
             x.Nilai
