@@ -73,6 +73,7 @@
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IExam examRepo { get; set; }
     [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
+    private CancellationTokenSource cts = new CancellationTokenSource();
 
     string search;
     private Breakpoint curentBreak;
@@ -93,7 +94,7 @@
         if (firstRender)
         {
             await BrowserViewportService.SubscribeAsync(this, true);
-            dataExam = await examRepo.Find(request, new CancellationToken());
+            dataExam = await examRepo.Find(request, cts.Token);
             isLoading = false;
             StateHasChanged();
         }
@@ -110,13 +111,15 @@
     {
         isLoading = true;
         request.Page = page;
-        dataExam = await examRepo.Find(request, new CancellationToken());
+        dataExam = await examRepo.Find(request, cts.Token);
         isLoading = false;
         StateHasChanged();
     }
 
     public async ValueTask DisposeAsync()
     {
+        await cts.CancelAsync();
+        cts.Dispose();
         await BrowserViewportService.UnsubscribeAsync(this);
     }
 

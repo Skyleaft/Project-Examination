@@ -3,6 +3,7 @@
 @using global::Shared.TakeExam
 @using Web.Client.Interfaces
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@implements IAsyncDisposable
 
 <MudDialog>
     <DialogContent>
@@ -64,6 +65,8 @@
     [Inject] private IRoom _roomRepo { get; set; }
     [Inject] private NavigationManager _navigationManager { get; set; }
     [Inject] ISnackbar _snackbar { get; set; }
+    
+    private CancellationTokenSource cts = new CancellationTokenSource();
 
     private Room room;
 
@@ -126,7 +129,7 @@
                 EndDate = null
             };
 
-            var created = await _userExam.Create(data);
+            var created = await _userExam.Create(data,cts.Token);
             await Task.Delay(400);
             if (created.isSuccess)
             {
@@ -146,6 +149,7 @@
             else
             {
                 dial.Close();
+                MudDialog.Close(DialogResult.Ok(true));
                 DialogService.ShowMessageBox(
                     "Error",
                     created.Message,
@@ -162,7 +166,7 @@
         if (!string.IsNullOrEmpty(kodeRoom))
         {
             room = await _roomRepo.Get(kodeRoom);
-            await Task.Delay(400);
+            await Task.Delay(400,cts.Token);
             if (room == null)
             {
                 DialogService.ShowMessageBox(
@@ -174,6 +178,12 @@
 
         isLoading = false;
         StateHasChanged();
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
     }
 
 }

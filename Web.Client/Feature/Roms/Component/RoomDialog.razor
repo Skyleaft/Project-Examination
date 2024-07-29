@@ -4,6 +4,7 @@
 @using Web.Client.Interfaces
 @using Web.Client.Shared.Extensions
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@implements IAsyncDisposable
 
 <EditForm Model="room" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator/>
@@ -107,6 +108,8 @@
     };
 
     [Parameter] public bool isEdit { get; set; }
+    
+    private CancellationTokenSource cts = new CancellationTokenSource();
 
     void Cancel()
     {
@@ -117,7 +120,7 @@
 
     string imagePath = "/images/room-bg.jpg";
 
-    List<Exam> _exams = new();
+    IEnumerable<Exam> _exams = new List<Exam>();
     DateTime? dateStart = DateTime.Today;
     DateTime? dateEnd = DateTime.Today;
 
@@ -155,7 +158,7 @@
         {
             Page = 1,
             PageSize = 200
-        }, new CancellationToken());
+        }, cts.Token);
         _exams = data.Items;
         
         
@@ -201,10 +204,15 @@
             {
                 dial.Close();
                 MudDialog.Close(DialogResult.Ok(true));
-                DialogService.ShowMessageBox(
-                    "Info",
-                    created.Message,
-                    "Ok");
+                _snackbar.Add(
+                    @<div>
+                        <h3>Info!!</h3>
+                        <ul>
+                            <li>Success</li>
+                            <li>@created.Message</li>
+                        </ul>
+                    </div>
+                    , Severity.Success);
             }
             else
             {
@@ -232,6 +240,12 @@
     {
         room.Kode = StringExtensions.GenerateRandomString(20);
         StateHasChanged();
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
     }
 
 }

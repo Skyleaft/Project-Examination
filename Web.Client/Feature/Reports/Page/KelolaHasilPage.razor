@@ -8,6 +8,7 @@
 @inject IDialogService Dialog
 @inject IJSRuntime js
 @attribute [Authorize(Roles = "Superuser,Dosen,Operator")]
+@implements IAsyncDisposable
 
 <MudText Typo="Typo.h4" Align="Align.Center">Kelola Hasil Ujian</MudText>
 <MudPaper Elevation="2" Class="my-2 pa-2">
@@ -113,20 +114,17 @@
     private string searchString = "";
     int exportType = 0;
     Room selectedRoom;
+    private CancellationTokenSource cts = new CancellationTokenSource();
 
     DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
-
-    protected override async Task OnInitializedAsync()
-    {
-        await Task.Delay(1000);
-        RoomsRef = await _rooms.AllRefference(new CancellationToken());
-    }
+    
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
+            RoomsRef = await _rooms.AllRefference(cts.Token);
             StateHasChanged();
         }
     }
@@ -154,8 +152,8 @@
         req.Direction = (int)state.SortDirection;
         if (selectedRoom != null)
             req.Filter = selectedRoom.Nama;
-        var data = await _report.Find(req, new CancellationToken());
-        await Task.Delay(100);
+        var data = await _report.Find(req, ct);
+        await Task.Delay(100, ct);
         var tabledata = new TableData<ExamReport>
         {
             TotalItems = data.TotalItems,
@@ -200,7 +198,7 @@
                 PageSize = 3000,
                 SortDirection = SortDirection.None,
                 SortLabel = ""
-            }, new CancellationToken());
+            }, cts.Token);
             data = load.Items.ToList();
         }
         else
@@ -271,6 +269,12 @@
             selectedRoom = obj;
             table.ReloadServerData();
         }
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
     }
 
 }

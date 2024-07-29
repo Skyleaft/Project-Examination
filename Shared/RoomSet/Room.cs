@@ -21,12 +21,6 @@ public class Room : IGenericModifier
     public Exam? Exam { get; set; }
     public int ExamId { get; set; }
     public byte[]? Thumbnail { get; set; }
-    public List<UserExam>? ListPeserta { get; set; }
-    public int TotalPeserta
-    {
-        get { return ListPeserta?.Count ?? 0; }
-    }
-
     public string? CreatedBy { get; set; }
     public DateTime? CreatedOn { get; set; }
     public string? LastModifiedBy { get; set; }

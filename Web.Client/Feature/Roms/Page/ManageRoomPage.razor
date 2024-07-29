@@ -47,7 +47,7 @@
             }
             else
             {
-                foreach (var item in dataRoom.Items)
+                foreach (var item in _dataRoom.Items)
                 {
                     var strImage = "/images/room-bg.jpg";
                     if (item.Thumbnail != null)
@@ -62,7 +62,7 @@
     </MudPaper>
     <div class="d-none d-flex align-center flex-grow-1 mt-8">
         <MudSpacer/>
-        <MudPagination Color="Color.Primary" Count="@dataRoom.TotalPage" SelectedChanged="PageChanged"/>
+        <MudPagination Color="Color.Primary" Count="@_dataRoom.TotalPage" SelectedChanged="PageChanged"/>
         <MudSpacer/>
     </div>
 
@@ -73,6 +73,7 @@
     [Inject] IRoom _repo { get; set; }
     [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
 
+    private CancellationTokenSource cts = new CancellationTokenSource();
     readonly DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 
 
@@ -86,7 +87,7 @@
         PageSize = 15
     };
 
-    PaginatedResponse<Room> dataRoom = new();
+    PaginatedResponse<Room> _dataRoom = new();
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -94,7 +95,7 @@
         if (firstRender)
         {
             await BrowserViewportService.SubscribeAsync(this);
-            dataRoom = await _repo.Find(request, new CancellationToken());
+            _dataRoom = await _repo.Find(request, cts.Token);
             isLoading = false;
             StateHasChanged();
         }
@@ -116,8 +117,8 @@
     {
         isLoading = true;
         request.Page = page;
-        dataRoom = await _repo.Find(request, new CancellationToken());
-        await Task.Delay(400);
+        _dataRoom = await _repo.Find(request, cts.Token);
+        await Task.Delay(200,cts.Token);
         isLoading = false;
         StateHasChanged();
     }
@@ -128,7 +129,7 @@
         var result = await form.Result;
         if (!result.Canceled)
         {
-            await Task.Delay(200);
+            await Task.Delay(200,cts.Token);
             await PageChanged(1);
         }
             
@@ -136,6 +137,8 @@
 
     public async ValueTask DisposeAsync()
     {
+        await cts.CancelAsync();
+        cts.Dispose();
         await BrowserViewportService.UnsubscribeAsync(this);
     }
 

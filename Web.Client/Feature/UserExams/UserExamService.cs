@@ -10,25 +10,25 @@ namespace Web.Client.Feature.UserExams;
 
 public class UserExamService(HttpClient _httpClient) : IUserExam
 {
-    public async Task<CreatedResponse<UserExam>> Create(CreateUserExamDTO r)
+    public async Task<CreatedResponse<UserExam>> Create(CreateUserExamDTO r, CancellationToken ct)
     {
-        var res = await _httpClient.PostAsJsonAsync("api/userexam/", r);
+        var res = await _httpClient.PostAsJsonAsync("api/userexam/", r, cancellationToken: ct);
         if (res.IsSuccessStatusCode)
         {
-            var created = await res.Content.ReadFromJsonAsync<CreatedResponse<UserExam>>();
+            var created = await res.Content.ReadFromJsonAsync<CreatedResponse<UserExam>>(cancellationToken: ct);
             return created;
         }
 
-        var error = await res.Content.ReadFromJsonAsync<BadResponse>();
+        var error = await res.Content.ReadFromJsonAsync<BadResponse>(cancellationToken: ct);
         return new CreatedResponse<UserExam>(false, error.Errors["generalErrors"].FirstOrDefault());
     }
 
-    public async Task<ServiceResponse> Update(UserExam r)
+    public async Task<ServiceResponse> Update(UserExam r,CancellationToken ct)
     {
-        var res = await _httpClient.PutAsJsonAsync($"api/userexam/{r.Id}", r);
+        var res = await _httpClient.PutAsJsonAsync($"api/userexam/{r.Id}", r, cancellationToken: ct);
         if (res.IsSuccessStatusCode)
         {
-            var content = await res.Content.ReadFromJsonAsync<ServiceResponse>();
+            var content = await res.Content.ReadFromJsonAsync<ServiceResponse>(cancellationToken: ct);
             return content;
         }
 
@@ -47,9 +47,9 @@ public class UserExamService(HttpClient _httpClient) : IUserExam
         return res;
     }
 
-    public async Task<UserExam> Get(Guid Id)
+    public async Task<UserExam> Get(Guid Id,CancellationToken ct)
     {
-        var data = await _httpClient.GetFromJsonAsync<UserExam>($"/api/userexam/{Id}");
+        var data = await _httpClient.GetFromJsonAsync<UserExam>($"/api/userexam/{Id}", cancellationToken: ct);
         return data;
     }
 
@@ -82,18 +82,18 @@ public class UserExamService(HttpClient _httpClient) : IUserExam
         throw new NotImplementedException();
     }
 
-    public async Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r)
+    public async Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r, CancellationToken ct)
     {
-        var res = await _httpClient.PutAsJsonAsync($"api/userexam/userAnswer/{r.UserAnswerId}", r);
+        var res = await _httpClient.PutAsJsonAsync($"api/userexam/userAnswer/{r.UserAnswerId}", r, cancellationToken: ct);
         if (res.IsSuccessStatusCode)
         {
-            var content = await res.Content.ReadFromJsonAsync<ServiceResponse>();
+            var content = await res.Content.ReadFromJsonAsync<ServiceResponse>(cancellationToken: ct);
             return content;
         }
 
         if (res.StatusCode == HttpStatusCode.BadRequest)
         {
-            var content = await res.Content.ReadFromJsonAsync<BadResponse>();
+            var content = await res.Content.ReadFromJsonAsync<BadResponse>(cancellationToken: ct);
             return new ServiceResponse(false, JsonSerializer.Serialize(content.Errors));
         }
 

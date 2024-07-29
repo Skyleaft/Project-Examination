@@ -4,13 +4,13 @@
 <MudCard Style="width: 280px; min-width: 280px">
     <MudCardMedia Image="@strImage" Height="100"/>
     <MudCardContent>
-        <MudText Typo="Typo.h6">@data.Nama</MudText>
-        <MudText Typo="Typo.body2">Dibuat Oleh : @data.CreatedBy</MudText>
+        <MudText Typo="Typo.h6">@data?.Nama</MudText>
+        <MudText Typo="Typo.body2">Dibuat Oleh : @data?.CreatedBy</MudText>
         @{
-            if (!string.IsNullOrEmpty(data.LastModifiedBy))
+            if (!string.IsNullOrEmpty(data?.LastModifiedBy))
             {
                 <MudText Typo="Typo.caption">*Diperbarui Oleh : @data.LastModifiedBy</MudText>
-                <MudText Typo="Typo.caption"> Tanggal : @(data.LastModifiedOn.Value.ToString("dd/MM/yyyy"))</MudText>
+                <MudText Typo="Typo.caption"> Tanggal : @data.LastModifiedOn?.ToString("dd/MM/yyyy")</MudText>
             }
         }
     </MudCardContent>
@@ -26,6 +26,7 @@
     [Parameter] public EventCallback<int> RefreshData { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IRoom _roomRepo { get; set; }
+    [Inject] ISnackbar _snackbar { get; set; }
 
     DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 
@@ -38,7 +39,6 @@
         var result = await form.Result;
         if (!result.Canceled)
         {
-            await Task.Delay(400);
             await RefreshData.InvokeAsync(1);
         }
     }
@@ -54,10 +54,15 @@
             var res = await _roomRepo.Delete(data.Id);
             if (res.Flag)
             {
-                await Dialog.ShowMessageBox(
-                    "Info",
-                    res.Message,
-                    "Ok");
+                _snackbar.Add(
+                    @<div>
+                        <h3>Info!!</h3>
+                        <ul>
+                            <li>Success</li>
+                            <li>@res.Message</li>
+                        </ul>
+                    </div>
+                    , Severity.Success);
                 await RefreshData.InvokeAsync(1);
             }
             else

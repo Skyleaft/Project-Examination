@@ -22,7 +22,7 @@ public class Endpoint : Endpoint<UserExam, ServiceResponse>
 
     public override async Task HandleAsync(UserExam r, CancellationToken ct)
     {
-        var res = await _repo.Update(r);
+        var res = await _repo.Update(r,ct);
         await SendAsync(res, cancellation: ct);
     }
 }

@@ -78,6 +78,7 @@
     [Inject] IRoom _rooms { get; set; }
     [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
 
+    private CancellationTokenSource cts = new CancellationTokenSource();
     string search;
     private Breakpoint curentBreak;
     private bool isLoading = true;
@@ -97,7 +98,7 @@
         if (firstRender)
         {
             await BrowserViewportService.SubscribeAsync(this);
-            data = await _repo.Find(request, new CancellationToken());
+            data = await _repo.Find(request, cts.Token);
             isLoading = false;
             StateHasChanged();
         }
@@ -113,15 +114,17 @@
     private async Task PageChanged(int page)
     {
         isLoading = true;
-        await Task.Delay(200);
         request.Page = page;
-        data = await _repo.Find(request, new CancellationToken());
+        data = await _repo.Find(request, cts.Token);
+        await Task.Delay(200,cts.Token);
         isLoading = false;
     }
 
 
     public async ValueTask DisposeAsync()
     {
+        await cts.CancelAsync();
+        cts.Dispose();
         await BrowserViewportService.UnsubscribeAsync(this);
     }
 
@@ -160,7 +163,7 @@
     {
         var form = await Dialog.ShowAsync<UserRoomSearchDialog>("Cari Ruangan", maxWidth);
         var result = await form.Result;
-        if (!result.Canceled)
+        if (!result!.Canceled)
             await PageChanged(1);
     }
 

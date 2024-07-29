@@ -4,6 +4,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IDialogService Dialog
 @inject ISessionStorageService SessionStorage
+@implements IAsyncDisposable
 @using System.Text.Json
 @using Blazored.SessionStorage
 @using global::Shared.BankSoal
@@ -29,7 +30,7 @@ else
     <MudGrid>
         <MudItem md="9" xs="12">
 
-            <div id="scroll_soal" class="ma-0" style="height:84vh;overflow: auto;">
+            <div id="scroll_soal" class="ma-0" style="height:82vh;overflow: auto;">
                 @{
                     foreach (var item in soalPaging.Items)
                     {
@@ -130,6 +131,7 @@ else
     MudWatch _watch = new();
     PaginatedResponse<UserAnswer> soalPaging;
     TimeSpan _timer;
+    private CancellationTokenSource cts = new CancellationTokenSource();
 
     bool isLoading = true;
     bool reRender = true;
@@ -139,7 +141,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        
         await delayStart();
+        
     }
     
 
@@ -153,30 +157,28 @@ else
             {
             }
             
-            userExam = await _userExamRepo.Get(new Guid(Id));
-            room = await _roomRepo.Get(userExam.RoomId);
+            userExam = await _userExamRepo.Get(new Guid(Id),cts.Token);
+            soalPaging = await userExam.UserAnswers!.OrderBy(x => x.Soal!.Nomor).ToPagingList(1, 10);
+            room = await _roomRepo.Get(userExam.RoomId,cts.Token);
+        
+            
+            _timer = userExam.TimeLeft;
+            
+            
             //jawabanUser = await _userExamRepo.GetUserAnswers(userExam.Id);
             // foreach (var item in jawabanUser)
             // {
             //     item.Soal = room.Exam.Soals.Find(x => x.Id == item.SoalId);
             // }
-            soalPaging = await userExam.UserAnswers.OrderBy(x => x.Soal.Nomor).ToPagingList(1, 10);
-            _timer = userExam.TimeLeft;
             
-            // var timeleft = await SessionStorage.GetItemAsStringAsync(privateKey);
-            // if (!string.IsNullOrEmpty(timeleft))
-            // {
-            //     var timestr = TimeSpan.FromMilliseconds(double.Parse(timeleft));
-            //     userExam.TimeLeft = timestr;
-            // }
+            
             reRender = false;
             isLoading = false;
             isLoadTime = false;
 
 
-            StateHasChanged();
+            //StateHasChanged();
         }
-
         
 
     }
@@ -217,7 +219,7 @@ else
         userExam.IsOngoing = false;
         userExam.IsDone = true;
         userExam.TimeLeft = _watch.Value;
-        var res = await _userExamRepo.Update(userExam);
+        var res = await _userExamRepo.Update(userExam,cts.Token);
         if (res.Flag)
         {
             await SessionStorage.RemoveItemAsync(privateKey);
@@ -230,7 +232,7 @@ else
     {
         var result = await Dialog.ShowMessageBox(
             "Warning",
-            "Yakin Jawaban anda sudah benar?",
+            "Yakin semua pertanyaan anda sudah dijawab semua?",
             "Ya", cancelText: "Tidak");
         StateHasChanged();
         if (result != null)
@@ -240,7 +242,7 @@ else
             userExam.IsOngoing = false;
             userExam.EndDate = DateTime.UtcNow;
             userExam.TimeLeft = _watch.Value;
-            var res = await _userExamRepo.Update(userExam);
+            var res = await _userExamRepo.Update(userExam,cts.Token);
             if (res.Flag)
             {
                 await SessionStorage.RemoveItemAsync(privateKey);
@@ -271,7 +273,7 @@ else
             TimeLeft = _watch.Value
         };
         
-        var res = await _userExamRepo.UpdateJawaban(dto);
+        var res = await _userExamRepo.UpdateJawaban(dto,cts.Token);
         if (res.Flag)
         {
             _watch.Start();
@@ -280,6 +282,12 @@ else
         {
         }
         _watch.Start();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
     }
 
 }

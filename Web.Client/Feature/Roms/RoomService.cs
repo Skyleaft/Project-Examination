@@ -46,9 +46,9 @@ public class RoomService(HttpClient _httpClient) : IRoom
         return res;
     }
 
-    public async Task<Room> Get(Guid Id)
+    public async Task<Room> Get(Guid Id, CancellationToken ct)
     {
-        var data = await _httpClient.GetFromJsonAsync<Room>($"/api/room/{Id}");
+        var data = await _httpClient.GetFromJsonAsync<Room>($"/api/room/{Id}", cancellationToken: ct);
         return data;
     }
 

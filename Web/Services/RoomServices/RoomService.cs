@@ -24,40 +24,39 @@ public class RoomService : IRoom
     public async Task<CreatedResponse<Room>> Create(Room r)
     {
         r.CreatedOn = DateTime.UtcNow;
-        var find = _dbContext.Room.FirstOrDefault(x => x.Kode.Equals(r.Kode));
+        var find = _dbContext.Room.AsNoTracking().FirstOrDefault(x => x.Kode.Equals(r.Kode));
         if (find != null)
             return new CreatedResponse<Room>(false, "Kode Ruangan Sudah Digunakan");
         var created = _dbContext.Room.Add(r); 
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return new CreatedResponse<Room>(true, "Data Berhasil Ditambahkan", created.Entity);
     }
 
     public async Task<ServiceResponse> Update(Room r)
     {
         var room =  _dbContext
-            .Room.AsNoTracking().FirstOrDefault(x => x.Id == r.Id);
+            .Room.FirstOrDefault(x => x.Id == r.Id);
         if (room == null) return new ServiceResponse(false, "data tidak ditemukan");
 
         r.LastModifiedOn = DateTime.UtcNow;
-        _dbContext.Room.Update(r);
-        //_dbContext.Entry(room).CurrentValues.SetValues(r);
-        _dbContext.SaveChanges();
+        _dbContext.Entry(room).CurrentValues.SetValues(r);
+        await _dbContext.SaveChangesAsync();
         return new ServiceResponse(true, "data berhasil diupdate");
     }
 
     public async Task<ServiceResponse> Delete(Guid Id)
     {
-        var find =  _dbContext.Room.Find(Id);
+        var find =  await _dbContext.Room.AsNoTracking().FirstOrDefaultAsync(x=>x.Id==Id);
         if (find == null) return new ServiceResponse(false, "data tidak ditemukan");
 
         _dbContext.Room.Remove(find); 
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return new ServiceResponse(true, "data berhasil dihapus");
     }
     
-    public async Task<Room> Get(Guid Id)
+    public async Task<Room> Get(Guid Id, CancellationToken ct)
     {
-        var find = _dbContext
+        var find = await _dbContext
             .Room
             .AsNoTracking()
             .AsSplitQuery()
@@ -65,7 +64,7 @@ public class RoomService : IRoom
             .Include(x => x.Exam)
             .ThenInclude(y => y.Soals.OrderBy(o => o.Nomor))
             .ThenInclude(z => z.PilihanJawaban)
-            .FirstOrDefault();
+            .FirstOrDefaultAsync(ct);
         if (find == null) return null;
 
         return find;
@@ -112,7 +111,7 @@ public class RoomService : IRoom
         var data = await _dbContext
             .Room
             .AsNoTracking()
-            .Include(x=>x.ListPeserta)
+            .AsSplitQuery()
             .WhereIf(!string.IsNullOrEmpty(r.Search),
                 x => x.Nama.ToLower().Contains(r.Search.ToLower()) ||
                      x.Kode.ToLower().Contains(r.Search.ToLower())

@@ -2,6 +2,7 @@
 @using global::Shared.TakeExam
 @using global::Shared.BankSoal
 @using Web.Client.Interfaces
+@using Web.Client.Shared.Extensions
 
 <MudPaper Class="pa-4 ma-2 my-3">
     <div class="d-flex flex-grow-1 gap-1">
@@ -11,10 +12,10 @@
         <MudPaper Class="flex-1 d-flex flex-column" Elevation="0">
             <MudText Class="m-2">@((MarkupString)data.Soal.Pertanyaan)</MudText>
 
+            <MudForm @ref="form">
             @if (data != null)
             {
-                <MudRadioGroup @ref="refJawaban" T="SoalJawaban" Class="mt-1" ValueChanged="OnPilihJawaban" Value="data.SoalJawaban">
-
+                <MudRadioGroup @ref="refJawaban" T="SoalJawaban?" Class="mt-1" ValueChanged="OnPilihJawaban" Value="data.SoalJawaban">
                     @foreach (var jawaban in data.Soal!.PilihanJawaban!)
                     {
                         <MudItem xs="12" Class="my-1">
@@ -23,8 +24,9 @@
                     }
 
                 </MudRadioGroup>
+                
             }
-
+</MudForm>
 
         </MudPaper>
         <MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
@@ -45,16 +47,32 @@
     [Parameter] public EventCallback<SoalJawaban> UpdateJawaban { get; set; }
     [Inject] IUserExam _userExamRepo { get; set; }
     private MudRadioGroup<SoalJawaban>? refJawaban;
+    private MudForm form;
+    SoalJawaban currentJawaban;
 
-    SoalJawaban currentJaw;
-    
+    protected async override Task OnParametersSetAsync()
+    {
+        currentJawaban = data.SoalJawaban;
+    }
+
+    protected override void OnInitialized()
+    {
+        data.Soal.PilihanJawaban = data.Soal.PilihanJawaban.Shuffle().ToList();
+    }
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
+            
+            //reselect if reloaded
+            if(data.SoalJawaban!=null)
+                data.SoalJawaban = data.Soal.PilihanJawaban.Find(x=>x.Id == data.SoalJawabanId);
+            StateHasChanged();
         }
+        
     }
 
     private async Task OnPilihJawaban(SoalJawaban? obj)
@@ -63,29 +81,12 @@
             return;
         if (refJawaban == null)
             return;
+        
         data.SoalJawaban = obj;
         data.SoalJawabanId = obj.Id;
         
         
         await UpdateJawaban.InvokeAsync(obj);
-        //reff.Value = obj;
-
-        // var dto = new UpdateJawabanDTO()
-        // {
-        //     SoalJawabanId = obj.Id,
-        //     UserExamId = userAnswer.UserExamId,
-        //     UserAnswerId = userAnswer.Id,
-        //     TimeLeft = TimeSpan.FromHours(1)
-        // };
-        //
-        // var res = await _userExamRepo.UpdateJawaban(dto);
-        // if (res.Flag)
-        // {
-        // }
-        // else
-        // {
-        // }
-
         StateHasChanged();
     }
 

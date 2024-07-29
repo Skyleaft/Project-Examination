@@ -9,14 +9,14 @@ public class PaginatedResponse<T>
     public int TotalItems { get; set; }
     public bool HasPrevious => CurrentPage > 1;
     public bool HasNext => CurrentPage < TotalPage;
-    public List<T> Items { get; init; } = new List<T>();
+    public IEnumerable<T> Items { get; init; } = new List<T>();
 
-    public PaginatedResponse(List<T> items,int page, int count,int pageSize)
+    public PaginatedResponse(IEnumerable<T> items,int page, int count,int pageSize)
     {
         TotalItems = count;
         CurrentPage = page;
         TotalPage = (int)Math.Ceiling(count / (double)pageSize);
-        Items.AddRange(items);
+        Items = items;
     }
     public PaginatedResponse() { }
 }
@@ -36,16 +36,17 @@ public static class PaginatedListHelper
         if (!string.IsNullOrEmpty(orderBy))
         {
             var dir = direction == 1 ? " asc" : " desc";
-            items =  source.Skip((currentPage - 1) * pageSize)
-                .Take(pageSize)
+            items =  await source
                 .OrderBy(orderBy + dir)
-                .ToList();
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken: ct);
         }
         else
         {
-            items =  source.Skip((currentPage - 1) * pageSize)
+            items =  await source.Skip((currentPage - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync(cancellationToken: ct);
         }
         
         return new PaginatedResponse<T>(items, currentPage, count, pageSize);

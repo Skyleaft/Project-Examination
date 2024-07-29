@@ -10,6 +10,7 @@
 @inject IDialogService Dialog
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ISessionStorageService SessionStorage
+@implements IAsyncDisposable
 
 <NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="OnBeforeNavBack"/>
 
@@ -152,6 +153,7 @@
     private Room room;
     private bool isLoading = true;
     readonly string privateKey = "zlxkjcoijasdfnwqwesfvlaksnoaiscnzxnocqanqwf";
+    private CancellationTokenSource cts = new CancellationTokenSource();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -163,8 +165,8 @@
             {
             }
 
-            userExam = await _userExamRepo.Get(new Guid(Id));
-            room = await _roomRepo.Get(userExam.RoomId);
+            userExam = await _userExamRepo.Get(new Guid(Id),cts.Token);
+            room = await _roomRepo.Get(userExam.RoomId,cts.Token);
 
             isLoading = false;
             StateHasChanged();
@@ -192,6 +194,12 @@
         {
             locationChangingContext.PreventNavigation();
         }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
     }
 
 }

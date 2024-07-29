@@ -21,7 +21,7 @@ public class Endpoint : Endpoint<CreateUserExamDTO, CreatedResponse<UserExam>>
 
     public override async Task HandleAsync(CreateUserExamDTO r, CancellationToken ct)
     {
-        var res = await _repo.Create(r);
+        var res = await _repo.Create(r,ct);
         if (!res.isSuccess)
             ThrowError(res.Message);
         await SendCreatedAtAsync($"/UserExam/{res.Data.Id}", res.Data, res, cancellation: ct);

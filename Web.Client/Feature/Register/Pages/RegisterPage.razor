@@ -10,6 +10,7 @@
 @using Web.Client.Interfaces
 @layout BlankLayout
 @inject HttpClient HttpClient
+@implements IAsyncDisposable
 
 
 <EditForm Model="userModel" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit" FormName="register">
@@ -158,7 +159,8 @@
         Role = "User"
     };
 
-
+    private CancellationTokenSource cts = new CancellationTokenSource();
+    
     Provinsi SelectedProv;
     Kota SelectedKota;
 
@@ -210,8 +212,7 @@
         var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
         var dial = await DialogService.ShowAsync<BluryDialog>("Sedang Mendaftar...", options);
 
-        var created = await _userService.Register(userModel, new CancellationToken());
-        await Task.Delay(300);
+        var created = await _userService.Register(userModel, cts.Token);
         if (created.isSuccess)
         {
             dial.Close();
@@ -359,7 +360,7 @@
 "
         };
 
-        return await _mailService.SendMailAsync(email);
+        return await _mailService.SendMailAsync(email,cts.Token);
     }
 
     public async Task FilterKota(string ProvID)
@@ -398,6 +399,12 @@
     private void ToLogin()
     {
         _navigationManager.NavigateTo("/", true);
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
     }
 
 }

@@ -20,7 +20,7 @@ public class Endpoint : EndpointWithoutRequest<Room>
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var res = await _repo.Get(Route<Guid>("Id"));
+        var res = await _repo.Get(Route<Guid>("Id"),ct);
         await SendAsync(res, cancellation: ct);
     }
 }

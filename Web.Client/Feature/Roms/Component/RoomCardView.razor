@@ -26,7 +26,7 @@
             <MudText Typo="Typo.body2">Mulai : @data.JadwalStart.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
             <MudText Typo="Typo.body2">Selesai : @data.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
         </MudStack>
-        <MudText Typo="Typo.body2"> Jumlah Peserta :@data.TotalPeserta</MudText>
+        <MudText Typo="Typo.body2"> Jumlah Peserta :@_totalPeserta</MudText>
 
     </MudCardContent>
     <MudCardActions>
@@ -61,6 +61,7 @@
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IRoom _roomRepo { get; set; }
     private bool isWaitActiveState;
+    private int _totalPeserta;
 
     DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 

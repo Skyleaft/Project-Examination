@@ -34,16 +34,16 @@ public class EmailService : IMailService
         }
     }
 
-    public async Task<bool> SendMailAsync(MimeMessage email)
+    public async Task<bool> SendMailAsync(MimeMessage email, CancellationToken ct)
     {
         try
         {
             using var MailClient = new SmtpClient();
             MailClient.CheckCertificateRevocation = false;
-            await MailClient.ConnectAsync(Mail_Settings.Host, Mail_Settings.Port, Mail_Settings.UseSSL);
-            await MailClient.AuthenticateAsync(Mail_Settings.EmailId, Mail_Settings.Password);
-            await MailClient.SendAsync(email);
-            await MailClient.DisconnectAsync(true);
+            await MailClient.ConnectAsync(Mail_Settings.Host, Mail_Settings.Port, Mail_Settings.UseSSL, ct);
+            await MailClient.AuthenticateAsync(Mail_Settings.EmailId, Mail_Settings.Password, ct);
+            await MailClient.SendAsync(email, ct);
+            await MailClient.DisconnectAsync(true, ct);
             return true;
         }
         catch

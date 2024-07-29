@@ -9,7 +9,7 @@ public interface IRoom
     public Task<CreatedResponse<Room>> Create(Room r);
     public Task<ServiceResponse> Update(Room r);
     public Task<ServiceResponse> Delete(Guid Id);
-    public Task<Room> Get(Guid Id);
+    public Task<Room> Get(Guid Id, CancellationToken ct);
     public Room GetSync(Guid Id);
     public Task<Room> Get(string kode);
     public Task<PaginatedResponse<Room>> Find(FindRequest r, CancellationToken ct, string? Username = "");

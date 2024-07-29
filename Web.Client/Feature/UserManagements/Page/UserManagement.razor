@@ -113,6 +113,7 @@
     [Inject] ISnackbar _snackbar { get; set; }
     private IEnumerable<ApplicationUser> pagedData;
     private MudTable<ApplicationUser> table;
+    private CancellationTokenSource cts = new CancellationTokenSource();
 
     private int totalItems;
     private string searchString = "";
@@ -144,7 +145,7 @@
         req.OrderBy = state.SortLabel;
         req.Direction = (int)state.SortDirection;
         var data = await _userService.Find(req, ct);
-        await Task.Delay(100);
+        await Task.Delay(100, ct);
         totalItems = data.TotalItems;
         pagedData = data.Items;
         return new TableData<ApplicationUser> { TotalItems = totalItems, Items = pagedData };

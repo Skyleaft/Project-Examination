@@ -9,6 +9,7 @@
 @inject IDialogService Dialog
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ISessionStorageService SessionStorage
+@implements IAsyncDisposable
 
 <MudContainer MaxWidth="MaxWidth.Medium">
     <MudPaper Width="100%" Class="pa-4">
@@ -146,6 +147,7 @@
     private Room room;
     private bool isLoading = true;
     readonly string privateKey = "zlxkjcoijasdfnwqwesfvlaksnoaiscnzxnocqanqwf";
+    private CancellationTokenSource cts = new CancellationTokenSource();
 
     protected override async Task OnInitializedAsync()
     {
@@ -161,8 +163,8 @@
             {
             }
 
-            userExam = await _userExamRepo.Get(new Guid(Id));
-            room = await _roomRepo.Get(userExam.RoomId);
+            userExam = await _userExamRepo.Get(new Guid(Id),cts.Token);
+            room = await _roomRepo.Get(userExam.RoomId,cts.Token);
 
             await SessionStorage.RemoveItemAsync(privateKey);
             isLoading = false;
@@ -180,7 +182,7 @@
         {
             userExam.StartDate = DateTime.UtcNow;
             userExam.IsOngoing = true;
-            var res = await _userExamRepo.Update(userExam);
+            var res = await _userExamRepo.Update(userExam,cts.Token);
             if (res.Flag)
             {
                 _navigationManager.NavigateTo($"exam/userexam/{Id}");
@@ -188,5 +190,10 @@
         }
     }
 
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
+    }
 
 }

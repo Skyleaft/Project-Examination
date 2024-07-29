@@ -54,7 +54,7 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="CreateUserExam">Masuk Ke Ruangan</MudButton>
+        <MudButton Color="Color.Primary" OnClick="NavToRoom">Masuk Ke Ruangan</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -114,9 +114,21 @@
     }
 
 
-    private void CreateUserExam()
+    private void NavToRoom()
     {
-        _navigationManager.NavigateTo($"exam/exambefore/{userExam.Id}", true);
+        if (userExam.IsDone)
+        {
+            _navigationManager.NavigateTo($"exam/examresult/{userExam.Id}", true);
+        }
+        else if (userExam.IsOngoing)
+        {
+            _navigationManager.NavigateTo($"exam/userexam/{userExam.Id}", true);
+        }
+        else
+        {
+            _navigationManager.NavigateTo($"exam/exambefore/{userExam.Id}", true);
+        }
+        
     }
 
 }

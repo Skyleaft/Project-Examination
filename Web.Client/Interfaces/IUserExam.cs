@@ -7,15 +7,15 @@ namespace Web.Client.Interfaces;
 
 public interface IUserExam
 {
-    public Task<CreatedResponse<UserExam>> Create(CreateUserExamDTO r);
-    public Task<ServiceResponse> Update(UserExam r);
+    public Task<CreatedResponse<UserExam>> Create(CreateUserExamDTO r, CancellationToken ct);
+    public Task<ServiceResponse> Update(UserExam r, CancellationToken ct);
     public Task<ServiceResponse> Delete(Guid Id);
-    public Task<UserExam> Get(Guid Id);
+    public Task<UserExam> Get(Guid Id,CancellationToken ct);
     public Task<UserExam> GetOnly(Guid Id);
     public Task<PaginatedResponse<UserExam>> Find(FindRequest r, CancellationToken ct, string? UserId = "");
     public Task<PaginatedResponse<UserExam>> FindReport(FindRequest r, CancellationToken ct);
     public Task<bool> SaveTimeLeft(Guid Id, TimeSpan timeLeft);
-    public Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r);
+    public Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r, CancellationToken ct);
     public Task<List<UserAnswer>> GetUserAnswers(Guid UserExamId);
 }
 
