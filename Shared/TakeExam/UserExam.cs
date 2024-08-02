@@ -20,7 +20,7 @@ public class UserExam
     public TimeSpan TimeLeft { get; set; }
     public List<UserAnswer>? UserAnswers { get; set; }
 
-    public int? Score
+    public int? CalculateScore
     {
         get
         {
@@ -29,14 +29,16 @@ public class UserExam
             return 0;
         }
     }
+    public int? ScoreData{ get; set; }
 
-    public double? ScoreNormalize
+    public double? CalculateScoreNormalize
     {
         get
         {
-            if (UserAnswers != null && Score!=null)
-                return ((double)Score / (double)UserAnswers.Sum(x=>x.Soal.MaxPoint)) * 100;
+            if (UserAnswers != null && CalculateScore!=null)
+                return ((double)CalculateScore / (double)UserAnswers.Sum(x=>x.Soal.MaxPoint)) * 100;
             return 0;
         }
     }
+    public double? ScoreNormalizeData{ get; set; }
 }

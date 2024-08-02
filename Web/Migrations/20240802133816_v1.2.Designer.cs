@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Web.Common.Database;
@@ -11,9 +12,11 @@ using Web.Common.Database;
 namespace Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240802133816_v1.2")]
+    partial class v12
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -336,6 +339,16 @@ namespace Web.Migrations
                     b.ToTable("Room");
                 });
 
+            modelBuilder.Entity("Shared.RoomSet.RoomExam", b =>
+                {
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uuid");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("RoomExam");
+                });
+
             modelBuilder.Entity("Shared.TakeExam.UserAnswer", b =>
                 {
                     b.Property<Guid>("Id")
@@ -608,6 +621,17 @@ namespace Web.Migrations
                         .IsRequired();
 
                     b.Navigation("Exam");
+                });
+
+            modelBuilder.Entity("Shared.RoomSet.RoomExam", b =>
+                {
+                    b.HasOne("Shared.RoomSet.Room", "Room")
+                        .WithMany()
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("Shared.TakeExam.UserAnswer", b =>

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq.Dynamic.Core;
+using Mapster;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Shared.Common;
@@ -118,6 +119,36 @@ public class RoomService : IRoom
             )
             .Where(x => x.CreatedBy == Username)
             .OrderBy(x => x.CreatedOn)
+            .ToPaginatedList(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
+        return data;
+    }
+
+    public async Task<PaginatedResponse<RoomExam>> FindRoomView(FindRequest r, CancellationToken ct, string? Username = "")
+    {
+        if (string.IsNullOrEmpty(Username))
+        {
+            var auth = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            var user = auth.User;
+            Username = user.Identity.Name;
+        }
+        var data = await _dbContext
+            .Room
+            .AsNoTracking()
+            .AsSplitQuery()
+            .WhereIf(!string.IsNullOrEmpty(r.Search),
+                x => x.Nama.ToLower().Contains(r.Search.ToLower()) ||
+                     x.Kode.ToLower().Contains(r.Search.ToLower())
+            )
+            .Where(x => x.CreatedBy == Username)
+            .Select((y)=>
+                new RoomExam()
+                {
+                    Room = y,
+                    RoomId = y.Id,
+                    UserExams = _dbContext.UserExam.Where(x=>x.RoomId==y.Id)
+                        .Include(x=>x.User)
+                        .ToList()
+                })
             .ToPaginatedList(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
     }

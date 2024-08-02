@@ -109,7 +109,7 @@
                             </td>
                             <td>
                                 <MudText Typo="Typo.body1">
-                                    <b>@userExam.Score</b> / @room.Exam.TotalPoint
+                                    <b>@userExam.CalculateScore</b> / @room.Exam.TotalPoint
                                 </MudText>
                             </td>
                         </tr>
@@ -122,7 +122,7 @@
                             </td>
                             <td>
                                 <MudText Typo="Typo.body1">
-                                    <b>@userExam.ScoreNormalize.Value.ToString("0.00")</b>
+                                    <b>@userExam.CalculateScoreNormalize.Value.ToString("0.00")</b>
                                 </MudText>
                             </td>
                         </tr>

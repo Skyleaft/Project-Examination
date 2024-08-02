@@ -14,13 +14,20 @@
 <MudPaper Elevation="2" Class="my-2 pa-2">
     <MudGrid>
         <MudItem lg="3" xs="12">
-            <MudAutocomplete T="Room" Label="Filter Ruangan"
-                             Variant="Variant.Outlined"
-                             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
-                             Strict="false"
-                             ValueChanged="OnFilter"
-                             ToStringFunc="@(e => e == null ? null : $"{e.Nama} - {e.Kode}")"
-                             SearchFunc="SearchFunc"/>
+            <MudStack Row="true">
+                <MudAutocomplete T="Room" Label="Filter Sesi Ujian"
+                                 Variant="Variant.Outlined"
+                                 AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                 Strict="false"
+                                 ValueChanged="OnFilter"
+                                 Value="selectedRoom"
+                                 ToStringFunc="@(e => e == null ? null : $"{e.Nama} - {e.Kode}")"
+                                 SearchFunc="SearchFunc"/>
+                <MudIconButton Icon="@Icons.Material.Rounded.Clear" 
+                               Variant="Variant.Text"
+                               OnClick="OnFilterReset"/>
+            </MudStack>
+            
         </MudItem>
         <MudItem lg="6" xs="12">
             <MudTextField T="string"
@@ -38,7 +45,7 @@
                            Label="Export Type" 
                            @bind-Value="exportType"
                            Variant="Variant.Outlined">
-                    <MudSelectItem Value="0">Current Page</MudSelectItem>
+                    <MudSelectItem Value="0">Current</MudSelectItem>
                     <MudSelectItem Value="1">All Data</MudSelectItem>
                     <MudSelectItem Value="2">Selected</MudSelectItem>
                 </MudSelect>
@@ -186,8 +193,17 @@
                     , Severity.Error);
                 return;
             }
-
-            data = table.FilteredItems;
+            
+            var req = new FindRequest();
+            req.Page = 1;
+            req.PageSize = 3000;
+            req.Search = searchString;
+                req.OrderBy = table.Context.CurrentSortLabel.SortLabel;
+            req.Direction = (int)table.TableContext.SortDirection;
+            if (selectedRoom != null)
+                req.Filter = selectedRoom.Nama;
+            var load = await _report.Find(req, cts.Token);
+            data = load.Items;
         }
         else if (exportType == 1)
         {
@@ -275,6 +291,12 @@
     {
         await cts.CancelAsync();
         cts.Dispose();
+    }
+
+    private void OnFilterReset()
+    {
+        selectedRoom = null;
+        table.ReloadServerData();
     }
 
 }

@@ -13,5 +13,6 @@ public interface IRoom
     public Room GetSync(Guid Id);
     public Task<Room> Get(string kode);
     public Task<PaginatedResponse<Room>> Find(FindRequest r, CancellationToken ct, string? Username = "");
+    public Task<PaginatedResponse<RoomExam>> FindRoomView(FindRequest r, CancellationToken ct, string? Username = "");
     public Task<List<Room>> AllRefference(CancellationToken ct);
 }

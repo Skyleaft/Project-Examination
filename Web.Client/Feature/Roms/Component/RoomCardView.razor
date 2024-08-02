@@ -57,11 +57,12 @@
 @code {
     [Parameter] public Room data { get; set; }
     [Parameter] public string strImage { get; set; }
+    [Parameter] public int? _totalPeserta { get; set; }
     [Parameter] public EventCallback<int> RefreshData { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IRoom _roomRepo { get; set; }
     private bool isWaitActiveState;
-    private int _totalPeserta;
+    
 
     DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 

@@ -79,6 +79,11 @@ public class RoomService(HttpClient _httpClient) : IRoom
         return data;
     }
 
+    public Task<PaginatedResponse<RoomExam>> FindRoomView(FindRequest r, CancellationToken ct, string? Username = "")
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<List<Room>> AllRefference(CancellationToken ct)
     {
         throw new NotImplementedException();
