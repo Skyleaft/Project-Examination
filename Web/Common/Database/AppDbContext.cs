@@ -1,10 +1,9 @@
+using CoreLib.BankSoal;
+using CoreLib.Report;
+using CoreLib.RoomSet;
+using CoreLib.TakeExam;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Shared.BankSoal;
-using Shared.Report;
-using Shared.RoomSet;
-using Shared.TakeExam;
-using Shared.Users;
 
 namespace Web.Common.Database;
 

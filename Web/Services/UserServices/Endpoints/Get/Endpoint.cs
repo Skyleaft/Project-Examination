@@ -1,6 +1,4 @@
-﻿using FastEndpoints;
-using Web.Client.Feature.UserManagements;
-using Web.Client.Interfaces;
+﻿using Web.Client.Feature.UserManagements;
 
 namespace Web.Services.UserServices.Endpoints.Get;
 

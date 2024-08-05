@@ -157,7 +157,7 @@ namespace Web.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Shared.BankSoal.Exam", b =>
+            modelBuilder.Entity("CoreLib.BankSoal.Exam", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -192,7 +192,7 @@ namespace Web.Migrations
                     b.ToTable("Exam");
                 });
 
-            modelBuilder.Entity("Shared.BankSoal.Soal", b =>
+            modelBuilder.Entity("CoreLib.BankSoal.Soal", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -218,7 +218,7 @@ namespace Web.Migrations
                     b.ToTable("Soal");
                 });
 
-            modelBuilder.Entity("Shared.BankSoal.SoalJawaban", b =>
+            modelBuilder.Entity("CoreLib.BankSoal.SoalJawaban", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -244,7 +244,7 @@ namespace Web.Migrations
                     b.ToTable("SoalJawaban");
                 });
 
-            modelBuilder.Entity("Shared.Report.ExamReport", b =>
+            modelBuilder.Entity("CoreLib.Report.ExamReport", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -286,7 +286,7 @@ namespace Web.Migrations
                     b.ToView("vw_examreport", (string)null);
                 });
 
-            modelBuilder.Entity("Shared.RoomSet.Room", b =>
+            modelBuilder.Entity("CoreLib.RoomSet.Room", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -339,7 +339,7 @@ namespace Web.Migrations
                     b.ToTable("Room");
                 });
 
-            modelBuilder.Entity("Shared.TakeExam.UserAnswer", b =>
+            modelBuilder.Entity("CoreLib.TakeExam.UserAnswer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -365,7 +365,7 @@ namespace Web.Migrations
                     b.ToTable("UserAnswer");
                 });
 
-            modelBuilder.Entity("Shared.TakeExam.UserExam", b =>
+            modelBuilder.Entity("CoreLib.TakeExam.UserExam", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -409,7 +409,7 @@ namespace Web.Migrations
                     b.ToTable("UserExam");
                 });
 
-            modelBuilder.Entity("Shared.Users.ApplicationUser", b =>
+            modelBuilder.Entity("CoreLib.Users.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -497,7 +497,7 @@ namespace Web.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Shared.Users.Kota", b =>
+            modelBuilder.Entity("CoreLib.Users.Kota", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(100)
@@ -518,7 +518,7 @@ namespace Web.Migrations
                     b.ToTable("Kota", "reference");
                 });
 
-            modelBuilder.Entity("Shared.Users.Provinsi", b =>
+            modelBuilder.Entity("CoreLib.Users.Provinsi", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(100)
@@ -544,7 +544,7 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Shared.Users.ApplicationUser", null)
+                    b.HasOne("CoreLib.Users.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -553,7 +553,7 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Shared.Users.ApplicationUser", null)
+                    b.HasOne("CoreLib.Users.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -568,7 +568,7 @@ namespace Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Shared.Users.ApplicationUser", null)
+                    b.HasOne("CoreLib.Users.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -577,34 +577,34 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Shared.Users.ApplicationUser", null)
+                    b.HasOne("CoreLib.Users.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Shared.BankSoal.Soal", b =>
+            modelBuilder.Entity("CoreLib.BankSoal.Soal", b =>
                 {
-                    b.HasOne("Shared.BankSoal.Exam", null)
+                    b.HasOne("CoreLib.BankSoal.Exam", null)
                         .WithMany("Soals")
                         .HasForeignKey("ExamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Shared.BankSoal.SoalJawaban", b =>
+            modelBuilder.Entity("CoreLib.BankSoal.SoalJawaban", b =>
                 {
-                    b.HasOne("Shared.BankSoal.Soal", null)
+                    b.HasOne("CoreLib.BankSoal.Soal", null)
                         .WithMany("PilihanJawaban")
                         .HasForeignKey("SoalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Shared.RoomSet.Room", b =>
+            modelBuilder.Entity("CoreLib.RoomSet.Room", b =>
                 {
-                    b.HasOne("Shared.BankSoal.Exam", "Exam")
+                    b.HasOne("CoreLib.BankSoal.Exam", "Exam")
                         .WithMany()
                         .HasForeignKey("ExamId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -613,17 +613,17 @@ namespace Web.Migrations
                     b.Navigation("Exam");
                 });
 
-            modelBuilder.Entity("Shared.TakeExam.UserAnswer", b =>
+            modelBuilder.Entity("CoreLib.TakeExam.UserAnswer", b =>
                 {
-                    b.HasOne("Shared.BankSoal.Soal", "Soal")
+                    b.HasOne("CoreLib.BankSoal.Soal", "Soal")
                         .WithMany()
                         .HasForeignKey("SoalId");
 
-                    b.HasOne("Shared.BankSoal.SoalJawaban", "SoalJawaban")
+                    b.HasOne("CoreLib.BankSoal.SoalJawaban", "SoalJawaban")
                         .WithMany()
                         .HasForeignKey("SoalJawabanId");
 
-                    b.HasOne("Shared.TakeExam.UserExam", null)
+                    b.HasOne("CoreLib.TakeExam.UserExam", null)
                         .WithMany("UserAnswers")
                         .HasForeignKey("UserExamId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -634,15 +634,15 @@ namespace Web.Migrations
                     b.Navigation("SoalJawaban");
                 });
 
-            modelBuilder.Entity("Shared.TakeExam.UserExam", b =>
+            modelBuilder.Entity("CoreLib.TakeExam.UserExam", b =>
                 {
-                    b.HasOne("Shared.RoomSet.Room", "Room")
+                    b.HasOne("CoreLib.RoomSet.Room", "Room")
                         .WithMany()
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Shared.Users.ApplicationUser", "User")
+                    b.HasOne("CoreLib.Users.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -653,18 +653,18 @@ namespace Web.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Shared.Users.ApplicationUser", b =>
+            modelBuilder.Entity("CoreLib.Users.ApplicationUser", b =>
                 {
-                    b.HasOne("Shared.Users.Kota", "Kota")
+                    b.HasOne("CoreLib.Users.Kota", "Kota")
                         .WithMany()
                         .HasForeignKey("KotaId");
 
                     b.Navigation("Kota");
                 });
 
-            modelBuilder.Entity("Shared.Users.Kota", b =>
+            modelBuilder.Entity("CoreLib.Users.Kota", b =>
                 {
-                    b.HasOne("Shared.Users.Provinsi", "Provinsi")
+                    b.HasOne("CoreLib.Users.Provinsi", "Provinsi")
                         .WithMany()
                         .HasForeignKey("ProvinsiId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -673,17 +673,17 @@ namespace Web.Migrations
                     b.Navigation("Provinsi");
                 });
 
-            modelBuilder.Entity("Shared.BankSoal.Exam", b =>
+            modelBuilder.Entity("CoreLib.BankSoal.Exam", b =>
                 {
                     b.Navigation("Soals");
                 });
 
-            modelBuilder.Entity("Shared.BankSoal.Soal", b =>
+            modelBuilder.Entity("CoreLib.BankSoal.Soal", b =>
                 {
                     b.Navigation("PilihanJawaban");
                 });
 
-            modelBuilder.Entity("Shared.TakeExam.UserExam", b =>
+            modelBuilder.Entity("CoreLib.TakeExam.UserExam", b =>
                 {
                     b.Navigation("UserAnswers");
                 });

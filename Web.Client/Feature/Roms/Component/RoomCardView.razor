@@ -1,4 +1,5 @@
-﻿@using global::Shared.RoomSet
+﻿@using global::CoreLib.RoomSet
+@using global::CoreLib.TakeExam
 @using Web.Client.Interfaces
 @inject IDialogService Dialog
 <MudCard Style="width: 350px; min-width: 350px">
@@ -30,7 +31,7 @@
 
     </MudCardContent>
     <MudCardActions>
-        <MudButton Variant="Variant.Text" Color="Color.Primary">Lihat</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnLihatClick">Lihat</MudButton>
         <MudSpacer/>
         @{
             if (isWaitActiveState)
@@ -56,6 +57,7 @@
 
 @code {
     [Parameter] public Room data { get; set; }
+    [Parameter] public IEnumerable<UserExam?> userExamData { get; set; }
     [Parameter] public string strImage { get; set; }
     [Parameter] public int? _totalPeserta { get; set; }
     [Parameter] public EventCallback<int> RefreshData { get; set; }
@@ -86,5 +88,19 @@
         StateHasChanged();
     }
 
+
+    private async Task OnLihatClick()
+    {
+        var parameters = new DialogParameters<RoomViewDialog>();
+        parameters.Add(x => x.room, data);
+        parameters.Add(x => x.UserExamsData, userExamData);
+        parameters.Add(x => x.isEdit, true);
+        var form = await Dialog.ShowAsync<RoomViewDialog>("Detail Ruangan", parameters, maxWidth);
+        var result = await form.Result;
+        if (!result.Canceled)
+        {
+            await RefreshData.InvokeAsync(1);
+        }
+    }
 
 }

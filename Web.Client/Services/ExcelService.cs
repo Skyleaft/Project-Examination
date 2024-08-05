@@ -1,6 +1,6 @@
 ﻿using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using Shared.Users;
+using CoreLib.Users;
 
 namespace Web.Client.Services;
 

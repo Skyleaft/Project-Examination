@@ -1,11 +1,9 @@
-﻿using Mapster;
+﻿using CoreLib.Common;
+using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Shared.Common;
-using Shared.Users;
 using Web.Client.Feature.Register;
 using Web.Client.Feature.UserManagements;
-using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
 using Web.Common.Database;
 
@@ -26,8 +24,8 @@ public class UserService : IUser
     {
         var data = await _appDbContext
             .Users
-            .Include(x=>x.Kota)
-            .ThenInclude(y=>y.Provinsi)
+            .Include(x => x.Kota)
+            .ThenInclude(y => y.Provinsi)
             .WhereIf(!string.IsNullOrEmpty(r.Search),
                 x => x.NamaLengkap.ToLower()
                     .Contains(r.Search.ToLower()))
@@ -78,6 +76,7 @@ public class UserService : IUser
         finduser.Photo = r.Photo;
         finduser.Pekerjaan = r.Pekerjaan;
         finduser.KotaId = r.KotaId;
+        finduser.LastLogin = r.LastLogin;
         var updated = await _userManager.UpdateAsync(finduser);
         if (oldData.Role != r.Role)
         {
@@ -130,5 +129,15 @@ public class UserService : IUser
         var finduser = await _userManager.FindByIdAsync(userID);
         var token = await _userManager.GeneratePasswordResetTokenAsync(finduser);
         return token;
+    }
+
+    public async Task<ServiceResponse> UpdateLastLogin(string userID)
+    {
+        var finduser = await _userManager.FindByIdAsync(userID);
+        finduser.LastLogin = DateTime.UtcNow;
+        var updated = _appDbContext.Users.Update(finduser);
+        await _appDbContext.SaveChangesAsync();
+        return new ServiceResponse(true, "Berhasil Login");
+        
     }
 }

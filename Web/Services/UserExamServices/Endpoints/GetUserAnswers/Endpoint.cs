@@ -1,8 +1,6 @@
-﻿using FastEndpoints;
-using Shared.TakeExam;
-using Web.Client.Interfaces;
+﻿using CoreLib.TakeExam;
 
-namespace Web.Services.UserExamServices.Endpoints.GetUserAnswer;
+namespace Web.Services.UserExamServices.Endpoints.GetUserAnswers;
 
 public class Endpoint : EndpointWithoutRequest<List<UserAnswer>>
 {

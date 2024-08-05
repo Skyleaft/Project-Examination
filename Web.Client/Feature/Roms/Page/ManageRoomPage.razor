@@ -1,7 +1,7 @@
 ﻿@page "/room/manage"
 @implements IBrowserViewportObserver
-@using global::Shared.Common
-@using global::Shared.RoomSet
+@using global::CoreLib.Common
+@using global::CoreLib.RoomSet
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Feature.Roms.Component
 @using Web.Client.Interfaces
@@ -118,7 +118,6 @@
         isLoading = true;
         request.Page = page;
         _dataRoom = await _repo.Find(request, cts.Token);
-        await Task.Delay(200,cts.Token);
         isLoading = false;
         StateHasChanged();
     }
@@ -129,7 +128,6 @@
         var result = await form.Result;
         if (!result.Canceled)
         {
-            await Task.Delay(200,cts.Token);
             await PageChanged(1);
         }
             

@@ -1,6 +1,6 @@
 ﻿using MudBlazor;
-using Shared.Common;
-using Shared.TakeExam;
+using CoreLib.Common;
+using CoreLib.TakeExam;
 using Web.Client.Shared.Models;
 
 namespace Web.Client.Interfaces;
@@ -13,8 +13,6 @@ public interface IUserExam
     public Task<UserExam> Get(Guid Id,CancellationToken ct);
     public Task<UserExam> GetOnly(Guid Id);
     public Task<PaginatedResponse<UserExam>> Find(FindRequest r, CancellationToken ct, string? UserId = "");
-    public Task<PaginatedResponse<UserExam>> FindReport(FindRequest r, CancellationToken ct);
-    public Task<bool> SaveTimeLeft(Guid Id, TimeSpan timeLeft);
     public Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r, CancellationToken ct);
     public Task<List<UserAnswer>> GetUserAnswers(Guid UserExamId);
 }
@@ -25,6 +23,7 @@ public class CreateUserExamDTO
     public string? UserId { get; set; }
     public bool IsOngoing { get; set; }
     public bool IsDone { get; set; }
+    public bool IsRepeatable { get; set; }
     public Guid RoomId { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }

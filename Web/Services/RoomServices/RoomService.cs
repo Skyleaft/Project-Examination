@@ -1,11 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Linq.Dynamic.Core;
-using Mapster;
+﻿using CoreLib.Common;
+using CoreLib.RoomSet;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Shared.Common;
-using Shared.RoomSet;
-using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
 using Web.Common.Database;
 
@@ -28,14 +24,14 @@ public class RoomService : IRoom
         var find = _dbContext.Room.AsNoTracking().FirstOrDefault(x => x.Kode.Equals(r.Kode));
         if (find != null)
             return new CreatedResponse<Room>(false, "Kode Ruangan Sudah Digunakan");
-        var created = _dbContext.Room.Add(r); 
+        var created = await _dbContext.Room.AddAsync(r);
         await _dbContext.SaveChangesAsync();
         return new CreatedResponse<Room>(true, "Data Berhasil Ditambahkan", created.Entity);
     }
 
     public async Task<ServiceResponse> Update(Room r)
     {
-        var room =  _dbContext
+        var room = _dbContext
             .Room.FirstOrDefault(x => x.Id == r.Id);
         if (room == null) return new ServiceResponse(false, "data tidak ditemukan");
 
@@ -47,14 +43,14 @@ public class RoomService : IRoom
 
     public async Task<ServiceResponse> Delete(Guid Id)
     {
-        var find =  await _dbContext.Room.AsNoTracking().FirstOrDefaultAsync(x=>x.Id==Id);
+        var find = await _dbContext.Room.AsNoTracking().FirstOrDefaultAsync(x => x.Id == Id);
         if (find == null) return new ServiceResponse(false, "data tidak ditemukan");
 
-        _dbContext.Room.Remove(find); 
+        _dbContext.Room.Remove(find);
         await _dbContext.SaveChangesAsync();
         return new ServiceResponse(true, "data berhasil dihapus");
     }
-    
+
     public async Task<Room> Get(Guid Id, CancellationToken ct)
     {
         var find = await _dbContext
@@ -123,7 +119,8 @@ public class RoomService : IRoom
         return data;
     }
 
-    public async Task<PaginatedResponse<RoomExam>> FindRoomView(FindRequest r, CancellationToken ct, string? Username = "")
+    public async Task<PaginatedResponse<RoomExam>> FindRoomView(FindRequest r, CancellationToken ct,
+        string? Username = "")
     {
         if (string.IsNullOrEmpty(Username))
         {
@@ -131,6 +128,7 @@ public class RoomService : IRoom
             var user = auth.User;
             Username = user.Identity.Name;
         }
+
         var data = await _dbContext
             .Room
             .AsNoTracking()
@@ -140,32 +138,31 @@ public class RoomService : IRoom
                      x.Kode.ToLower().Contains(r.Search.ToLower())
             )
             .Where(x => x.CreatedBy == Username)
-            .Select((y)=>
-                new RoomExam()
+            .Select(y =>
+                new RoomExam
                 {
                     Room = y,
                     RoomId = y.Id,
-                    UserExams = _dbContext.UserExam.Where(x=>x.RoomId==y.Id)
-                        .Include(x=>x.User)
+                    UserExams = _dbContext.UserExam.Where(x => x.RoomId == y.Id)
+                        .Include(x => x.User)
                         .ToList()
                 })
             .ToPaginatedList(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
     }
 
-    public async Task<List<Room>> AllRefference(CancellationToken ct)
+    public async Task<IEnumerable<Room>> AllRefference(CancellationToken ct)
     {
-        var data = _dbContext
+        var data = await _dbContext
             .Room
             .AsNoTracking()
             .OrderBy(x => x.CreatedOn)
-            .Select(x => new Room()
+            .Select(x => new Room
             {
                 Id = x.Id,
                 Nama = x.Nama,
                 Kode = x.Kode
-            })
-            .ToList();
+            }).ToListAsync(ct);
         return data;
     }
 }

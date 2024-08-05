@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Json;
 using Blazored.LocalStorage;
-using Shared.Users;
+using CoreLib.Users;
 using Web.Client.Interfaces;
 
 namespace Web.Client.Feature.References;

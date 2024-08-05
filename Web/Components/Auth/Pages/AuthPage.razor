@@ -2,15 +2,15 @@
 @inject NavigationManager navManager
 @page "/Account/Login"
 @using Blazored.LocalStorage
+@using CoreLib.Users
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
-@using Shared.Users
-@using Web.Common.Database
 @using Web.Components.Auth.Components
 @attribute [AllowAnonymous]
 @layout LoginLayout
 @inject SignInManager<ApplicationUser> signInManager
 @inject IdentityRedirectManager RedirectManager
+@inject IUser _user
 
 <EditForm Model="model" method="post" OnValidSubmit="OnValidSubmit" FormName="login">
     <DataAnnotationsValidator/>
@@ -102,11 +102,15 @@
                 //dial.Close();
                 if (string.IsNullOrEmpty(ReturnUrl))
                 {
-                    RedirectManager.RedirectTo("/");
+                    var res = await _user.UpdateLastLogin(finduser.Id);
+                    if(res.Flag)
+                        RedirectManager.RedirectTo("/");
                 }
                 else
                 {
-                    RedirectManager.RedirectTo(ReturnUrl);
+                    var res = await _user.UpdateLastLogin(finduser.Id);
+                    if(res.Flag)
+                        RedirectManager.RedirectTo(ReturnUrl);
 
                 }
             }

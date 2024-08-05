@@ -1,0 +1,100 @@
+﻿@using System.Text.Json.Serialization
+@using global::CoreLib.BankSoal
+@using global::CoreLib.RoomSet
+@using global::CoreLib.TakeExam
+@using Web.Client.Shared.Extensions
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@implements IAsyncDisposable
+
+<MudDialog>
+    <DialogContent>
+        <MudPaper Class="pa-4 ma-2 mb-4">
+            <MudStack Spacing="4">
+                <MudText Class="m-2">@((MarkupString)jawabanUser.Soal.Pertanyaan)</MudText>
+                <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
+                <MudRadioGroup @ref="refJawaban" T="SoalJawaban?" Class="mt-1" ReadOnly Value="jawabanUser.SoalJawaban">
+                    @{
+                        var maxpoint = jawabanUser.Soal.MaxPoint;
+                        foreach (var jawaban in jawabanUser.Soal.PilihanJawaban)
+                        {
+                            <MudItem xs="12" Class="my-1">
+                                @if (jawaban.Point == maxpoint && room.JadwalEnd.ToLocalTime() < DateTime.Now.ToLocalTime())
+                                {
+                                    <div class="d-none d-lg-block rounded" style="height:100%; width:100%;background-color: #B2DFDB;">
+                                        <MudRadio Value="@jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <MudRadio Value="@jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
+                                }
+                            
+
+                            </MudItem>
+                        }
+                    }
+
+                </MudRadioGroup>
+
+            </MudStack>
+
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudStack Row="true" Spacing="2" Class="ma-2 my-3">
+            <MudButton OnClick="Cancel">Close</MudButton>
+
+        </MudStack>
+
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public UserAnswer jawabanUser { get; set; }
+    [Parameter] public Room room { get; set; }
+    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] ISnackbar _snackbar { get; set; }
+    private MudRadioGroup<SoalJawaban>? refJawaban;
+
+    private CancellationTokenSource cts = new CancellationTokenSource();
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+    
+    protected override void OnInitialized()
+    {
+        MudDialog.Title = $"Pembahasan Soal Nomor {jawabanUser.Soal.Nomor}";
+        jawabanUser.Soal.PilihanJawaban = jawabanUser.Soal.PilihanJawaban.Shuffle().ToList();
+    }
+    
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            //reselect if reloaded
+            if(jawabanUser.SoalJawaban!=null)
+                jawabanUser.SoalJawaban = jawabanUser.Soal.PilihanJawaban.Find(x=>x.Id == jawabanUser.SoalJawabanId);
+
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+    
+
+
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
+    }
+
+}

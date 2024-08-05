@@ -1,4 +1,4 @@
-﻿using Shared.Users;
+﻿using CoreLib.Users;
 
 namespace Web.Client.Interfaces;
 

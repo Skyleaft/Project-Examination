@@ -1,5 +1,4 @@
 ﻿using Web.Client.Feature.Register;
-using Web.Client.Interfaces;
 using Web.Services.ExamServices;
 using Web.Services.ReferenceServices;
 using Web.Services.ReportServices;

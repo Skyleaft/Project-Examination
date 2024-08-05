@@ -1,6 +1,4 @@
-﻿using FastEndpoints;
-using Shared.RoomSet;
-using Web.Client.Interfaces;
+﻿using CoreLib.RoomSet;
 using Web.Client.Shared.Models;
 
 namespace Web.Services.RoomServices.Endpoints.Update;

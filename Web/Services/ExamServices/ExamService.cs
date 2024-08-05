@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Shared.BankSoal;
-using Shared.Common;
-using Web.Client.Interfaces;
+﻿using CoreLib.BankSoal;
+using CoreLib.Common;
+using Microsoft.EntityFrameworkCore;
 using Web.Client.Shared.Models;
 using Web.Common.Database;
 
@@ -19,8 +18,8 @@ public class ExamService : IExam
     public async Task<CreatedResponse<Exam>> Create(Exam r)
     {
         r.CreatedOn = DateTime.UtcNow;
-        var created =  _dbContext.Exam.Add(r);
-         _dbContext.SaveChanges();
+        var created = _dbContext.Exam.Add(r);
+        _dbContext.SaveChanges();
         return new CreatedResponse<Exam>(true, "Data Berhasil Ditambahkan", created.Entity);
     }
 
@@ -50,17 +49,17 @@ public class ExamService : IExam
             {
                 // Update child
                 _dbContext.Entry(existingChild).CurrentValues.SetValues(soal);
-                 _dbContext.SoalJawaban.AddRange(soal.PilihanJawaban);
+                _dbContext.SoalJawaban.AddRange(soal.PilihanJawaban);
             }
 
             else
             {
-                 _dbContext.Soal.Add(soal);
-                 _dbContext.SoalJawaban.AddRange(soal.PilihanJawaban);
+                _dbContext.Soal.Add(soal);
+                _dbContext.SoalJawaban.AddRange(soal.PilihanJawaban);
             }
         }
 
-         _dbContext.SaveChanges();
+        _dbContext.SaveChanges();
         return new ServiceResponse(true, "data berhasil diupdate");
     }
 
@@ -69,14 +68,14 @@ public class ExamService : IExam
         var find = _dbContext.Exam.Find(Id);
         if (find == null) return new ServiceResponse(false, "data tidak ditemukan");
 
-        _dbContext.Exam.Remove(find); 
+        _dbContext.Exam.Remove(find);
         _dbContext.SaveChanges();
         return new ServiceResponse(true, "data berhasil dihapus");
     }
 
     public async Task<Exam> Get(int Id)
     {
-        var find =  _dbContext
+        var find = _dbContext
             .Exam
             .Include(x => x.Soals.OrderBy(s => s.Nomor))
             .ThenInclude(xs => xs.PilihanJawaban)

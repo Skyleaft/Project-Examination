@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
-using Shared.Users;
+using CoreLib.Users;
 using Web.Client.Services;
 using Web.Client.Shared.Theme;
 

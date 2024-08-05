@@ -1,6 +1,4 @@
-﻿using FastEndpoints;
-using Shared.RoomSet;
-using Web.Client.Interfaces;
+﻿using CoreLib.RoomSet;
 
 namespace Web.Services.RoomServices.Endpoints.Get;
 
@@ -20,7 +18,7 @@ public class Endpoint : EndpointWithoutRequest<Room>
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var res = await _repo.Get(Route<Guid>("Id"),ct);
+        var res = await _repo.Get(Route<Guid>("Id"), ct);
         await SendAsync(res, cancellation: ct);
     }
 }

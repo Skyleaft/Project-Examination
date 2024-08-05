@@ -1,8 +1,6 @@
 ﻿using System.Security.Claims;
-using FastEndpoints;
-using Shared.Common;
-using Shared.TakeExam;
-using Web.Client.Interfaces;
+using CoreLib.Common;
+using CoreLib.TakeExam;
 
 namespace Web.Services.UserExamServices.Endpoints.Find;
 

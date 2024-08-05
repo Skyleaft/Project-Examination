@@ -1,8 +1,5 @@
 ﻿using Blazored.LocalStorage;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Shared.Users;
-using Web.Client.Interfaces;
 using Web.Common.Database;
 
 namespace Web.Services.ReferenceServices;
@@ -25,8 +22,8 @@ public class ReferenceService : IReferences
         var data = await _storageService.GetItemAsync<List<Provinsi>>(key);
         if (data == null)
         {
-            var fetch =  _appDbContext.Provinsi.ToList();
-            var fetkota =  _appDbContext.Kota.ToList();
+            var fetch = _appDbContext.Provinsi.ToList();
+            var fetkota = _appDbContext.Kota.ToList();
             cache.Set(key, fetch, TimeSpan.FromDays(1));
             cache.Set("ref-kota", fetkota, TimeSpan.FromDays(1));
             data = fetch;

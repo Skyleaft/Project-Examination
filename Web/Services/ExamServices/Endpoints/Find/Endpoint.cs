@@ -1,7 +1,5 @@
-﻿using FastEndpoints;
-using Shared.BankSoal;
-using Shared.Common;
-using Web.Client.Interfaces;
+﻿using CoreLib.BankSoal;
+using CoreLib.Common;
 
 namespace Web.Services.ExamServices.Endpoints.Find;
 

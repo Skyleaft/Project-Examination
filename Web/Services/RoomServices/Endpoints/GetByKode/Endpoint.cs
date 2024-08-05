@@ -1,6 +1,4 @@
-﻿using FastEndpoints;
-using Shared.RoomSet;
-using Web.Client.Interfaces;
+﻿using CoreLib.RoomSet;
 
 namespace Web.Services.RoomServices.Endpoints.GetByKode;
 

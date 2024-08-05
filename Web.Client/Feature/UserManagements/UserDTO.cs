@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Shared.Common;
+using CoreLib.Common;
 
 namespace Web.Client.Feature.UserManagements;
 

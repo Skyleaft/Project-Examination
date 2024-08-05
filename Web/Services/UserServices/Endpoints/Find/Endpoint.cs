@@ -1,7 +1,4 @@
-﻿using FastEndpoints;
-using Shared.Common;
-using Shared.Users;
-using Web.Client.Interfaces;
+﻿using CoreLib.Common;
 
 namespace Web.Services.UserServices.Endpoints.Find;
 

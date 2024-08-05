@@ -1,9 +1,10 @@
 ﻿@page "/exam/examresult/{Id:Guid}"
 @using Blazored.SessionStorage
-@using global::Shared.BankSoal
-@using global::Shared.RoomSet
-@using global::Shared.TakeExam
+@using global::CoreLib.BankSoal
+@using global::CoreLib.RoomSet
+@using global::CoreLib.TakeExam
 @using Microsoft.AspNetCore.Authorization
+@using Web.Client.Feature.UserExams.Component
 @using Web.Client.Interfaces
 @layout UserExamLayout
 @attribute [Authorize(Roles = "Superuser,User")]
@@ -23,12 +24,13 @@
                     @{
                         if (!isLoading)
                         {
-                            foreach (var item in room.Exam.Soals)
+                            foreach (var item in userExam.UserAnswers.OrderBy(x=>x.Soal.Nomor))
                             {
-                                <MudButton Variant="CheckSoalIsAnswer(item)"
+                                <MudButton Variant="CheckSoalIsAnswer(item.Soal)"
+                                           OnClick="()=>OnNomorSoalClick(item)"
                                            Color="Color.Primary"
                                            Style="width: 50px; height: 50px;">
-                                    @item.Nomor
+                                    @item.Soal.Nomor
                                 </MudButton>
                             }
                         }
@@ -154,6 +156,8 @@
     private bool isLoading = true;
     readonly string privateKey = "zlxkjcoijasdfnwqwesfvlaksnoaiscnzxnocqanqwf";
     private CancellationTokenSource cts = new CancellationTokenSource();
+    
+    DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -200,6 +204,15 @@
     {
         await cts.CancelAsync();
         cts.Dispose();
+    }
+
+    private async Task OnNomorSoalClick(UserAnswer jawaban)
+    {
+        var parameters = new DialogParameters<ViewJawabanDialog>();
+        parameters.Add(x => x.jawabanUser, jawaban);
+        parameters.Add(x=>x.room,room);
+        var form = await Dialog.ShowAsync<ViewJawabanDialog>("Pembahasan Soal", parameters, maxWidth);
+        var result = await form.Result;
     }
 
 }

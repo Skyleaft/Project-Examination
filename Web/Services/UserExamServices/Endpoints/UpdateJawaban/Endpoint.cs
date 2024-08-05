@@ -1,7 +1,4 @@
-﻿using FastEndpoints;
-using Shared.TakeExam;
-using Web.Client.Interfaces;
-using Web.Client.Shared.Models;
+﻿using Web.Client.Shared.Models;
 
 namespace Web.Services.UserExamServices.Endpoints.UpdateJawaban;
 
@@ -22,7 +19,7 @@ public class Endpoint : Endpoint<UpdateJawabanDTO, ServiceResponse>
 
     public override async Task HandleAsync(UpdateJawabanDTO r, CancellationToken ct)
     {
-        var res = await _repo.UpdateJawaban(r,ct);
+        var res = await _repo.UpdateJawaban(r, ct);
         await SendAsync(res, cancellation: ct);
     }
 }

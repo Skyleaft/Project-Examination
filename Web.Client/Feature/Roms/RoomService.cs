@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Shared.Common;
-using Shared.RoomSet;
+using CoreLib.Common;
+using CoreLib.RoomSet;
 using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
 
@@ -52,11 +52,6 @@ public class RoomService(HttpClient _httpClient) : IRoom
         return data;
     }
 
-    public Room GetSync(Guid Id)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<Room> Get(string kode)
     {
         var res = await _httpClient.GetAsync($"/api/room?kode={kode}");
@@ -79,13 +74,21 @@ public class RoomService(HttpClient _httpClient) : IRoom
         return data;
     }
 
-    public Task<PaginatedResponse<RoomExam>> FindRoomView(FindRequest r, CancellationToken ct, string? Username = "")
+    public async Task<PaginatedResponse<RoomExam>> FindRoomView(FindRequest r, CancellationToken ct, string? Username = "")
     {
-        throw new NotImplementedException();
+        var res = await _httpClient.PostAsJsonAsync("api/room/findroomview", r, ct);
+        var data = new PaginatedResponse<RoomExam>();
+        if (res.IsSuccessStatusCode) data = await res.Content.ReadFromJsonAsync<PaginatedResponse<RoomExam>>(ct);
+
+        return data;
     }
 
-    public Task<List<Room>> AllRefference(CancellationToken ct)
+    public async Task<IEnumerable<Room>> AllRefference(CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var res = await _httpClient.GetAsync("api/room/AllRefference", ct);
+        var data = new List<Room>();
+        if (res.IsSuccessStatusCode) data = await res.Content.ReadFromJsonAsync<List<Room>>(ct);
+
+        return data;
     }
 }

@@ -1,6 +1,4 @@
-﻿using FastEndpoints;
-using Shared.TakeExam;
-using Web.Client.Interfaces;
+﻿using CoreLib.TakeExam;
 
 namespace Web.Services.UserExamServices.Endpoints.GetOnly;
 

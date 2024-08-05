@@ -1,6 +1,4 @@
-﻿using FastEndpoints;
-using Web.Client.Interfaces;
-using Web.Client.Shared.Models;
+﻿using Web.Client.Shared.Models;
 
 namespace Web.Services.ExamServices.Endpoints.Delete;
 

@@ -1,6 +1,5 @@
-﻿using FastEndpoints;
+﻿using CoreLib.BankSoal;
 using FluentValidation;
-using Shared.BankSoal;
 
 namespace Web.Services.ExamServices.Endpoints;
 

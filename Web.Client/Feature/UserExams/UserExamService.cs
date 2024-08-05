@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Shared.Common;
-using Shared.TakeExam;
+using CoreLib.Common;
+using CoreLib.TakeExam;
 using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
 
@@ -66,20 +66,6 @@ public class UserExamService(HttpClient _httpClient) : IUserExam
         if (res.IsSuccessStatusCode) data = await res.Content.ReadFromJsonAsync<PaginatedResponse<UserExam>>(ct);
 
         return data;
-    }
-
-    public async Task<PaginatedResponse<UserExam>> FindReport(FindRequest r, CancellationToken ct)
-    {
-        var res = await _httpClient.PostAsJsonAsync("api/userexam/findReport", r, ct);
-        var data = new PaginatedResponse<UserExam>();
-        if (res.IsSuccessStatusCode) data = await res.Content.ReadFromJsonAsync<PaginatedResponse<UserExam>>(ct);
-
-        return data;
-    }
-
-    public Task<bool> SaveTimeLeft(Guid Id, TimeSpan timeLeft)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r, CancellationToken ct)

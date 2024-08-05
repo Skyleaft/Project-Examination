@@ -1,7 +1,7 @@
 ﻿@page "/report/manage"
-@using global::Shared.Common
-@using global::Shared.Report
-@using global::Shared.RoomSet
+@using global::CoreLib.Common
+@using global::CoreLib.Report
+@using global::CoreLib.RoomSet
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Interfaces
 @using Web.Client.Services
@@ -61,7 +61,8 @@
 </MudPaper>
 
 <MudTable ServerData="ServerReload"
-          Dense="true" Hover="true" @ref="table" MultiSelection="true" Class="mt-2">
+          Dense="true" Hover="true" @ref="table" MultiSelection="true" 
+          Class="mt-2" Height="55vh">
     <ToolBarContent>
         
     </ToolBarContent>
@@ -116,7 +117,7 @@
     [Inject] ISnackbar _snackbar { get; set; }
     private MudTable<ExamReport> table;
     private IEnumerable<ExamReport> pagedData;
-    private List<Room> RoomsRef = new List<Room>();
+    private IEnumerable<Room> RoomsRef = new List<Room>();
     private int totalItems;
     private string searchString = "";
     int exportType = 0;
@@ -160,7 +161,6 @@
         if (selectedRoom != null)
             req.Filter = selectedRoom.Nama;
         var data = await _report.Find(req, ct);
-        await Task.Delay(100, ct);
         var tabledata = new TableData<ExamReport>
         {
             TotalItems = data.TotalItems,

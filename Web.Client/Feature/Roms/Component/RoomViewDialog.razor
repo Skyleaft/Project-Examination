@@ -1,0 +1,110 @@
+﻿@using global::CoreLib.BankSoal
+@using global::CoreLib.Common
+@using global::CoreLib.RoomSet
+@using global::CoreLib.TakeExam
+@using Web.Client.Interfaces
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@implements IAsyncDisposable
+
+<MudDialog>
+    <DialogContent>
+        <MudPaper Class="pa-4 ma-2 mb-4">
+            <MudStack Spacing="4">
+                <MudText Typo="Typo.h4">@room.Nama</MudText>
+                <MudDataGrid Items="@UserExamsData" Filterable="true"
+                             FixedHeader="true"
+                             Height="40vh"
+                             ColumnResizeMode="ResizeMode.Column">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Daftar Peserta Ujian</MudText>
+                        <MudSpacer/>
+                    </ToolBarContent>
+                    <Columns>
+                        <PropertyColumn Property="x => x.User.NamaLengkap" Title="Nama Lengkap"/>
+                        <PropertyColumn Property="x => CheckStatus(x.IsOngoing, x.IsDone)" Title="Status"/>
+                        <PropertyColumn Property="x => x.TimeLeft" Title="Sisa Waktu"/>
+                        <PropertyColumn Property="x => x.ScoreNormalizeData" Title="Nilai"/>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="UserExam"/>
+                    </PagerContent>
+                </MudDataGrid>
+            </MudStack>
+
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudStack Row="true" Spacing="2" Class="ma-2 my-3">
+            <MudButton OnClick="Cancel">Close</MudButton>
+
+        </MudStack>
+
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public IEnumerable<UserExam> UserExamsData { get; set; }
+    [Parameter] public Room room { get; set; }
+    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] ISnackbar _snackbar { get; set; }
+
+    [Parameter] public bool isEdit { get; set; }
+
+    private string _searchString;
+
+    private CancellationTokenSource cts = new CancellationTokenSource();
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    int examid;
+
+    string imagePath = "/images/room-bg.jpg";
+
+    IEnumerable<Exam> _exams = new List<Exam>();
+    DateTime? dateStart = DateTime.Today;
+    DateTime? dateEnd = DateTime.Today;
+
+    TimeSpan? timeStart = new TimeSpan(00, 00, 00);
+    TimeSpan? timeEnd = new TimeSpan(00, 00, 00);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (auth is not null)
+            {
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    public string CheckStatus(bool onGoing, bool isDone)
+    {
+        if (onGoing)
+            return "Mengerjakan";
+        else if (isDone)
+            return "Selesai";
+        else
+            return "Belum Dikerjakan";
+    }
+
+
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
+    }
+
+}

@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
-using FastEndpoints;
+using CoreLib.Common;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using MudExtensions.Services;
-using Shared.Common;
-using Shared.Users;
 using Web;
 using Web.Client.Feature.BankSoal.Page;
 using Web.Client.Services;

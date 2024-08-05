@@ -1,6 +1,4 @@
-﻿using FastEndpoints;
-using Shared.TakeExam;
-using Web.Client.Interfaces;
+﻿using CoreLib.TakeExam;
 
 namespace Web.Services.UserExamServices.Endpoints.Get;
 
@@ -20,7 +18,7 @@ public class Endpoint : EndpointWithoutRequest<UserExam>
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var res = await _repo.Get(Route<Guid>("Id"),ct);
+        var res = await _repo.Get(Route<Guid>("Id"), ct);
         await SendAsync(res, cancellation: ct);
     }
 }

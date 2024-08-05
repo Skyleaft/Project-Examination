@@ -1,7 +1,5 @@
-﻿using FastEndpoints;
-using Shared.Common;
+﻿using CoreLib.Common;
 using Web.Client.Feature.UserManagements;
-using Web.Client.Interfaces;
 
 namespace Web.Services.UserServices.Endpoints.Register;
 

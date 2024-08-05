@@ -1,6 +1,4 @@
-﻿using FastEndpoints;
-using Shared.TakeExam;
-using Web.Client.Interfaces;
+﻿using CoreLib.TakeExam;
 using Web.Client.Shared.Models;
 
 namespace Web.Services.UserExamServices.Endpoints.Update;
@@ -22,7 +20,7 @@ public class Endpoint : Endpoint<UserExam, ServiceResponse>
 
     public override async Task HandleAsync(UserExam r, CancellationToken ct)
     {
-        var res = await _repo.Update(r,ct);
+        var res = await _repo.Update(r, ct);
         await SendAsync(res, cancellation: ct);
     }
 }

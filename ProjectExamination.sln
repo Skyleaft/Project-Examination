@@ -16,7 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectExamination.AppHost"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectExamination.ServiceDefaults", "ProjectExamination.ServiceDefaults\ProjectExamination.ServiceDefaults.csproj", "{22AF9C85-E4D8-4E6A-9121-E990D8634FD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{F704212B-6E1A-4F5C-AC67-AF3732EB293E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreLib", "CoreLib\CoreLib.csproj", "{F704212B-6E1A-4F5C-AC67-AF3732EB293E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

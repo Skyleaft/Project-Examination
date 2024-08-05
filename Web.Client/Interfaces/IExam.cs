@@ -1,5 +1,5 @@
-﻿using Shared.BankSoal;
-using Shared.Common;
+﻿using CoreLib.BankSoal;
+using CoreLib.Common;
 using Web.Client.Shared.Models;
 
 namespace Web.Client.Interfaces;

@@ -1,6 +1,4 @@
-﻿using FastEndpoints;
-using Microsoft.EntityFrameworkCore;
-using Shared.Users;
+﻿using Microsoft.EntityFrameworkCore;
 using Web.Common.Database;
 
 namespace Web.Services.ReferenceServices.Endpoints.GetAllKota;

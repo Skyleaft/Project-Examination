@@ -1,7 +1,7 @@
 ﻿@page "/room/view"
 @implements IBrowserViewportObserver
-@using global::Shared.Common
-@using global::Shared.RoomSet
+@using global::CoreLib.Common
+@using global::CoreLib.RoomSet
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Feature.Roms.Component
 @using Web.Client.Interfaces
@@ -46,8 +46,12 @@
                     {
                         strImage = $"data:image;base64,{Convert.ToBase64String(item.Room.Thumbnail)}";
                     }
-
-                    <RoomCardView data="@item.Room" _totalPeserta="@item.TotalPeserta" strImage="@strImage" RefreshData="@PageChanged"/>
+                    
+                    <RoomCardView data="@item.Room"
+                                  _totalPeserta="@item.TotalPeserta" 
+                                  strImage="@strImage"
+                                  userExamData="@item.UserExams"
+                                  RefreshData="@PageChanged"/>
                 }
             }
         }
@@ -64,6 +68,7 @@
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IRoom _repo { get; set; }
     [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
+    private CancellationTokenSource cts = new CancellationTokenSource();
 
     string search;
     private Breakpoint curentBreak;
@@ -84,7 +89,7 @@
         if (firstRender)
         {
             await BrowserViewportService.SubscribeAsync(this);
-            dataRoom = await _repo.FindRoomView(request, new CancellationToken());
+            dataRoom = await _repo.FindRoomView(request, cts.Token);
             isLoading = false;
             StateHasChanged();
         }
@@ -105,9 +110,8 @@
     private async Task PageChanged(int page)
     {
         isLoading = true;
-        await Task.Delay(300);
         request.Page = page;
-        dataRoom = await _repo.FindRoomView(request, new CancellationToken());
+        dataRoom = await _repo.FindRoomView(request, cts.Token);
         isLoading = false;
         StateHasChanged();
     }

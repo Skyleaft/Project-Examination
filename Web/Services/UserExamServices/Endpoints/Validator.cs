@@ -1,5 +1,4 @@
-﻿using FastEndpoints;
-using Shared.TakeExam;
+﻿using CoreLib.TakeExam;
 
 namespace Web.Services.UserExamServices.Endpoints;
 

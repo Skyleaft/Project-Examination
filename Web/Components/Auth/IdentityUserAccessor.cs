@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Shared.Users;
 
 namespace Web.Components.Auth;
 

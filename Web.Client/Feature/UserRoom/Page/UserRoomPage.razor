@@ -1,9 +1,9 @@
 ﻿@page "/userroom"
 @attribute [Authorize(Roles = "Superuser,User")]
 @implements IBrowserViewportObserver
-@using global::Shared.Common
-@using global::Shared.RoomSet
-@using global::Shared.TakeExam
+@using global::CoreLib.Common
+@using global::CoreLib.RoomSet
+@using global::CoreLib.TakeExam
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Feature.UserRoom.Components
 @using Web.Client.Interfaces

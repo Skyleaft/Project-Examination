@@ -1,5 +1,4 @@
-﻿using FastEndpoints;
-using Shared.RoomSet;
+﻿using CoreLib.RoomSet;
 
 namespace Web.Services.RoomServices.Endpoints;
 

@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Json;
-using Shared.Common;
-using Shared.Users;
+using CoreLib.Common;
+using CoreLib.Users;
 using Web.Client.Feature.Register;
 using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
@@ -71,6 +71,11 @@ public class UserService : IUser
     }
 
     public Task<string> GenerateResetPassword(string userID)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ServiceResponse> UpdateLastLogin(string userID)
     {
         throw new NotImplementedException();
     }

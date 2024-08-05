@@ -1,7 +1,5 @@
-﻿using FastEndpoints;
-using Shared.Common;
-using Shared.RoomSet;
-using Web.Client.Interfaces;
+﻿using CoreLib.Common;
+using CoreLib.RoomSet;
 
 namespace Web.Services.RoomServices.Endpoints.Find;
 

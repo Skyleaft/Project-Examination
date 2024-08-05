@@ -1,6 +1,6 @@
 ﻿@using System.Security.Claims
-@using global::Shared.RoomSet
-@using global::Shared.TakeExam
+@using global::CoreLib.RoomSet
+@using global::CoreLib.TakeExam
 @using Web.Client.Interfaces
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IAsyncDisposable
@@ -126,7 +126,8 @@
                 TimeLeft = TimeSpan.FromMinutes(room.Durasi),
                 UserAnswers = listSoal,
                 StartDate = null,
-                EndDate = null
+                EndDate = null,
+                IsRepeatable = room.IsRepeatable
             };
 
             var created = await _userExam.Create(data,cts.Token);

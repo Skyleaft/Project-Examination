@@ -1,11 +1,9 @@
-﻿using System.Linq.Dynamic.Core;
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using CoreLib.Common;
+using CoreLib.TakeExam;
 using Mapster;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Shared.Common;
-using Shared.TakeExam;
-using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
 using Web.Common.Database;
 
@@ -25,29 +23,30 @@ public class UserExamService : IUserExam
     public async Task<CreatedResponse<UserExam>> Create(CreateUserExamDTO r, CancellationToken ct)
     {
         var check = await _dbContext.UserExam.AsNoTracking()
-            .FirstOrDefaultAsync(x => x.UserId == r.UserId && x.RoomId == r.RoomId,ct);
+            .FirstOrDefaultAsync(x => x.UserId == r.UserId && x.RoomId == r.RoomId, ct);
         if (check != null)
-            return new CreatedResponse<UserExam>(false, "Anda Sudah Berada Diruangan Tersebut, Silahkan Lihat di Ruangan Ujian");
+            return new CreatedResponse<UserExam>(false,
+                "Anda Sudah Berada Diruangan Tersebut, Silahkan Lihat di Ruangan Ujian");
         var data = r.Adapt<UserExam>();
-        var created =  _dbContext.UserExam.Add(data); 
+        var created = await _dbContext.UserExam.AddAsync(data, ct);
         await _dbContext.SaveChangesAsync(ct);
         return new CreatedResponse<UserExam>(true, "Data Berhasil Ditambahkan", created.Entity);
     }
 
     public async Task<ServiceResponse> Update(UserExam r, CancellationToken ct)
     {
-        var userExam = await Get(r.Id,ct);
+        var userExam = await Get(r.Id, ct);
         if (userExam == null) return new ServiceResponse(false, "data tidak ditemukan");
-        
+
         var entry = _dbContext.Entry(userExam);
         entry.Entity.EndDate = r.EndDate;
         entry.Entity.StartDate = r.StartDate;
         entry.Entity.RoomId = r.RoomId;
         entry.Entity.UserId = r.UserId;
-        entry.Entity.IsDone =r.IsDone;
+        entry.Entity.IsDone = r.IsDone;
         entry.Entity.IsOngoing = r.IsOngoing;
         entry.Entity.TimeLeft = r.TimeLeft;
-        
+
         // if (r.UserAnswers != null)
         // {
         //     var existingAnswers = userExam.UserAnswers.ToList();
@@ -60,8 +59,8 @@ public class UserExamService : IUserExam
         //     var answersToRemove = existingAnswers.Where(ea => !r.UserAnswers.Any(a => a.Id == ea.Id)).ToList();
         //     _dbContext.UserAnswer.RemoveRange(answersToRemove);
         // }
-        
-        
+
+
         // _dbContext.Entry(userExam).CurrentValues.SetValues(r);
         //
         // Delete children
@@ -70,22 +69,23 @@ public class UserExamService : IUserExam
             foreach (var existingChild in userExam.UserAnswers)
                 if (r.UserAnswers != null && r.UserAnswers.All(c => c.Id != existingChild.Id))
                     _dbContext.UserAnswer.Remove(existingChild);
-        
+
             // Update and Insert children
             if (r.UserAnswers != null)
                 foreach (var answer in r.UserAnswers)
                 {
                     var existingChild = userExam.UserAnswers
                         .FirstOrDefault(x => x.Id == answer.Id);
-        
+
                     if (existingChild != null)
                         // Update child
                         _dbContext.Entry(existingChild).CurrentValues.SetValues(answer);
-        
+
                     else
                         _dbContext.UserAnswer.Add(answer);
                 }
         }
+
         await _dbContext.SaveChangesAsync(ct);
         return new ServiceResponse(true, "data berhasil diupdate");
     }
@@ -95,12 +95,12 @@ public class UserExamService : IUserExam
         var find = await _dbContext.UserExam.FindAsync(Id);
         if (find == null) return new ServiceResponse(false, "data tidak ditemukan");
 
-        _dbContext.UserExam.Remove(find); 
-         _dbContext.SaveChanges();
+        _dbContext.UserExam.Remove(find);
+        await _dbContext.SaveChangesAsync();
         return new ServiceResponse(true, "data berhasil dihapus");
     }
 
-    public async Task<UserExam> Get(Guid Id,CancellationToken ct)
+    public async Task<UserExam> Get(Guid Id, CancellationToken ct)
     {
         var find = await _dbContext
             .UserExam
@@ -145,47 +145,22 @@ public class UserExamService : IUserExam
             .ThenInclude(y => y.SoalJawaban)
             .Include(x => x.UserAnswers)!
             .ThenInclude(y => y.Soal)
-            .Include(x=>x.Room)
+            .Include(x => x.Room)
             .Where(x => x.UserId == UserId)
-            .OrderBy(x => x.StartDate)
+            .OrderByDescending(x => x.Room.JadwalStart)
             .ToPaginatedList(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
-    }
-
-    public async Task<PaginatedResponse<UserExam>> FindReport(FindRequest r, CancellationToken ct)
-    {
-        var data = await _dbContext
-            .UserExam
-            .Include(x => x.User)
-            .ThenInclude(y => y.Kota)
-            .Include(x => x.UserAnswers)
-            .ThenInclude(y => y.SoalJawaban)
-            .Include(x => x.UserAnswers)
-            .ThenInclude(y => y.Soal)
-            .ToPaginatedList(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
-        return data;
-    }
-
-    public async Task<bool> SaveTimeLeft(Guid Id, TimeSpan timeLeft)
-    {
-        var data = _dbContext.UserExam.AsNoTracking()
-            .FirstOrDefault(x => x.Id == Id);
-        if (data == null)
-            return false;
-        data.TimeLeft = timeLeft; 
-        _dbContext.SaveChanges();
-        return true;
     }
 
     public async Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r, CancellationToken ct)
     {
         var data = _dbContext.UserAnswer.FirstOrDefault(x => x.Id == r.UserAnswerId);
         if (data == null)
-                return new ServiceResponse(false, "data tidak ditemukan");
+            return new ServiceResponse(false, "data tidak ditemukan");
         var exam = _dbContext.UserExam.FirstOrDefault(x => x.Id == r.UserExamId);
         var entry = _dbContext.Entry(data);
         entry.Entity.SoalJawabanId = r.SoalJawabanId;
-        
+
         var entryExam = _dbContext.Entry(exam);
         entryExam.Entity.TimeLeft = r.TimeLeft;
         await _dbContext.SaveChangesAsync(ct);
