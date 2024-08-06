@@ -12,7 +12,7 @@ WORKDIR /src
 
 COPY Web/Web.csproj Web/
 COPY Web.Client/Web.Client.csproj WebClient/
-COPY Shared/Shared.csproj Shared/
+COPY CoreLib/CoreLib.csproj CoreLib/
 COPY ProjectExamination.ServiceDefaults/ProjectExamination.ServiceDefaults.csproj ServiceDefault/
 RUN dotnet restore Web/Web.csproj
 
