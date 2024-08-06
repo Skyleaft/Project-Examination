@@ -38,6 +38,8 @@ public class UserExamService : IUserExam
         var userExam = await Get(r.Id, ct);
         if (userExam == null) return new ServiceResponse(false, "data tidak ditemukan");
 
+        var nomalizeScore = r.CalculateScoreNormalize;
+
         var entry = _dbContext.Entry(userExam);
         entry.Entity.EndDate = r.EndDate;
         entry.Entity.StartDate = r.StartDate;
@@ -46,6 +48,14 @@ public class UserExamService : IUserExam
         entry.Entity.IsDone = r.IsDone;
         entry.Entity.IsOngoing = r.IsOngoing;
         entry.Entity.TimeLeft = r.TimeLeft;
+        entry.Entity.RetryCount = r.RetryCount;
+        entry.Entity.ScoreData = r.CalculateScore;
+        entry.Entity.ScoreNormalizeData = nomalizeScore;
+        if (entry.Entity.HistoryScoreNormalize == null)
+        {
+            entry.Entity.HistoryScoreNormalize = new List<double>();
+        }
+        entry.Entity.HistoryScoreNormalize.Add((double)nomalizeScore); 
 
         // if (r.UserAnswers != null)
         // {
@@ -154,15 +164,15 @@ public class UserExamService : IUserExam
 
     public async Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r, CancellationToken ct)
     {
-        var data = _dbContext.UserAnswer.FirstOrDefault(x => x.Id == r.UserAnswerId);
+        var data = await _dbContext.UserAnswer.FirstOrDefaultAsync(x => x.Id == r.UserAnswerId);
         if (data == null)
             return new ServiceResponse(false, "data tidak ditemukan");
-        var exam = _dbContext.UserExam.FirstOrDefault(x => x.Id == r.UserExamId);
+        var exam = await _dbContext.UserExam.FirstOrDefaultAsync(x => x.Id == r.UserExamId, cancellationToken: ct);
         var entry = _dbContext.Entry(data);
         entry.Entity.SoalJawabanId = r.SoalJawabanId;
 
         var entryExam = _dbContext.Entry(exam);
-        entryExam.Entity.TimeLeft = r.TimeLeft;
+        entryExam.Entity!.TimeLeft = r.TimeLeft;
         await _dbContext.SaveChangesAsync(ct);
         return new ServiceResponse(true, "data berhasil diupdate");
     }
@@ -173,5 +183,44 @@ public class UserExamService : IUserExam
             .Where(x => x.UserExamId == UserExamId)
             .ToList();
         return data;
+    }
+
+    public async Task<ServiceResponse> RetryExam(Guid UserExamId, CancellationToken ct)
+    {
+        var data = await _dbContext
+            .UserExam
+            .Include(x=>x.UserAnswers)
+            .FirstOrDefaultAsync(x => x.Id == UserExamId, cancellationToken: ct);
+        if (data == null)
+            return new ServiceResponse(false, "data tidak ditemukan");
+
+        var duration = await _dbContext.Room
+            .Where(x => x.Id == data.RoomId)
+            .Select(x => x.Durasi)
+            .FirstOrDefaultAsync(cancellationToken: ct);
+        foreach (var item in data.UserAnswers)
+        {
+            item.SoalJawabanId = null;
+        }
+
+        data.IsDone = false;
+        data.IsOngoing = false;
+        data.RetryCount -= 1;
+        data.TimeLeft = TimeSpan.FromMinutes(duration);
+        await _dbContext.SaveChangesAsync(ct);
+        return new ServiceResponse(true, "data berhasil diupdate");
+    }
+
+    public async Task<ServiceResponse> StartExam(Guid UserExamId)
+    {
+        var data = await _dbContext
+            .UserExam
+            .FirstOrDefaultAsync(x => x.Id == UserExamId);
+        if (data == null)
+            return new ServiceResponse(false, "data tidak ditemukan");
+        data.IsOngoing = true;
+        data.StartDate = DateTime.UtcNow;
+        await _dbContext.SaveChangesAsync();
+        return new ServiceResponse(true, "data berhasil diupdate");
     }
 }

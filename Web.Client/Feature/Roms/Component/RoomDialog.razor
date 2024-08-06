@@ -56,6 +56,17 @@
                     <MudNumericField @bind-Value="room.Durasi" Label="Durasi Ujian" HelperText="Masukan Dalam Satuan Menit" 
                                      Variant="Variant.Outlined" 
                                      Min="0" Max="600"/>
+                    <MudField Label="Bisa Mengulang?" Variant="Variant.Outlined" InnerPadding="false">
+                        <MudSwitch @bind-Value="room.IsRepeatable" Color="Color.Success" />
+                    </MudField>
+                    @{
+                        if (room.IsRepeatable)
+                        {
+                            <MudNumericField @bind-Value="room.RetryCount" Label="Kesempatan Mengulang" HelperText="Berapa Kali peserta dapat mengulang?" 
+                                             Variant="Variant.Outlined" 
+                                             Min="0" Max="50"/>
+                        }
+                    }
                     <div class="d-flex justify-center">
                         <MudImage ObjectFit="ObjectFit.Cover" Height="200" Src="@imagePath"  Elevation="25" Class="rounded-lg mx-4"/>
                     </div>

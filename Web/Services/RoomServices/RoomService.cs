@@ -1,5 +1,6 @@
 ﻿using CoreLib.Common;
 using CoreLib.RoomSet;
+using Mapster;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Web.Client.Shared.Models;
@@ -91,6 +92,18 @@ public class RoomService : IRoom
             .Include(x => x.Exam)
             .ThenInclude(y => y.Soals)
             .FirstOrDefaultAsync(x => x.Kode == kode);
+        if (find == null) return null;
+
+        return find;
+    }
+
+    public async Task<RoomView> GetRoomOnly(Guid Id, CancellationToken ct)
+    {
+        var find = await _dbContext
+            .Room
+            .AsNoTracking()
+            .Select((x)=>x.Adapt<RoomView>())
+            .FirstOrDefaultAsync(x=>x.Id == Id,ct);
         if (find == null) return null;
 
         return find;

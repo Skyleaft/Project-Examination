@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using MudExtensions.Services;
@@ -87,7 +88,14 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddFastEndpoints();
+// Add response compression middleware
+builder.Services.AddResponseCompression(options =>
+{
+    options.Providers.Add<GzipCompressionProvider>();
+    options.EnableForHttps = true; // Optional: Enable compression for HTTPS
+});
+
+builder.Services.AddFastEndpoints().AddResponseCaching();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
@@ -98,7 +106,9 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
 app.MapDefaultEndpoints();
-app.UseFastEndpoints(c => { c.Endpoints.RoutePrefix = "api"; });
+app.UseResponseCaching()
+    .UseFastEndpoints(c => { c.Endpoints.RoutePrefix = "api"; });
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -110,7 +120,7 @@ else
     app.UseWebAssemblyDebugging();
 
 app.UseHttpsRedirection();
-
+app.UseResponseCompression();
 app.UseStaticFiles();
 app.UseAntiforgery();
 

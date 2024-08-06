@@ -33,6 +33,7 @@
         </MudHidden>
         <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" OnClick="() => PageChanged(1)"></MudIconButton>
         <MudButton StartIcon="@Icons.Material.Filled.Search"
+                   Variant="Variant.Outlined"
                    Class="pa-4"
                    OnClick="OnSearchRoom"
                    Color="Color.Primary">
@@ -75,7 +76,6 @@
 @code {
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IUserExam _repo { get; set; }
-    [Inject] IRoom _rooms { get; set; }
     [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
 
     private CancellationTokenSource cts = new CancellationTokenSource();

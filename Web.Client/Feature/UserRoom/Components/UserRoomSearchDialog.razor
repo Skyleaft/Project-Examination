@@ -127,7 +127,7 @@
                 UserAnswers = listSoal,
                 StartDate = null,
                 EndDate = null,
-                IsRepeatable = room.IsRepeatable
+                RetryCount = room.RetryCount
             };
 
             var created = await _userExam.Create(data,cts.Token);

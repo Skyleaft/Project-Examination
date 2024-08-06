@@ -19,6 +19,7 @@ public class Room : IGenericModifier
     public int Durasi { get; set; }
     public bool IsActive { get; set; }
     public bool IsRepeatable { get; set; }
+    public int? RetryCount { get; set; }
     public Exam? Exam { get; set; }
     public int ExamId { get; set; }
     public byte[]? Thumbnail { get; set; }

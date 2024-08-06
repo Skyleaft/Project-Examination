@@ -18,7 +18,7 @@ public class UserExam
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public TimeSpan TimeLeft { get; set; }
-    public int RetryCount { get; set; }
+    public int? RetryCount { get; set; }
     public List<UserAnswer>? UserAnswers { get; set; }
 
     public int? CalculateScore
@@ -36,10 +36,11 @@ public class UserExam
     {
         get
         {
-            if (UserAnswers != null && CalculateScore!=null)
-                return ((double)CalculateScore / (double)UserAnswers.Sum(x=>x.Soal.MaxPoint)) * 100;
+            if (UserAnswers != null && UserAnswers.First().Soal!=null && CalculateScore!=null)
+                return ((double)CalculateScore / (double)UserAnswers.Sum(x=>x.Soal?.MaxPoint??0)) * 100;
             return 0;
         }
     }
     public double? ScoreNormalizeData{ get; set; }
+    public List<double>? HistoryScoreNormalize { get; set; }
 }

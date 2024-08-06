@@ -8,6 +8,7 @@ public class Endpoint(AppDbContext repo) : EndpointWithoutRequest<List<Provinsi>
     public override void Configure()
     {
         Get("/ref/provinsi/all");
+        ResponseCache(60);
     }
 
     public override async Task HandleAsync(CancellationToken ct)

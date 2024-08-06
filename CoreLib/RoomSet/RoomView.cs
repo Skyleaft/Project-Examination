@@ -16,6 +16,8 @@ public class RoomView
     public DateTime JadwalEnd { get; set; }
     public int Durasi { get; set; }
     public bool IsActive { get; set; }
+    public bool IsRepeatable { get; set; }
+    public int? RepeatCount { get; set; }
     public ExamView? Exam { get; set; }
     public int ExamId { get; set; }
     public byte[]? Thumbnail { get; set; }

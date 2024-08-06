@@ -165,8 +165,7 @@
 
             userExam = await _userExamRepo.Get(new Guid(Id),cts.Token);
             room = await _roomRepo.Get(userExam.RoomId,cts.Token);
-
-            await SessionStorage.RemoveItemAsync(privateKey);
+            
             isLoading = false;
             StateHasChanged();
         }
@@ -180,9 +179,7 @@
         }
         else
         {
-            userExam.StartDate = DateTime.UtcNow;
-            userExam.IsOngoing = true;
-            var res = await _userExamRepo.Update(userExam,cts.Token);
+            var res = await _userExamRepo.StartExam(userExam.Id);
             if (res.Flag)
             {
                 _navigationManager.NavigateTo($"exam/userexam/{Id}");

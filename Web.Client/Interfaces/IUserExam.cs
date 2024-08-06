@@ -15,6 +15,8 @@ public interface IUserExam
     public Task<PaginatedResponse<UserExam>> Find(FindRequest r, CancellationToken ct, string? UserId = "");
     public Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r, CancellationToken ct);
     public Task<List<UserAnswer>> GetUserAnswers(Guid UserExamId);
+    public Task<ServiceResponse> RetryExam(Guid UserExamId, CancellationToken ct);
+    public Task<ServiceResponse> StartExam(Guid UserExamId);
 }
 
 public class CreateUserExamDTO
@@ -23,7 +25,7 @@ public class CreateUserExamDTO
     public string? UserId { get; set; }
     public bool IsOngoing { get; set; }
     public bool IsDone { get; set; }
-    public bool IsRepeatable { get; set; }
+    public int? RetryCount { get; set; }
     public Guid RoomId { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }

@@ -3,6 +3,7 @@
 @using global::CoreLib.TakeExam
 @using Web.Client.Interfaces
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@implements IAsyncDisposable
 
 <MudDialog>
     <DialogContent>
@@ -14,12 +15,6 @@
                               MaxLength="40"
                               @bind-Value="room.Nama"
                               For="@(() => room.Nama)"/>
-                <MudTextField Label="Kode Ruangan"
-                              Variant="Variant.Outlined"
-                              ReadOnly
-                              MaxLength="20"
-                              @bind-Value="room.Kode"
-                              For="@(() => room.Kode)"/>
 
                 <MudNumericField @bind-Value="room.Durasi"
                                  Label="Durasi Ujian" ReadOnly
@@ -41,12 +36,30 @@
                     <MudTimePicker Variant="Variant.Outlined"
                                    Label="Waktu Mulai"
                                    ReadOnly
-                                    Class="ml-3" @bind-Time="timeStart"/>
+                                   Class="ml-3" @bind-Time="timeStart"/>
                     <MudTimePicker Variant="Variant.Outlined"
                                    Label="Waktu Selesai"
                                    ReadOnly
                                    @bind-Time="timeEnd"/>
                 </MudToolBar>
+                @{
+                    if (room.IsRepeatable && room.JadwalEnd.ToLocalTime() > DateTime.Now.ToLocalTime())
+                    {
+                        <MudText Align="Align.Center" Typo="Typo.h6">Kesempatan Mengulang : @userExam.RetryCount X</MudText>
+                        if (!userExam.IsOngoing && userExam.IsDone)
+                        {
+                            <MudButton FullWidth Variant="Variant.Filled" 
+                                       OnClick="UlangUjianClick" 
+                                       Color="Color.Primary" 
+                                       StartIcon="@Icons.Material.Rounded.Refresh">Mengulang Ujian</MudButton>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body1">Jika Anda Sudah Mengerjakan Sekali Anda Dapat Mengulang Ujian Tersebut</MudText>
+                        }
+                        
+                    }
+                }
 
             </MudStack>
 
@@ -54,7 +67,7 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="NavToRoom">Masuk Ke Ruangan</MudButton>
+        <MudButton Color="Color.Primary" OnClick="NavToRoom" Variant="Variant.Outlined">Masuk Ke Ruangan</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -62,9 +75,11 @@
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
-    [Inject] private IExam _examRepo { get; set; }
-    [Inject] private IRoom _roomRepo { get; set; }
+    [Inject] private IUserExam _userExamRepo { get; set; }
     [Inject] private NavigationManager _navigationManager { get; set; }
+    [Inject] ISnackbar _snackbar { get; set; }
+    
+    private CancellationTokenSource cts = new CancellationTokenSource();
 
     [Parameter]
     public
@@ -129,6 +144,47 @@
             _navigationManager.NavigateTo($"exam/exambefore/{userExam.Id}", true);
         }
         
+    }
+
+    private async Task UlangUjianClick()
+    {
+        if (userExam.RetryCount == 0)
+        {
+            _snackbar.Add(
+                @<div>
+                    <h3>Info!!</h3>
+                    <ul>
+                        <li>Gagal</li>
+                        <li>Percobaan Mengulang anda Sudah Habis</li>
+                    </ul>
+                </div>
+                , Severity.Error);
+            return;
+        }
+        
+        var result = await DialogService.ShowMessageBox(
+            "Warning",
+            "Yakin Mau Mengulang Ujian?, semua jawaban akan terhapus!",
+            "Ya", cancelText: "Tidak");
+        StateHasChanged();
+        if (result != null)
+        {
+            userExam.RetryCount -= 1;
+            userExam.IsDone = false;
+            userExam.IsOngoing = false;
+        
+            var res = await _userExamRepo.RetryExam(userExam.Id, cts.Token);
+            if (res.Flag)
+            {
+                NavToRoom();
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
     }
 
 }

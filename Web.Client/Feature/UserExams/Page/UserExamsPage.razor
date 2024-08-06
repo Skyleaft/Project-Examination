@@ -249,8 +249,6 @@ else
         userExam.IsOngoing = false;
         userExam.IsDone = true;
         userExam.TimeLeft = _watch.Value;
-        userExam.ScoreData = userExam.CalculateScore;
-        userExam.ScoreNormalizeData = userExam.CalculateScoreNormalize;
         var res = await _userExamRepo.Update(userExam,cts.Token);
         if (res.Flag)
         {
@@ -274,8 +272,6 @@ else
             userExam.IsOngoing = false;
             userExam.EndDate = DateTime.UtcNow;
             userExam.TimeLeft = _watch.Value;
-            userExam.ScoreData = userExam.CalculateScore;
-            userExam.ScoreNormalizeData = userExam.CalculateScoreNormalize;
             var res = await _userExamRepo.Update(userExam,cts.Token);
             if (res.Flag)
             {
