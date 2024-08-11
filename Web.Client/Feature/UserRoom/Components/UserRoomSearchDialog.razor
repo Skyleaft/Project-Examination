@@ -52,8 +52,12 @@
         </MudPaper>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="CreateUserExam" Class="pa-2 ma-2">Daftar Ujian</MudButton>
+        <MudButton Color="Color.Primary" 
+                   OnClick="CreateUserExam" 
+                   StartIcon="@Icons.Material.Rounded.PlaylistAddCheck"
+                   FullWidth
+                   Variant="Variant.Outlined"
+                   Class="pa-3 ma-3">Daftar Ujian</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -107,7 +111,7 @@
     {
         if (room != null)
         {
-            var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
+            var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false};
             var dial = await DialogService.ShowAsync<BluryDialog>("Registering...", options);
 
             var listSoal = new List<UserAnswer>();
@@ -119,6 +123,8 @@
                 });
             }
 
+            bool isExpired = room.JadwalEnd < DateTime.Now.ToLocalTime();
+
             var data = new CreateUserExamDTO
             {
                 RoomId = room.Id,
@@ -127,7 +133,8 @@
                 UserAnswers = listSoal,
                 StartDate = null,
                 EndDate = null,
-                RetryCount = room.RetryCount
+                RetryCount = room.RetryCount,
+                isExpired = isExpired
             };
 
             var created = await _userExam.Create(data,cts.Token);

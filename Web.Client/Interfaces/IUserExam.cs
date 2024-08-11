@@ -30,6 +30,7 @@ public class CreateUserExamDTO
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public TimeSpan TimeLeft { get; set; }
+    public bool isExpired { get; set; }
     public List<UserAnswer>? UserAnswers { get; set; }
 }
 

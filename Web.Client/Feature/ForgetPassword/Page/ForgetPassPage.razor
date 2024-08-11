@@ -1,0 +1,222 @@
+﻿@page "/userclient/forgetpassword"
+@using System.Text
+@using global::CoreLib.Users
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using MimeKit
+@using MimeKit.Text
+@using Web.Client.Interfaces
+@layout BlankLayout
+@implements IAsyncDisposable
+
+<EditForm Model="model"  OnValidSubmit="OnValidSubmit" FormName="forget">
+    <DataAnnotationsValidator/>
+    <MudGrid Class="align-content-center justify-center">
+        <MudItem xs="9" md="5" lg="3">
+            <MudCard Class="pa-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Href="/Account/Login">Kembali</MudButton>
+                        <MudText Typo="Typo.h5">Lupa Password</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Validasi User</MudText>
+                    <MudText Typo="Typo.caption">jika lupa username silahkan hubungi panitia</MudText>
+                    <MudTextField T="string" Label="Username" Class="mt-3" Required="true" MaxLength="30"
+                                  @bind-Value="model.Username" Variant="Variant.Outlined"/>
+                    <MudTextField T="string" Label="Nomor Telepon" InputType="InputType.Number" 
+                                  MaxLength="15" InputMode="InputMode.tel" Class="mt-3" Required="true"
+                                  @bind-Value="model.NomorHP" Variant="Variant.Outlined"/>
+                    <MudButton ButtonType="ButtonType.Submit" 
+                               Variant="Variant.Filled" 
+                               Color="Color.Primary" Class="ml-auto mt-4" 
+                               FullWidth Style="height:60px">Kirim Reset Password</MudButton>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+</EditForm>
+
+@code {
+    [SupplyParameterFromQuery] private string UserId { get; set; }
+    [SupplyParameterFromQuery] private string Code { get; set; }
+    [Inject] UserManager<ApplicationUser> _userManager { get; set; }
+    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] IUser _userService { get; set; }
+    [Inject] IMailService _mailService { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+    [Inject] ISnackbar _snackbar { get; set; }
+
+    private validuserDTO model = new();
+    
+    private CancellationTokenSource cts = new CancellationTokenSource();
+    
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+    
+    private async Task OnValidSubmit(EditContext obj)
+    {
+        var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
+        
+        var res = await _userService.ValidateUserReset(model);
+        if (res.Valid)
+        {
+            var token = await _userService.GenerateResetPassword(res.Id);
+            if (!string.IsNullOrEmpty(token))
+            {
+                var dial = await DialogService.ShowAsync<BluryDialog>("Sedang Mengirim Email...", options);
+                var reseturi = _navigationManager.GetUriWithQueryParameters(
+                    _navigationManager.ToAbsoluteUri("userclient/ResetPassword").AbsoluteUri,
+                    new Dictionary<string, object?> { ["userId"] = res.Id, ["code"] = token });
+                var mail = await SendEmail(res.Email, reseturi);
+                if (!mail)
+                {
+                    dial.Close();
+                    _snackbar.Add(
+                        @<div>
+                            <h3>Info ERROR!!</h3>
+                            <ul>
+                                <li>IMail Services</li>
+                                <li>Ada Error di Send Email</li>
+                            </ul>
+                        </div>
+                        , Severity.Error);
+                }
+                else
+                {
+                    dial.Close();
+                    _snackbar.Add(
+                        @<div>
+                            <h3>Info!!</h3>
+                            <ul>
+                                <li>Success</li>
+                                <li>Reset URL Berhasil Digenerate, Silahkan Cek Email Anda</li>
+                            </ul>
+                        </div>
+                        , Severity.Success);
+                }
+
+            }
+        }
+        else
+        {
+            _snackbar.Add(
+                @<div>
+                    <h3>Validasi ERROR!!</h3>
+                    <ul>
+                        @res.Message
+                    </ul>
+                </div>
+                , Severity.Warning);
+        }
+    }
+    
+    private async Task<bool> SendEmail(string emailto, string resetUri)
+    {
+        var email = new MimeMessage();
+        email.From.Add(MailboxAddress.Parse("info@mzstudio.space"));
+        email.To.Add(MailboxAddress.Parse(emailto));
+        email.Subject = "Reset Password - Siaplulusp3k";
+        email.Body = new TextPart(TextFormat.Html)
+        {
+            Text = $@"
+<!DOCTYPE html>
+<html lang=""en"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>Reset Password</title>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            background-color: #f6f6f6;
+            margin: 0;
+            padding: 0;
+        }}
+        .container {{
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }}
+        .header {{
+            text-align: center;
+            padding-bottom: 20px;
+        }}
+        .header h1 {{
+            margin: 0;
+            font-size: 24px;
+            color: #333333;
+        }}
+        .image {{
+            text-align: center;
+            margin-bottom: 20px;
+        }}
+        .image img {{
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }}
+        .content {{
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+            color: #555555;
+        }}
+        .button {{
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #007bff;
+            text-decoration: none;
+            border-radius: 5px;
+        }}
+        .footer {{
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999999;
+        }}
+    </style>
+</head>
+<body>
+    <div class=""container"">
+        <div class=""header"">
+            <h1>Reset Password</h1>
+        </div>
+        <div class=""image"">
+            <img src=""https://via.placeholder.com/600x200"" alt="" Image"">
+        </div>
+        <div class=""content"">
+            <p>Halo, </>
+            <p>silahkan klik tombol di bawah ini untuk melanjutkan</p>
+            <a href=""{resetUri}"" class=""button"">Reset Password</a>
+        </div>
+        <div class=""footer"">
+            <p>If you did not sign up for this account, please ignore this email.</p>
+        </div>
+    </div>
+</body>
+</html>
+"
+        };
+
+        return await _mailService.SendMailAsync(email,cts.Token);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
+    }
+
+}
+

@@ -1,4 +1,7 @@
-﻿<div class="d-flex align-center flex-grow-1 d-md-none">
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@* IF Mobile *@
+<div class="d-flex align-center flex-grow-1 d-md-none">
     <MudTooltip Delay="1000" Text="Drawer">
         <MudIconButton OnClick="DrawerToggleCallback" Icon="@Icons.Material.Rounded.Notes" Color="Color.Inherit" Edge="Edge.Start"/>
     </MudTooltip>
@@ -9,7 +12,44 @@
     </NavLink>
     <MudSpacer/>
     <MudTooltip Delay="1000" Text="Search">
-        <MudIconButton Icon="@Icons.Material.Rounded.Search" Color="Color.Inherit" Edge="Edge.End" OnClick="@(() => OpenSearchDialog())"/>
+        <AuthorizeView>
+            <Authorized>
+                @{
+                    if (string.IsNullOrEmpty(avaSource))
+                    {
+                        <MudBadge Color="Color.Success" Overlap="true" Bordered="true" Class="mr-3" >
+                            <MudAvatar Style="height:35px; width:35px;" Color="Color.Primary" @onclick="@ToggleOpen">
+                                @context.User.Identity?.Name?[0]
+                            </MudAvatar>
+                        </MudBadge>
+                    }
+                    else
+                    {
+                        <MudBadge Color="Color.Success" Overlap="true" Bordered="true" Class="mr-3">
+                            <MudAvatar Style="height:35px; width:35px;" @onclick="@ToggleOpen">>
+                                <MudImage Src="@avaSource"></MudImage>
+                            </MudAvatar>
+                        </MudBadge>
+                    }
+                }
+                <MudPopover Open="_open"
+                            OverflowBehavior="OverflowBehavior.FlipAlways"
+                            AnchorOrigin="Origin.BottomCenter"
+                            TransformOrigin="Origin.TopRight" Paper="false">
+                    <MudPaper Elevation="12" Class="pa-2">
+                        <MudStack Spacing="2" Class="ma-2">
+                            <MudText Typo="Typo.caption">Halo, @context.User.Identity?.Name</MudText>
+                            <MudButton>Profile</MudButton>
+                            <MudButton OnClick="Logout">Logout</MudButton>
+                        </MudStack>
+                    </MudPaper>
+                    
+                </MudPopover>
+            </Authorized>
+            <NotAuthorized>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/Account/Login">Login</MudButton>
+            </NotAuthorized>
+        </AuthorizeView>
     </MudTooltip>
 </div>
 <div class="d-none d-md-flex align-center flex-grow-1">
@@ -29,7 +69,6 @@
         @*     </ItemTemplate> *@
         @* </MudAutocomplete> *@
         <MudDivider FlexItem="true" Vertical="true" DividerType="DividerType.Middle" Class="mx-4 my-4"/>
-        
     }
     else
     {
@@ -37,7 +76,7 @@
             <MudIconButton Icon="@Icons.Material.Rounded.Search" Color="Color.Inherit" OnClick="@(() => OpenSearchDialog())"/>
         </MudTooltip>
     }
-    
+
     <AppbarButtons _avaSource="@avaSource"/>
 </div>
 
@@ -65,3 +104,10 @@
         </MudText>
     </DialogContent>
 </MudDialog>
+
+@code{
+
+    bool _open;
+    private void ToggleOpen() => _open = !_open;
+
+}

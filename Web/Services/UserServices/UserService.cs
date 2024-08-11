@@ -2,6 +2,7 @@
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Web.Client.Feature.ForgetPassword;
 using Web.Client.Feature.Register;
 using Web.Client.Feature.UserManagements;
 using Web.Client.Shared.Models;
@@ -139,5 +140,30 @@ public class UserService : IUser
         await _appDbContext.SaveChangesAsync();
         return new ServiceResponse(true, "Berhasil Login");
         
+    }
+
+    public async Task<ValidUserResponse> ValidateUserReset(validuserDTO r)
+    {
+        var finduser = await _userManager.FindByNameAsync(r.Username);
+        if (finduser == null) return new ValidUserResponse()
+        {
+            Valid = false,
+            Message = "Username tidak ditemukan"
+        };
+        
+        if(finduser.PhoneNumber!=r.NomorHP)
+            return new ValidUserResponse( )
+            {
+                Valid = false,
+                Message = "Nomor HP tidak sesuai"
+            };
+        
+        return new ValidUserResponse()
+        {
+            Valid = true,
+            Username = finduser.UserName,
+            Email = finduser.Email,
+            Id = finduser.Id
+        };
     }
 }

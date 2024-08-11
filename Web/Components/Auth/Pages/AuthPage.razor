@@ -42,7 +42,11 @@
                     <MudTextField T="string" Label="Password" Class="mt-3" ShrinkLabel name="model.Password" Required="true" RequiredError="Password is required!"
                                   @bind-Value="model.Password" InputType="InputType.Password" Variant="Variant.Outlined"/>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto mt-4" FullWidth Style="height:60px">Login</MudButton>
-                    <MudButton Variant="Variant.Text" Href="userclient/register" FullWidth Class="mt-2">Daftar</MudButton>
+                    <MudStack Spacing="2" Class="mt-5" AlignItems="AlignItems.Center">
+                        <MudText>Belum Punya Akun? <MudLink href="userclient/register">Daftar Disini</MudLink></MudText>
+                        <MudText>Lupa Password? <MudLink href="userclient/forgetpassword">Reset Disini</MudLink></MudText>
+                    </MudStack>
+                    
                 </MudCardContent>
             </MudCard>
         </MudItem>

@@ -30,38 +30,41 @@
 <MudTooltip Delay="1000" Text="@(DarkLightModeButtonText)">
     <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@LayoutService.CycleDarkLightModeAsync"/>
 </MudTooltip>
-<MudDivider FlexItem="true" Vertical="true" DividerType="DividerType.Middle" Class="mx-4 my-4"/>
-<AuthorizeView>
-    <Authorized>
-        @{
-            if (string.IsNullOrEmpty(_avaSource))
-            {
-                <MudBadge Color="Color.Success" Overlap="true" Bordered="true" Class="mr-3">
-                    <MudAvatar Style="height:35px; width:35px;" Color="Color.Primary">
-                        @context.User.Identity.Name[0]
-                    </MudAvatar>
-                </MudBadge>
+
+<MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
+    <MudDivider FlexItem="true" Vertical="true" DividerType="DividerType.Middle" Class="mx-4 my-4"/>
+    <AuthorizeView>
+        <Authorized>
+            @{
+                if (string.IsNullOrEmpty(_avaSource))
+                {
+                    <MudBadge Color="Color.Success" Overlap="true" Bordered="true" Class="mr-3">
+                        <MudAvatar Style="height:35px; width:35px;" Color="Color.Primary">
+                            @context.User.Identity.Name[0]
+                        </MudAvatar>
+                    </MudBadge>
+                }
+                else
+                {
+                    <MudBadge Color="Color.Success" Overlap="true" Bordered="true" Class="mr-3">
+                        <MudAvatar Style="height:35px; width:35px;">
+                            <MudImage Src="@_avaSource"></MudImage>
+                        </MudAvatar>
+                    </MudBadge>
+                }
             }
-            else
-            {
-                <MudBadge Color="Color.Success" Overlap="true" Bordered="true" Class="mr-3">
-                    <MudAvatar Style="height:35px; width:35px;">
-                        <MudImage Src="@_avaSource"></MudImage>
-                    </MudAvatar>
-                </MudBadge>
-            }
-        }
-        <MudText Class="mr-2">@context.User.Identity.Name</MudText>
-        <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
-            <MudMenuItem>Profile</MudMenuItem>
-            <MudMenuItem>My account</MudMenuItem>
-            <MudMenuItem OnClick="Logout">Logout</MudMenuItem>
-        </MudMenu>
-    </Authorized>
-    <NotAuthorized>
-        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/Account/Login">Login</MudButton>
-    </NotAuthorized>
-</AuthorizeView>
+            <MudText Class="mr-2">@context.User.Identity.Name</MudText>
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
+                <MudMenuItem>Profile</MudMenuItem>
+                <MudMenuItem>My account</MudMenuItem>
+                <MudMenuItem OnClick="Logout">Logout</MudMenuItem>
+            </MudMenu>
+        </Authorized>
+        <NotAuthorized>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/Account/Login">Login</MudButton>
+        </NotAuthorized>
+    </AuthorizeView>
+</MudHidden>
 
 @code
 {

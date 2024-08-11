@@ -1,5 +1,6 @@
 ﻿using CoreLib.Common;
 using CoreLib.Users;
+using Web.Client.Feature.ForgetPassword;
 using Web.Client.Feature.Register;
 using Web.Client.Feature.UserManagements;
 using Web.Client.Shared.Models;
@@ -17,4 +18,5 @@ public interface IUser
     public Task<ServiceResponse> ResetPassword(PasswordReset data);
     public Task<string> GenerateResetPassword(string userID);
     public Task<ServiceResponse> UpdateLastLogin(string userID);
+    public Task<ValidUserResponse> ValidateUserReset(validuserDTO r);
 }

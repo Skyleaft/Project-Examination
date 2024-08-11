@@ -28,6 +28,12 @@ public class UserExamService : IUserExam
             return new CreatedResponse<UserExam>(false,
                 "Anda Sudah Berada Diruangan Tersebut, Silahkan Lihat di Ruangan Ujian");
         var data = r.Adapt<UserExam>();
+        if (r.isExpired)
+        {
+            data.IsDone = true;
+            data.RetryCount = 0;
+        }
+
         var created = await _dbContext.UserExam.AddAsync(data, ct);
         await _dbContext.SaveChangesAsync(ct);
         return new CreatedResponse<UserExam>(true, "Data Berhasil Ditambahkan", created.Entity);
@@ -55,7 +61,8 @@ public class UserExamService : IUserExam
         {
             entry.Entity.HistoryScoreNormalize = new List<double>();
         }
-        entry.Entity.HistoryScoreNormalize.Add((double)nomalizeScore); 
+
+        entry.Entity.HistoryScoreNormalize.Add((double)nomalizeScore);
 
         // if (r.UserAnswers != null)
         // {
@@ -189,7 +196,7 @@ public class UserExamService : IUserExam
     {
         var data = await _dbContext
             .UserExam
-            .Include(x=>x.UserAnswers)
+            .Include(x => x.UserAnswers)
             .FirstOrDefaultAsync(x => x.Id == UserExamId, cancellationToken: ct);
         if (data == null)
             return new ServiceResponse(false, "data tidak ditemukan");

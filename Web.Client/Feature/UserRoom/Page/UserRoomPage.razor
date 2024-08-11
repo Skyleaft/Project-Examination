@@ -157,7 +157,7 @@
 
     public Guid Id { get; }
 
-    readonly DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
+    readonly DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter",CloseButton = true};
 
     private async Task OnSearchRoom()
     {

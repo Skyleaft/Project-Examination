@@ -9,55 +9,58 @@
     <DialogContent>
         <MudPaper Class="pa-4 ma-2 mb-2">
             <MudStack Spacing="4">
-                <MudTextField Label="Nama Ruangan"
-                              Variant="Variant.Outlined"
-                              ReadOnly
-                              MaxLength="40"
-                              @bind-Value="room.Nama"
-                              For="@(() => room.Nama)"/>
+                <div class="d-flex justify-space-between flex-grow-1 gap-8">
+                    <MudStack Spacing="-2">
+                        <MudText Typo="Typo.caption">Nama Ruangan</MudText>
+                        <MudText Typo="Typo.h6">@room.Nama</MudText>
+                    </MudStack>
+                    <MudStack Spacing="-2">
+                        <MudText Typo="Typo.caption" Align="Align.End">Durasi Ujian</MudText>
+                        <MudText Typo="Typo.h6">@room.Durasi Menit</MudText>
+                    </MudStack>
+                </div>
 
-                <MudNumericField @bind-Value="room.Durasi"
-                                 Label="Durasi Ujian" ReadOnly
-                                 Variant="Variant.Outlined"
-                                 Min="0" Max="600"/>
-                <MudToolBar Class="pa-2">
-                    <MudDatePicker Variant="Variant.Outlined"
-                                   Label="Jadwal Mulai"
-                                   ReadOnly
-                                   MinDate="DateTime.Now.AddDays(-1)"
-                                   MaxDate="DateTime.Now.AddMonths(2)" Class="ml-3" @bind-Date="dateStart"/>
-                    <MudDatePicker Variant="Variant.Outlined"
-                                   Label="Jadwal Selesai"
-                                   ReadOnly
-                                   MinDate="DateTime.Now.AddDays(-1)"
-                                   MaxDate="DateTime.Now.AddMonths(2)" @bind-Date="dateEnd"/>
-                </MudToolBar>
-                <MudToolBar Class="pa-2">
-                    <MudTimePicker Variant="Variant.Outlined"
-                                   Label="Waktu Mulai"
-                                   ReadOnly
-                                   Class="ml-3" @bind-Time="timeStart"/>
-                    <MudTimePicker Variant="Variant.Outlined"
-                                   Label="Waktu Selesai"
-                                   ReadOnly
-                                   @bind-Time="timeEnd"/>
-                </MudToolBar>
+                <div class="d-flex justify-space-between flex-grow-1 gap-8">
+                    <MudStack Spacing="-2">
+                        <MudText Typo="Typo.caption">Jadwal Mulai</MudText>
+                        <MudText Typo="Typo.h6">@room.JadwalStart.ToLocalTime().ToString("dd/MM/yyyy : hh:mm")</MudText>
+                    </MudStack>
+                    <MudStack Spacing="-2">
+                        <MudText Typo="Typo.caption" Align="Align.End">Jadwal Selesai</MudText>
+                        <MudText Typo="Typo.h6" Align="Align.End">@room.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy : hh:mm")</MudText>
+                    </MudStack>
+                </div>
+
+                <div class="d-flex justify-space-between flex-grow-1 gap-8">
+                    <MudStack Spacing="-2">
+                        <MudText Typo="Typo.caption">Score Terahir</MudText>
+                        <MudText Typo="Typo.h6" Align="Align.Center">@userExam.ScoreData</MudText>
+                    </MudStack>
+                    <MudStack Spacing="-2">
+                        <MudText Typo="Typo.caption" Align="Align.End">Nilai Terahir</MudText>
+                        <MudText Typo="Typo.h6" Align="Align.Center">@userExam.ScoreNormalizeData</MudText>
+                    </MudStack>
+                </div>
+
+
+
                 @{
                     if (room.IsRepeatable && room.JadwalEnd.ToLocalTime() > DateTime.Now.ToLocalTime())
                     {
                         <MudText Align="Align.Center" Typo="Typo.h6">Kesempatan Mengulang : @userExam.RetryCount X</MudText>
                         if (!userExam.IsOngoing && userExam.IsDone)
                         {
-                            <MudButton FullWidth Variant="Variant.Filled" 
-                                       OnClick="UlangUjianClick" 
-                                       Color="Color.Primary" 
+                            <MudButton FullWidth Variant="Variant.Filled"
+                                       OnClick="UlangUjianClick"
+                                       Color="Color.Primary"
+                                       Size="Size.Large"
                                        StartIcon="@Icons.Material.Rounded.Refresh">Mengulang Ujian</MudButton>
                         }
                         else
                         {
                             <MudText Typo="Typo.body1">Jika Anda Sudah Mengerjakan Sekali Anda Dapat Mengulang Ujian Tersebut</MudText>
                         }
-                        
+
                     }
                 }
 
@@ -66,8 +69,12 @@
         </MudPaper>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="NavToRoom" Variant="Variant.Outlined">Masuk Ke Ruangan</MudButton>
+        <MudButton Color="Color.Primary"
+                   Class="ma-3 pa-3"
+                   StartIcon="@Icons.Material.Rounded.ArrowForwardIos"
+                   OnClick="NavToRoom" FullWidth
+                   Size="Size.Large"
+                   Variant="Variant.Outlined">Masuk Ke Ruangan</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -139,9 +146,13 @@
         {
             _navigationManager.NavigateTo($"exam/userexam/{userExam.Id}", true);
         }
-        else
+        else if(room.JadwalEnd.ToLocalTime() > DateTime.Now.ToLocalTime())
         {
             _navigationManager.NavigateTo($"exam/exambefore/{userExam.Id}", true);
+        }
+        else
+        {
+            _navigationManager.NavigateTo($"exam/examresult/{userExam.Id}", true);
         }
         
     }

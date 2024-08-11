@@ -34,7 +34,7 @@ public partial class Appbar
     {
         // var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvicder;
         // await customAuthStateProvider.UpdateAuthenticationState(null);
-        navManager.NavigateTo("/");
+        navManager.NavigateTo("/Account/Login?isLogout=true", true);
     }
 
     private void OpenSearchDialog()

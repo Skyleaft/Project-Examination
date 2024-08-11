@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using CoreLib.Common;
 using CoreLib.Users;
+using Web.Client.Feature.ForgetPassword;
 using Web.Client.Feature.Register;
 using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
@@ -65,17 +66,30 @@ public class UserService : IUser
         return res;
     }
 
-    public Task<ServiceResponse> ResetPassword(PasswordReset data)
+    public async Task<ServiceResponse> ResetPassword(PasswordReset data)
     {
-        throw new NotImplementedException();
+        var res = await _httpClient.PostAsJsonAsync("api/user/resetPassword", data);
+        if (res.IsSuccessStatusCode)
+        {
+            var status = await res.Content.ReadFromJsonAsync<ServiceResponse>();
+            return status;
+        }
+
+        return new ServiceResponse(false, res.ReasonPhrase);
     }
 
-    public Task<string> GenerateResetPassword(string userID)
+    public async Task<string> GenerateResetPassword(string userID)
     {
-        throw new NotImplementedException();
+        var userDTO = await _httpClient.GetFromJsonAsync<string>($"/api/user/{userID}/generateReset");
+        return userDTO;
     }
 
     public Task<ServiceResponse> UpdateLastLogin(string userID)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ValidUserResponse> ValidateUserReset(validuserDTO r)
     {
         throw new NotImplementedException();
     }

@@ -37,6 +37,12 @@
                         <MudText Typo="Typo.body2">Mulai : @data.Room.JadwalStart.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
                         <MudText Typo="Typo.body2">Selesai : @data.Room.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
                     </MudStack>
+                    @{
+                        if (data.IsDone)
+                        {
+                            <MudText Typo="Typo.body2">Nilai Terakhir :<b>@data.ScoreNormalizeData</b></MudText>
+                        }
+                    }
                 </MudPaper>
 
 
@@ -78,7 +84,7 @@
     private CancellationTokenSource cts = new CancellationTokenSource();
     
     private string strImage = "/images/room-bg.jpg";
-    DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
+    DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter", CloseButton = true};
 
     protected override async Task OnInitializedAsync()
     {
