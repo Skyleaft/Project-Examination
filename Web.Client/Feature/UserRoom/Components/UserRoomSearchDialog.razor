@@ -123,7 +123,7 @@
                 });
             }
 
-            bool isExpired = room.JadwalEnd < DateTime.Now.ToLocalTime();
+            bool isExpired = room.JadwalEnd > DateTime.Now.ToLocalTime();
 
             var data = new CreateUserExamDTO
             {

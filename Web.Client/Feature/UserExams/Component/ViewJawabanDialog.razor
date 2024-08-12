@@ -20,7 +20,7 @@
                             <MudItem xs="12" Class="my-1">
                                 @if (jawaban.Point == maxpoint && room.JadwalEnd.ToLocalTime() < DateTime.Now.ToLocalTime())
                                 {
-                                    <div class="d-none d-lg-block rounded" style="height:100%; width:100%;background-color: #B2DFDB;">
+                                    <div class="d-none d-block rounded" style="height:100%; width:100%;background-color: #B2DFDB;">
                                         <MudRadio Value="@jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
                                     </div>
                                 }

@@ -1,4 +1,5 @@
 ﻿using Web.Client.Feature.BankSoal;
+using Web.Client.Feature.Dashboards;
 using Web.Client.Feature.References;
 using Web.Client.Feature.Reports;
 using Web.Client.Feature.Roms;
@@ -18,6 +19,7 @@ public static class ServiceInject
         services.AddScoped<IRoom, RoomService>();
         services.AddScoped<IUserExam, UserExamService>();
         services.AddScoped<IReport, ReportService>();
+        services.AddScoped<IDashboard,DashboardService>();
         return services;
     }
 }

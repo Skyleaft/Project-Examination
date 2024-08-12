@@ -1,67 +1,134 @@
 ﻿@page "/"
 @using System.Security.Claims
+@using CoreLib.Dashboards
+@using CoreLib.TakeExam
 @using Microsoft.AspNetCore.Authorization
+@using Newtonsoft.Json
+@using Web.Client.Interfaces
+@using Web.Client.Feature.Dashboards.Components
 @layout MainLayout
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @attribute [Authorize]
-<h3>Dashboard</h3>
-<MudGrid>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="12" md="4">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6">
-        <MudGrid>
-            <MudItem xs="12">
-                <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+@implements IAsyncDisposable
 
-                </MudPaper>
-            </MudItem>
-            <MudItem xs="12">
-                <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-            </MudItem>
-        </MudGrid>
+<MudGrid Class="mb-4">
+    <MudItem xs="12" sm="6">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Total Ujian Yang Diikuti</MudText>
+            <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalUjian</MudText>
+        </MudPaper>
+
     </MudItem>
     <MudItem xs="12" sm="6">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
-            <MudChart ChartType="ChartType.Line" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="100%" ChartOptions="options"></MudChart>
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Rata - Rata Nilai</MudText>
+            <MudText Typo="Typo.h3" Align="Align.Center">@data.Avg.Value.ToString("0.00")</MudText>
         </MudPaper>
     </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+    <MudItem xs="12" sm="4">
+        <MudPaper Elevation="2" Class="pa-5">
+            <MudStack Spacing="3">
+                <MudText Typo="Typo.h5">Filter Ujian</MudText>
+                <MudSelect T="UserExamView?" Label="Pilih Ujian" @bind-Value="selectedView">
+                    @{
+                    if (!isLoading)
+                    {
+                    foreach (var item in data.RiwayatUjian)
+                    {
+                    <MudSelectItem T="UserExamView" Value="@item">@item.Room.Nama</MudSelectItem>
+                    }
+                    }
+
+                    }
+                </MudSelect>
+                <MudButton FullWidth
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="py-3"
+                           OnClick="ShowGrafik">Munculkan Grafik</MudButton>
+            </MudStack>
+            
+        </MudPaper>
     </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+    <MudItem xs="12" sm="8">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudChart ChartType="ChartType.Line"
+                      ChartSeries="@Series"
+                      XAxisLabels="@XAxisLabels"
+                      Height="300px"
+                      ChartOptions="options">
+            </MudChart>
+        </MudPaper>
     </MudItem>
-    <MudItem xs="12" sm="12" md="4">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
+
+    <MudItem xs="12" sm="12">
+        <MudText Typo="Typo.h5">Ujian Berlangsung:</MudText>
+        <MudPaper Elevation="2" Class="d-flex flex-wrap justify-xs-center justify-md-start gap-4 pa-4">
+
+            @{
+                if (!isLoading)
+                {
+                    foreach (var item in data.UjianBerlangsung)
+                    {
+                        <UserRoomCardDashboard data="item"/>
+                    }
+                }
+            }
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="12">
+        <MudText Typo="Typo.h5">Ujian Mendatang:</MudText>
+        <MudPaper Elevation="2" Class="d-flex flex-wrap justify-xs-center justify-md-start gap-4 pa-4">
+
+            @{
+                if (!isLoading)
+                {
+                    foreach (var item in data.UjianAkanDatang)
+                    {
+                        <UserRoomCardDashboard data="item"/>
+                    }
+                }
+            }
+        </MudPaper>
     </MudItem>
 </MudGrid>
 
 @code {
+    [Inject] IDashboard _dashboards { get; set; }
     private string? authMessage;
     private string? surname;
     private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
     Random random = new Random();
     private ChartOptions options = new ChartOptions();
+
+    private UserExamView? selectedView;
+
+    private DashboardData data = new();
+    private CancellationTokenSource cts = new CancellationTokenSource();
+    bool isLoading = true;
+
     public List<ChartSeries> Series = new List<ChartSeries>()
     {
-        new ChartSeries() { Name = "Manajerial", Data = new double[] { 77 ,0,0,0,0,0} },
-        new ChartSeries() { Name = "Sosio Kultural", Data = new double[] { 33,0,0,0,0,0 } },
-        new ChartSeries() { Name = "Wawancara", Data = new double[] { 56 ,0,0,0,0,0} },
     };
-    public string[] XAxisLabels = { "Seri 1", "Seri 2", "Seri 3", "Seri 4", "Seri 5", "Seri 6"};
+
+    public string[] XAxisLabels = { "1", "2", "3", "4", "5", "6","7","8","9" };
 
     protected override void OnInitialized()
     {
-        options.InterpolationOption = InterpolationOption.NaturalSpline;
+        options.InterpolationOption = InterpolationOption.Straight;
     }
-    
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            data = await _dashboards.Get(cts.Token);
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
     private async Task GetClaimsPrincipalData()
     {
         var authState = await AuthenticationStateProvider
@@ -77,6 +144,29 @@
         else
         {
             authMessage = "The user is NOT authenticated.";
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
+    }
+
+    private void ShowGrafik()
+    {
+        if (selectedView != null)
+        {
+            Series = new List<ChartSeries>()
+            {
+                new ChartSeries()
+                {
+                    Name = selectedView.Room.Nama,
+                    Data = selectedView.HistoryScoreNormalize?.ToArray()??new double[0],
+                    Index = 0
+                }
+            };
+            StateHasChanged();
         }
     }
 

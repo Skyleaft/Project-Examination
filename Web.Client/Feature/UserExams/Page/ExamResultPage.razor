@@ -4,6 +4,7 @@
 @using global::CoreLib.RoomSet
 @using global::CoreLib.TakeExam
 @using Microsoft.AspNetCore.Authorization
+@using Newtonsoft.Json
 @using Web.Client.Feature.UserExams.Component
 @using Web.Client.Interfaces
 @layout UserExamLayout
@@ -32,6 +33,16 @@
                                            Style="width: 50px; height: 50px;">
                                     @item.Soal.Nomor
                                 </MudButton>
+                            }
+                        }
+                        else
+                        {
+                            {
+                                <div class="d-none d-flex align-center flex-grow-1 ma-8">
+                                    <MudSpacer/>
+                                    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+                                    <MudSpacer/>
+                                </div>
                             }
                         }
                     }
@@ -85,7 +96,10 @@
                             </td>
                             <td>
                                 <MudText Typo="Typo.body1">
-                                    @userExam.EndDate.Value.ToLocalTime().ToString("dd/MM/yyyy - HH:mm")
+                                    @if (userExam.EndDate != null)
+                                    {
+                                        @userExam.EndDate.Value.ToLocalTime().ToString("dd/MM/yyyy - HH:mm")
+                                    }
                                 </MudText>
                             </td>
                         </tr>
@@ -154,7 +168,6 @@
     private UserExam userExam;
     private Room room;
     private bool isLoading = true;
-    readonly string privateKey = "zlxkjcoijasdfnwqwesfvlaksnoaiscnzxnocqanqwf";
     private CancellationTokenSource cts = new CancellationTokenSource();
     
     DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
@@ -177,7 +190,7 @@
         }
     }
 
-    private Variant CheckSoalIsAnswer(Soal soal)
+    private Variant CheckSoalIsAnswer(Soal? soal)
     {
         if (userExam.UserAnswers == null)
             return Variant.Outlined;
@@ -188,7 +201,6 @@
 
     private async Task OnBackHome()
     {
-        await SessionStorage.RemoveItemAsync(privateKey);
         _navigationManager.NavigateTo("/userroom", true);
     }
 
@@ -206,7 +218,7 @@
         cts.Dispose();
     }
 
-    private async Task OnNomorSoalClick(UserAnswer jawaban)
+    private async Task OnNomorSoalClick(UserAnswer? jawaban)
     {
         var parameters = new DialogParameters<ViewJawabanDialog>();
         parameters.Add(x => x.jawabanUser, jawaban);
