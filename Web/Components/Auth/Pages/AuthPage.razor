@@ -106,12 +106,14 @@
                 //dial.Close();
                 if (string.IsNullOrEmpty(ReturnUrl))
                 {
-                    var res = await _user.UpdateLastLogin(finduser.Id);
-                    if(res.Flag)
-                        RedirectManager.RedirectTo("/");
+                     var res = await _user.UpdateLastLogin(finduser.Id);
+                     if(res.Flag)
+                         RedirectManager.RedirectTo("/");
+                        
                 }
                 else
                 {
+                    //RedirectManager.RedirectTo(ReturnUrl);
                     var res = await _user.UpdateLastLogin(finduser.Id);
                     if(res.Flag)
                         RedirectManager.RedirectTo(ReturnUrl);

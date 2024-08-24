@@ -136,7 +136,6 @@ public class UserService : IUser
     {
         var finduser = await _userManager.FindByIdAsync(userID);
         finduser.LastLogin = DateTime.UtcNow;
-        var updated = _appDbContext.Users.Update(finduser);
         await _appDbContext.SaveChangesAsync();
         return new ServiceResponse(true, "Berhasil Login");
         

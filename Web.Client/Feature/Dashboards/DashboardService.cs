@@ -12,4 +12,9 @@ public class DashboardService(HttpClient _httpClient) :IDashboard
         return data;
     }
 
+    public async Task<DosenDashboardData> GetDosen(CancellationToken ct, string? UserId = "")
+    {
+        var data = await _httpClient.GetFromJsonAsync<DosenDashboardData>($"/api/DashboardDataDosen", cancellationToken: ct);
+        return data;
+    }
 }
