@@ -1,8 +1,10 @@
-﻿using System.Security.Claims;
+﻿using System.Linq.Dynamic.Core;
+using System.Security.Claims;
 using CoreLib.Dashboards;
 using CoreLib.TakeExam;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor;
 using Web.Common.Database;
 
 namespace Web.Services.DashboardService;
@@ -63,7 +65,7 @@ public class DashboardService : IDashboard
         var currentUser = await _dbContext.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == UserId, cancellationToken: ct);
-        var peserta =await _dbContext.UserRoles
+        var peserta = await _dbContext.UserRoles
             .AsNoTracking()
             .Where(x => x.RoleId == "c6477de3-27b8-4094-b504-48ee4954995e")
             .CountAsync(cancellationToken: ct);
@@ -74,51 +76,120 @@ public class DashboardService : IDashboard
             .AsNoTracking()
             .Where(x => x.CreatedBy == currentUser.UserName)
             .CountAsync(cancellationToken: ct);
-        
+
         var data = _dbContext
             .UserExam
-            .Include(x=>x.User)
+            .Include(x => x.User)
             .Include(x => x.Room)
-            .ThenInclude(y=>y.Exam)
+            .ThenInclude(y => y.Exam)
             .AsNoTracking()
-            .Where(x => x.IsDone==true);
-        
+            .Where(x => x.IsDone == true);
+
         var filter = data
+            .GroupBy(x => x.User)
+            .Select(x => new
+            {
+                User = x.Key,
+                AverageScore = data.Where(y => y.User == x.Key).Average(y => y.ScoreNormalizeData),
+                HighestScore = data.Where(y => y.User == x.Key).Max(y => y.ScoreNormalizeData),
+                LowestScore = data.Where(y => y.User == x.Key).Min(y => y.ScoreNormalizeData)
+            });
+
+        var filterRoom = data
             .GroupBy(x => x.Room)
             .Select(x => new
             {
                 Room = x.Key,
-                AvgScore = (double)x.Average(s => s.ScoreNormalizeData),
-                HighestScore = (double)x.Max(s=>s.ScoreNormalizeData),
-                LowestScore = (double)x.Min(s=>s.ScoreNormalizeData)
+                AverageScore = data.Where(y => y.Room == x.Key).Average(y => y.ScoreNormalizeData),
+                HighestScore = data.Where(y => y.Room == x.Key).Max(y => y.ScoreNormalizeData),
+                LowestScore = data.Where(y => y.Room == x.Key).Min(y => y.ScoreNormalizeData)
             })
-            .Take(10);
-        
+            .Where(x=>x.Room.CreatedBy==currentUser.UserName);
+
         var res = new DosenDashboardData()
         {
             TotalPeserta = peserta,
             TotalSoal = totalSoal,
             TotalRuangan = totalRuang,
-            Top10 = data.Where(s=>filter.Select(r=>r.Room).Contains(s.Room))
-                .Select(x=>new NilaiUser()
-                {
-                    NamaPeserta = x.User.NamaLengkap,
-                    Avg = filter.First(r=>r.Room==x.Room).AvgScore,
-                    Highest = filter.First(r=>r.Room==x.Room).HighestScore,
-                    Lowest = filter.First(r=>r.Room==x.Room).LowestScore
-                })
-                .OrderByDescending(r=>r.Avg)
-                .Take(10),
-            Bottom10 = data.Where(s=>filter.Select(r=>r.Room).Contains(s.Room))
-                .Select(x=>new NilaiUser()
-                {
-                    NamaPeserta = x.User.NamaLengkap,
-                    Avg = filter.First(r=>r.Room==x.Room).AvgScore,
-                    Highest = filter.First(r=>r.Room==x.Room).HighestScore,
-                    Lowest = filter.First(r=>r.Room==x.Room).LowestScore
-                })
-                .OrderBy(r=>r.Avg)
-                .Take(10)
+            Top10 = filter.Select(x => new NilaiUser()
+            {
+                Avg = (double)x.AverageScore,
+                Highest = (double)x.HighestScore,
+                Lowest = (double)x.LowestScore,
+                NamaPeserta = x.User.NamaLengkap
+            }).OrderByDescending(u => u.Avg).Take(10),
+            Bottom10 = filter.Select(x => new NilaiUser()
+            {
+                Avg = (double)x.AverageScore,
+                Highest = (double)x.HighestScore,
+                Lowest = (double)x.LowestScore,
+                NamaPeserta = x.User.NamaLengkap
+            }).OrderBy(u => u.Avg).Take(10),
+            RoomAnalysis = filterRoom.Select(x=>new RoomAnalys()
+            {
+                Avg = x.AverageScore,
+                Highest = x.HighestScore,
+                Lowest = x.LowestScore,
+                NamaRoom = x.Room.Nama,
+                Jadwal = x.Room.JadwalStart
+            }).OrderByDescending(x=>x.Jadwal)
+        };
+
+        return res;
+    }
+
+    public async Task<AdminDashboardData> GetAdmin(CancellationToken ct)
+    {
+        var roles = _dbContext.UserRoles.AsNoTracking();
+        var peserta = await roles
+            .Where(x => x.RoleId == "c6477de3-27b8-4094-b504-48ee4954995e")
+            .CountAsync(cancellationToken: ct);
+        var dosen = await roles
+            .Where(x => x.RoleId == "f37731fe-e205-446e-a744-4c90f1f12821")
+            .CountAsync(cancellationToken: ct);
+        var ope = await roles
+            .Where(x => x.RoleId == "f37731fe-e205-446e-a744-4c90f1f12821")
+            .CountAsync(cancellationToken: ct);
+        var user = await roles
+            .CountAsync(cancellationToken: ct);
+        var totalSoal = await _dbContext.Exam
+            .AsNoTracking()
+            .CountAsync(cancellationToken: ct);
+        var totalRuang = await _dbContext.Room
+            .AsNoTracking()
+            .CountAsync(cancellationToken: ct);
+        var totalUjian = await _dbContext.UserExam
+            .AsNoTracking()
+            .CountAsync(cancellationToken: ct);
+        var totalUjianSelesai = await _dbContext.UserExam
+            .AsNoTracking()
+            .Where(x => x.IsDone == true)
+            .CountAsync(cancellationToken: ct);
+        var totalUjianBelumSelesai = totalUjian - totalUjianSelesai;
+
+        var inactiveUser = _dbContext.Users
+            .Where(x => x.EmailConfirmed == false).Select(x => new InactiveUser(x));
+
+        var lastLogin = _dbContext.Users
+            .Where(x=>x.LastLogin!=null)
+            .OrderByDescending(x => x.LastLogin)
+            .Take(10).Select(x=>new LatestLoginUser(x));
+        
+
+        var res = new AdminDashboardData()
+        {
+            TotalPeserta = peserta,
+            TotalDosen = dosen,
+            TotalOperator = ope,
+            TotalUser = user,
+            TotalSoal = totalSoal,
+            TotalRuangan = totalRuang,
+            TotalUjian = totalUjian,
+            TotalUjianSelesai = totalUjianSelesai,
+            TotalUjianBelumSelesai = totalUjianBelumSelesai,
+            InactiveUsers = inactiveUser,
+            LatestLoginUsers = lastLogin
+            
         };
 
         return res;

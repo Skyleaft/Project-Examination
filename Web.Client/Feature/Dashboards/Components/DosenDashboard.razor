@@ -1,0 +1,159 @@
+﻿@using CoreLib.Dashboards
+@using CoreLib.TakeExam
+@using Web.Client.Interfaces
+@implements IAsyncDisposable
+<MudGrid Class="mb-4">
+    <MudItem xs="12" sm="4">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Total Peserta Ujian</MudText>
+            <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalPeserta</MudText>
+        </MudPaper>
+
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Total Soal</MudText>
+            <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalSoal</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Total Ruangan</MudText>
+            <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalRuangan</MudText>
+        </MudPaper>
+    </MudItem>
+
+    @if (isLoading)
+    {
+        <div class="d-none d-flex align-center flex-grow-1 ma-8">
+            <MudSpacer/>
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+            <MudSpacer/>
+        </div>
+    }
+    else
+    {
+    <MudItem xs="12">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudChart ChartType="ChartType.Line"
+                      ChartSeries="@Series"
+                      XAxisLabels="@XAxisLabels"
+                      Width="100%"
+                      Height="350px"
+                      ChartOptions="options">
+            </MudChart>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="6">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudDataGrid Items="data.Top10">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Top 10 Peserta Terbaik</MudText>
+                    <MudSpacer />
+                </ToolBarContent>
+                <Columns>
+                    <PropertyColumn Property="x => x.NamaPeserta" Title="Nama Peserta"/>
+                    <PropertyColumn Property="x => x.Avg" Format="F2" Title="Rata - Rata"/>
+                    <PropertyColumn Property="x => x.Highest" Format="F2" Title="Terbesar"/>
+                    <PropertyColumn Property="x => x.Lowest" Format="F2" Title="Terkecil"/>
+                </Columns>
+            </MudDataGrid>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="6">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudDataGrid Items="data.Bottom10">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Top 10 Peserta Terbawah</MudText>
+                    <MudSpacer />
+                </ToolBarContent>
+                <Columns>
+                    <PropertyColumn Property="x => x.NamaPeserta" Title="Nama Peserta"/>
+                    <PropertyColumn Property="x => x.Avg" Format="F2" Title="Rata - Rata"/>
+                    <PropertyColumn Property="x => x.Highest" Format="F2" Title="Terbesar"/>
+                    <PropertyColumn Property="x => x.Lowest" Format="F2" Title="Terkecil"/>
+                </Columns>
+            </MudDataGrid>
+        </MudPaper>
+    </MudItem>
+    }
+
+    
+    
+
+    
+</MudGrid>
+
+@code {
+    [Inject] IDashboard _dashboards { get; set; }
+    
+    Random random = new Random();
+    private ChartOptions options = new ChartOptions();
+
+    private UserExamView? selectedView;
+
+    private DosenDashboardData data = new();
+    private CancellationTokenSource cts = new CancellationTokenSource();
+    bool isLoading = true;
+
+    public List<ChartSeries> Series = new List<ChartSeries>()
+    {
+    };
+
+    public string[] XAxisLabels = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+
+    protected override void OnInitialized()
+    {
+        options.InterpolationOption = InterpolationOption.Straight;
+        options.LineStrokeWidth = 4;
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            data = await _dashboards.GetDosen(cts.Token);
+            isLoading = false;
+
+            var avg = data.RoomAnalysis.Select(x => x.Avg??new double()).Take(5).ToArray();
+            var max = data.RoomAnalysis.Select(x => x.Highest??new double()).Take(5).ToArray();
+            var min = data.RoomAnalysis.Select(x => x.Lowest??new double()).Take(5).ToArray();
+
+            Series = new List<ChartSeries>()
+            {
+                new ChartSeries()
+                {
+                    Data = avg,
+                    Index = 0,
+                    Name = "Rata - Rata"
+                },
+                new ChartSeries()
+                {
+                    Data = max,
+                    Index = 0,
+                    Name = "Terbesar"
+                },
+                new ChartSeries()
+                {
+                    Data = min,
+                    Index = 0,
+                    Name = "Terkecil"
+                }
+            };
+            XAxisLabels = data.RoomAnalysis.Select(x => x.NamaRoom).Take(5).ToArray();
+            
+            StateHasChanged();
+        }
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
+    }
+
+    
+}

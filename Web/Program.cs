@@ -107,7 +107,15 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 });
 app.MapDefaultEndpoints();
 app.UseResponseCaching()
-    .UseFastEndpoints(c => { c.Endpoints.RoutePrefix = "api"; });
+    .UseFastEndpoints(c =>
+    {
+        c.Endpoints.RoutePrefix = "api";
+        c.Serializer.RequestDeserializer = async (req, tDto, jCtx, ct) =>
+        {
+            using var reader = new StreamReader(req.Body);
+            return Newtonsoft.Json.JsonConvert.DeserializeObject(await reader.ReadToEndAsync(), tDto);
+        };
+    });
 
 
 // Configure the HTTP request pipeline.

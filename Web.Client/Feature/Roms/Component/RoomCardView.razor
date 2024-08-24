@@ -2,7 +2,7 @@
 @using global::CoreLib.TakeExam
 @using Web.Client.Interfaces
 @inject IDialogService Dialog
-<MudCard Style="width: 350px; min-width: 350px">
+<MudCard>
     <MudCardMedia Image="@strImage" Height="100"/>
     <MudCardHeader Class="mb-n7">
         <MudText Typo="Typo.h6">@data.Nama</MudText>
@@ -21,14 +21,15 @@
 
     </MudCardHeader>
     <MudCardContent>
-        <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
-        <MudText Typo="Typo.body2">Kode Ruangan :<b>@data.Kode</b></MudText>
-        <MudStack Row="true" Spacing="2">
-            <MudText Typo="Typo.body2">Mulai : @data.JadwalStart.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
-            <MudText Typo="Typo.body2">Selesai : @data.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
-        </MudStack>
-        <MudText Typo="Typo.body2"> Jumlah Peserta :@_totalPeserta</MudText>
-
+        <MudPaper MaxWidth="330px" Elevation="0">
+            <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
+            <MudText Typo="Typo.body2">Kode Ruangan :<b>@data.Kode</b></MudText>
+            <MudStack Row="true" Spacing="2">
+                <MudText Typo="Typo.body2">Mulai : @data.JadwalStart.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+                <MudText Typo="Typo.body2">Selesai : @data.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+            </MudStack>
+            <MudText Typo="Typo.body2"> Jumlah Peserta :@_totalPeserta</MudText>
+        </MudPaper>
     </MudCardContent>
     <MudCardActions>
         <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnLihatClick">Lihat</MudButton>

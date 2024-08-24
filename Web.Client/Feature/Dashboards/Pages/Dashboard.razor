@@ -16,7 +16,11 @@
 </AuthorizeView>
 
 <AuthorizeView Roles="Dosen">
-    <MudText>Dosen View</MudText>
+    <DosenDashboard/>
+</AuthorizeView>
+
+<AuthorizeView Roles="Superuser, Operator">
+    <AdminDashboard/>
 </AuthorizeView>
 
 

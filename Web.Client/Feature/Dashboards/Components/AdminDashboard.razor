@@ -1,0 +1,152 @@
+﻿@using CoreLib.Dashboards
+@using CoreLib.TakeExam
+@using Web.Client.Interfaces
+@implements IAsyncDisposable
+<MudGrid Class="mb-4">
+    <MudItem xs="12" sm="4">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Total User</MudText>
+            <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalUser</MudText>
+        </MudPaper>
+
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Total Peserta</MudText>
+            <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalPeserta</MudText>
+        </MudPaper>
+
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Total Dosen</MudText>
+            <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalDosen</MudText>
+        </MudPaper>
+
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Total Operator</MudText>
+            <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalOperator</MudText>
+        </MudPaper>
+    </MudItem>
+    
+    <MudItem xs="12" sm="4">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Total Soal</MudText>
+            <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalSoal</MudText>
+        </MudPaper>
+    </MudItem>
+    
+    <MudItem xs="12" sm="4">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Total Ruangan</MudText>
+            <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalRuangan</MudText>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="4">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Total Ujian</MudText>
+            <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalUjian</MudText>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="4">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Total Ujian Selesai</MudText>
+            <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalUjianSelesai</MudText>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="4">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Total Ujian Belum Selesai</MudText>
+            <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalUjianBelumSelesai</MudText>
+        </MudPaper>
+    </MudItem>
+    
+    @if (isLoading)
+    {
+        <div class="d-none d-flex align-center flex-grow-1 ma-8">
+            <MudSpacer/>
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+            <MudSpacer/>
+        </div>
+    }
+    else
+    {
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudDataGrid Items="data.InactiveUsers" Filterable="true">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Daftar User Belum Aktif</MudText>
+                        <MudSpacer />
+                    </ToolBarContent>
+                    <Columns>
+                        <PropertyColumn Property="x => x.NamaLengkap" Title="Nama Lengkap"/>
+                        <PropertyColumn Property="x => x.Email" Title="Email"/>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="InactiveUser"/>
+                    </PagerContent>
+                </MudDataGrid>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudDataGrid Items="data.LatestLoginUsers">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Log User Login Terahir</MudText>
+                        <MudSpacer />
+                    </ToolBarContent>
+                    <Columns>
+                        <PropertyColumn Property="x => x.NamaLengkap" Title="Nama Lengkap"/>
+                        <PropertyColumn Property="x => x.LastLogin" Title="Terahir Login"/>
+                    </Columns>
+                </MudDataGrid>
+            </MudPaper>
+        </MudItem>
+    }
+
+    
+    
+
+    
+</MudGrid>
+
+@code {
+    [Inject] IDashboard _dashboards { get; set; }
+
+    Random random = new Random();
+    private ChartOptions options = new ChartOptions();
+
+    private UserExamView? selectedView;
+
+    private AdminDashboardData data = new();
+    private CancellationTokenSource cts = new CancellationTokenSource();
+    bool isLoading = true;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            data = await _dashboards.GetAdmin(cts.Token);
+            isLoading = false;
+
+
+
+            StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
+    }
+    
+}

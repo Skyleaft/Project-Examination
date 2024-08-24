@@ -38,9 +38,9 @@
                         <MudText Typo="Typo.body2">Selesai : @data.Room.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
                     </MudStack>
                     @{
-                        if (data.IsDone)
+                        if (data.IsDone && data.ScoreNormalizeData!=null)
                         {
-                            <MudText Typo="Typo.body2">Nilai Terakhir :<b>@data.ScoreNormalizeData</b></MudText>
+                            <MudText Typo="Typo.body2">Nilai Terakhir :<b>@data.ScoreNormalizeData.Value.ToString("F2")</b></MudText>
                         }
                     }
                 </MudPaper>

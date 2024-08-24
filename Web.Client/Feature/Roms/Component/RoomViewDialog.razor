@@ -22,8 +22,8 @@
                     <Columns>
                         <PropertyColumn Property="x => x.User.NamaLengkap" Title="Nama Lengkap"/>
                         <PropertyColumn Property="x => CheckStatus(x.IsOngoing, x.IsDone)" Title="Status"/>
-                        <PropertyColumn Property="x => x.TimeLeft" Title="Sisa Waktu"/>
-                        <PropertyColumn Property="x => x.ScoreNormalizeData" Title="Nilai"/>
+                        <PropertyColumn Property="x => x.TimeLeft" Format="hh\:mm" Title="Sisa Waktu"/>
+                        <PropertyColumn Property="x => x.ScoreNormalizeData" Format="F2" Title="Nilai"/>
                     </Columns>
                     <PagerContent>
                         <MudDataGridPager T="UserExam"/>

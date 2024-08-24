@@ -16,9 +16,6 @@
         </MudNavGroup>
     </AuthorizeView>
     <AuthorizeView Roles="User,Superuser">
-        <MudNavGroup Title="Ruangan Ujian" Icon="@Icons.Material.Filled.Assessment" Expanded="true">
-            <MudNavLink Href="/userroom" Match="NavLinkMatch.All">Ruangan</MudNavLink>
-            @* <MudNavLink Href="/userroom/cari" Match="NavLinkMatch.All">Cari Ujian</MudNavLink> *@
-        </MudNavGroup>
+        <MudNavLink Href="/userroom" Icon="@Icons.Material.Filled.Assessment" Match="NavLinkMatch.All">Ruangan</MudNavLink>
     </AuthorizeView>
 </MudNavMenu>

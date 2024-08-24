@@ -1,18 +1,21 @@
 ﻿@using global::CoreLib.RoomSet
 @using Web.Client.Interfaces
 @inject IDialogService Dialog
-<MudCard Style="width: 280px; min-width: 280px">
+<MudCard>
     <MudCardMedia Image="@strImage" Height="100"/>
     <MudCardContent>
-        <MudText Typo="Typo.h6">@data?.Nama</MudText>
-        <MudText Typo="Typo.body2">Dibuat Oleh : @data?.CreatedBy</MudText>
-        @{
-            if (!string.IsNullOrEmpty(data?.LastModifiedBy))
-            {
-                <MudText Typo="Typo.caption">*Diperbarui Oleh : @data.LastModifiedBy</MudText>
-                <MudText Typo="Typo.caption"> Tanggal : @data.LastModifiedOn?.ToString("dd/MM/yyyy")</MudText>
+        <MudPaper MaxWidth="300px" Elevation="0">
+            <MudText Typo="Typo.h6">@data?.Nama</MudText>
+            <MudText Typo="Typo.body2">Dibuat Oleh : @data?.CreatedBy</MudText>
+            @{
+                if (!string.IsNullOrEmpty(data?.LastModifiedBy))
+                {
+                    <MudText Typo="Typo.caption">*Diperbarui Oleh : @data.LastModifiedBy</MudText>
+                    <MudText Typo="Typo.caption"> Tanggal : @data.LastModifiedOn?.ToString("dd/MM/yyyy")</MudText>
+                }
             }
-        }
+        </MudPaper>
+
     </MudCardContent>
     <MudCardActions>
         <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="OnEdit"></MudIconButton>
