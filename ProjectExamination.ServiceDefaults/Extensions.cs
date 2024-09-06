@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
@@ -36,10 +38,18 @@ public static class Extensions
 
     public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
     {
+        var seqURL =builder.Configuration["SEQ_URL"];
+        var seqApiKeys = builder.Configuration["SEQ_API_KEY"];
         builder.Logging.AddOpenTelemetry(logging =>
         {
             logging.IncludeFormattedMessage = true;
             logging.IncludeScopes = true;
+            logging.AddOtlpExporter(a =>
+            {
+                a.Endpoint = new Uri(seqURL);
+                a.Protocol = OtlpExportProtocol.HttpProtobuf;
+                a.Headers = $"X-Seq-ApiKey={seqApiKeys}";
+            });
         });
 
         builder.Services.AddOpenTelemetry()
@@ -52,6 +62,7 @@ public static class Extensions
             .WithTracing(tracing =>
             {
                 tracing.AddAspNetCoreInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation()
                     // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
                     //.AddGrpcClientInstrumentation()
                     .AddHttpClientInstrumentation();

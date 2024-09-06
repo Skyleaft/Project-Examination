@@ -17,6 +17,6 @@ public interface IUser
     public Task<ServiceResponse> ForceActivate(string userID);
     public Task<ServiceResponse> ResetPassword(PasswordReset data);
     public Task<string> GenerateResetPassword(string userID);
-    public Task<ServiceResponse> UpdateLastLogin(string userID);
+    public Task<ServiceResponse> UpdateLastLogin(string userID, CancellationToken ct);
     public Task<ValidUserResponse> ValidateUserReset(validuserDTO r);
 }

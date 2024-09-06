@@ -84,7 +84,7 @@ public class UserService : IUser
         return userDTO;
     }
 
-    public Task<ServiceResponse> UpdateLastLogin(string userID)
+    public Task<ServiceResponse> UpdateLastLogin(string userID, CancellationToken ct)
     {
         throw new NotImplementedException();
     }

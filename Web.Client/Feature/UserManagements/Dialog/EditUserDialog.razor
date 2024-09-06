@@ -120,6 +120,13 @@
                                 <MudButton Variant="Variant.Outlined" FullWidth="true" OnClick="OnResetPassword">
                                     Reset Password
                                 </MudButton>
+                                <MudStack Row="true" Spacing="2">
+                                    <MudText>Email Status <b>@(userModel.EmailConfirmed ? "Active" : "Non Active")</b></MudText>
+                                    <MudButton Variant="Variant.Outlined" FullWidth="true" OnClick="OnConfirmEmail">
+                                        Manual Confirm Email
+                                    </MudButton>
+                                </MudStack>
+                                
                             </MudStack>
 
                         </MudCardContent>
@@ -178,6 +185,8 @@
         {
             dataProv = await _reference.GetAllprovinsi();
             dataKota = await _reference.GetAllKota();
+            SelectedKota = dataKota.FirstOrDefault(x => x.Id == userModel.KotaId);
+            SelectedProv = dataProv.FirstOrDefault(x => x.Id == SelectedKota.ProvinsiId);
             StateHasChanged();
         }
     }
@@ -258,6 +267,11 @@
             var parameters = new DialogParameters<ResetPassDialog> { { x => x.urlReset, reseturi } };
             DialogService.ShowAsync<ResetPassDialog>("Reset URL",parameters);
         }
+    }
+
+    private void OnConfirmEmail()
+    {
+        userModel.EmailConfirmed = true;
     }
 
 }

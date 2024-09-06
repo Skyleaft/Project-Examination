@@ -223,6 +223,7 @@
         var parameters = new DialogParameters<ViewJawabanDialog>();
         parameters.Add(x => x.jawabanUser, jawaban);
         parameters.Add(x=>x.room,room);
+        parameters.Add(x=>x.forceShowJawaban, userExam.RetryCount==0);
         var form = await Dialog.ShowAsync<ViewJawabanDialog>("Pembahasan Soal", parameters, maxWidth);
         var result = await form.Result;
     }

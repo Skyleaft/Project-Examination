@@ -127,7 +127,7 @@ public class RoomService : IRoom
                      x.Kode.ToLower().Contains(r.Search.ToLower())
             )
             .Where(x => x.CreatedBy == Username)
-            .OrderBy(x => x.CreatedOn)
+            .OrderByDescending(x => x.CreatedOn)
             .ToPaginatedList(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
     }
@@ -151,6 +151,7 @@ public class RoomService : IRoom
                      x.Kode.ToLower().Contains(r.Search.ToLower())
             )
             .Where(x => x.CreatedBy == Username)
+            .OrderByDescending(x=>x.CreatedOn)
             .Select(y =>
                 new RoomExam
                 {

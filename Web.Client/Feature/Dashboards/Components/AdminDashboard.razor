@@ -103,7 +103,9 @@
                     </ToolBarContent>
                     <Columns>
                         <PropertyColumn Property="x => x.NamaLengkap" Title="Nama Lengkap"/>
-                        <PropertyColumn Property="x => x.LastLogin" Title="Terahir Login"/>
+                        <PropertyColumn Property="x => x.LastLogin.ToLocalTime()"
+                                        Format="dd-MMM-yyyy HH:mm" 
+                                        Title="Terahir Login"/>
                     </Columns>
                 </MudDataGrid>
             </MudPaper>

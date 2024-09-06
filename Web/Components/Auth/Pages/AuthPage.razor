@@ -11,6 +11,7 @@
 @inject SignInManager<ApplicationUser> signInManager
 @inject IdentityRedirectManager RedirectManager
 @inject IUser _user
+@implements IAsyncDisposable
 
 <EditForm Model="model" method="post" OnValidSubmit="OnValidSubmit" FormName="login">
     <DataAnnotationsValidator/>
@@ -64,6 +65,8 @@
     [Inject] HttpClient httpClient { get; set; }
     [Inject] ILocalStorageService _localStorageService { get; set; }
     private string? errorMessage;
+    
+    private CancellationTokenSource cts = new CancellationTokenSource();
 
     private bool isVisible;
 
@@ -106,7 +109,7 @@
                 //dial.Close();
                 if (string.IsNullOrEmpty(ReturnUrl))
                 {
-                     var res = await _user.UpdateLastLogin(finduser.Id);
+                     var res = await _user.UpdateLastLogin(finduser.Id,cts.Token);
                      if(res.Flag)
                          RedirectManager.RedirectTo("/");
                         
@@ -114,7 +117,7 @@
                 else
                 {
                     //RedirectManager.RedirectTo(ReturnUrl);
-                    var res = await _user.UpdateLastLogin(finduser.Id);
+                    var res = await _user.UpdateLastLogin(finduser.Id,cts.Token);
                     if(res.Flag)
                         RedirectManager.RedirectTo(ReturnUrl);
 
@@ -142,6 +145,12 @@
         {
             navManager.NavigateTo("/",true);
         }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
     }
 
 }

@@ -78,6 +78,7 @@ public class UserService : IUser
         finduser.Pekerjaan = r.Pekerjaan;
         finduser.KotaId = r.KotaId;
         finduser.LastLogin = r.LastLogin;
+        finduser.EmailConfirmed = r.EmailConfirmed;
         var updated = await _userManager.UpdateAsync(finduser);
         if (oldData.Role != r.Role)
         {
@@ -132,11 +133,11 @@ public class UserService : IUser
         return token;
     }
 
-    public async Task<ServiceResponse> UpdateLastLogin(string userID)
+    public async Task<ServiceResponse> UpdateLastLogin(string userID, CancellationToken ct)
     {
         var finduser = await _userManager.FindByIdAsync(userID);
         finduser.LastLogin = DateTime.UtcNow;
-        await _appDbContext.SaveChangesAsync();
+        await _appDbContext.SaveChangesAsync(ct);
         return new ServiceResponse(true, "Berhasil Login");
         
     }

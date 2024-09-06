@@ -27,4 +27,5 @@ public class UserDTO
     public string Role { get; set; }
     [Required(ErrorMessage = "Asal Kota harus Diisi")]
     public string KotaId { get; set; }
+    public bool EmailConfirmed { get; set; }
 }
