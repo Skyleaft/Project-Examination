@@ -15,15 +15,15 @@ public class ExamService : IExam
         _dbContext = dbContext;
     }
 
-    public async Task<CreatedResponse<Exam>> Create(Exam r)
+    public async Task<CreatedResponse<Exam>> Create(Exam r, CancellationToken ct)
     {
         r.CreatedOn = DateTime.UtcNow;
         var created = _dbContext.Exam.Add(r);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync(ct);
         return new CreatedResponse<Exam>(true, "Data Berhasil Ditambahkan", created.Entity);
     }
 
-    public async Task<ServiceResponse> Update(Exam r)
+    public async Task<ServiceResponse> Update(Exam r, CancellationToken ct)
     {
         var exam = await Get(r.Id);
         if (exam == null) return new ServiceResponse(false, "data tidak ditemukan");
@@ -36,7 +36,8 @@ public class ExamService : IExam
         {
             if (!r.Soals.Any(c => c.Id == existingChild.Id))
                 _dbContext.Soal.Remove(existingChild);
-            _dbContext.SoalJawaban.RemoveRange(existingChild.PilihanJawaban);
+            if (existingChild.PilihanJawaban != null) 
+                _dbContext.SoalJawaban.RemoveRange(existingChild.PilihanJawaban);
         }
 
         // Update and Insert children
@@ -49,17 +50,19 @@ public class ExamService : IExam
             {
                 // Update child
                 _dbContext.Entry(existingChild).CurrentValues.SetValues(soal);
-                _dbContext.SoalJawaban.AddRange(soal.PilihanJawaban);
+                if (soal.PilihanJawaban != null) 
+                    _dbContext.SoalJawaban.AddRange(soal.PilihanJawaban);
             }
 
             else
             {
                 _dbContext.Soal.Add(soal);
-                _dbContext.SoalJawaban.AddRange(soal.PilihanJawaban);
+                if (soal.PilihanJawaban != null) 
+                    _dbContext.SoalJawaban.AddRange(soal.PilihanJawaban);
             }
         }
 
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync(ct);
         return new ServiceResponse(true, "data berhasil diupdate");
     }
 
@@ -69,7 +72,7 @@ public class ExamService : IExam
         if (find == null) return new ServiceResponse(false, "data tidak ditemukan");
 
         _dbContext.Exam.Remove(find);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return new ServiceResponse(true, "data berhasil dihapus");
     }
 

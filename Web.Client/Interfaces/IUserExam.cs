@@ -14,9 +14,9 @@ public interface IUserExam
     public Task<UserExam> GetOnly(Guid Id);
     public Task<PaginatedResponse<UserExam>> Find(FindRequest r, CancellationToken ct, string? UserId = "");
     public Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r, CancellationToken ct);
-    public Task<List<UserAnswer>> GetUserAnswers(Guid UserExamId);
+    public Task<List<UserAnswer>> GetUserAnswers(Guid UserExamId, CancellationToken ct);
     public Task<ServiceResponse> RetryExam(Guid UserExamId, CancellationToken ct);
-    public Task<ServiceResponse> StartExam(Guid UserExamId);
+    public Task<ServiceResponse> StartExam(Guid UserExamId, CancellationToken ct);
 }
 
 public class CreateUserExamDTO

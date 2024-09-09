@@ -10,30 +10,30 @@ namespace Web.Client.Feature.BankSoal;
 
 public class ExamService(HttpClient _httpClient) : IExam
 {
-    public async Task<CreatedResponse<Exam>> Create(Exam r)
+    public async Task<CreatedResponse<Exam>> Create(Exam r, CancellationToken ct)
     {
-        var res = await _httpClient.PostAsJsonAsync("api/exam/", r);
+        var res = await _httpClient.PostAsJsonAsync("api/exam/", r, cancellationToken: ct);
         if (res.IsSuccessStatusCode)
         {
-            var createdUser = await res.Content.ReadFromJsonAsync<CreatedResponse<Exam>>();
+            var createdUser = await res.Content.ReadFromJsonAsync<CreatedResponse<Exam>>(cancellationToken: ct);
             return createdUser;
         }
 
         return new CreatedResponse<Exam>(false, res.ReasonPhrase);
     }
 
-    public async Task<ServiceResponse> Update(Exam r)
+    public async Task<ServiceResponse> Update(Exam r, CancellationToken ct)
     {
-        var res = await _httpClient.PutAsJsonAsync($"api/exam/{r.Id}", r);
+        var res = await _httpClient.PutAsJsonAsync($"api/exam/{r.Id}", r, cancellationToken: ct);
         if (res.IsSuccessStatusCode)
         {
-            var content = await res.Content.ReadFromJsonAsync<ServiceResponse>();
+            var content = await res.Content.ReadFromJsonAsync<ServiceResponse>(cancellationToken: ct);
             return content;
         }
 
         if (res.StatusCode == HttpStatusCode.BadRequest)
         {
-            var content = await res.Content.ReadFromJsonAsync<BadResponse>();
+            var content = await res.Content.ReadFromJsonAsync<BadResponse>(cancellationToken: ct);
             return new ServiceResponse(false, JsonSerializer.Serialize(content.Errors));
         }
 

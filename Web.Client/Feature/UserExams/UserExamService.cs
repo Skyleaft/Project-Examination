@@ -100,9 +100,9 @@ public class UserExamService(HttpClient _httpClient) : IUserExam
         return new ServiceResponse(false, res.ReasonPhrase);
     }
 
-    public async Task<List<UserAnswer>> GetUserAnswers(Guid UserExamId)
+    public async Task<List<UserAnswer>> GetUserAnswers(Guid UserExamId, CancellationToken ct)
     {
-        var data = await _httpClient.GetFromJsonAsync<List<UserAnswer>>($"/api/userexam/{UserExamId}/userAnswer");
+        var data = await _httpClient.GetFromJsonAsync<List<UserAnswer>>($"/api/userexam/{UserExamId}/userAnswer", cancellationToken: ct);
         return data;
     }
 
@@ -117,12 +117,12 @@ public class UserExamService(HttpClient _httpClient) : IUserExam
         return new ServiceResponse(false, res.ReasonPhrase);
     }
 
-    public async Task<ServiceResponse> StartExam(Guid UserExamId)
+    public async Task<ServiceResponse> StartExam(Guid UserExamId, CancellationToken ct)
     {
-        var res = await _httpClient.GetAsync($"/api/userexam/start/{UserExamId}");
+        var res = await _httpClient.GetAsync($"/api/userexam/start/{UserExamId}", ct);
         if (res.IsSuccessStatusCode)
         {
-            var data = await res.Content.ReadFromJsonAsync<ServiceResponse>();
+            var data = await res.Content.ReadFromJsonAsync<ServiceResponse>(cancellationToken: ct);
             return data;
         }
         return new ServiceResponse(false, res.ReasonPhrase);

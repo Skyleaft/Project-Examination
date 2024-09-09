@@ -19,7 +19,7 @@ public class Endpoint : EndpointWithoutRequest<ServiceResponse>
 
     public override async Task HandleAsync( CancellationToken ct)
     {
-        var res = await _repo.StartExam(Route<Guid>("Id"));
+        var res = await _repo.StartExam(Route<Guid>("Id"),ct);
         await SendAsync(res, cancellation: ct);
     }
 }

@@ -179,7 +179,7 @@
         }
         else
         {
-            var res = await _userExamRepo.StartExam(userExam.Id);
+            var res = await _userExamRepo.StartExam(userExam.Id, cts.Token);
             if (res.Flag)
             {
                 _navigationManager.NavigateTo($"exam/userexam/{Id}");

@@ -9,6 +9,7 @@
 @layout SoalLayout
 @attribute [Authorize(Roles = "Superuser,Dosen,Operator")]
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@implements IAsyncDisposable
 
 @if (isLoading)
 {
@@ -292,6 +293,8 @@ else
     private string curentUser;
     private readonly string[] alpha = { "A", "B", "C", "D", "E", "F", "G" };
     private string imageUrl;
+    
+    private CancellationTokenSource cts = new CancellationTokenSource();
 
     private IQuillModule[] _modules =
     {
@@ -389,25 +392,25 @@ else
             var dial = await DialogService.ShowAsync<BluryDialog>("Harap Tunggu...", options);
             if (model.Id == 0)
             {
-                var created = await examRepo.Create(model);
+                var created = await examRepo.Create(model, cts.Token);
                 if (created.isSuccess)
                 {
                     model = created.Data;
                 }
 
                 dial.Close();
-                DialogService.ShowMessageBox(
+                await DialogService.ShowMessageBox(
                     "Info",
                     "Soal Berhasil di Simpan",
                     "Ok");
             }
             else
             {
-                var edited = await examRepo.Update(model);
+                var edited = await examRepo.Update(model,cts.Token);
                 if (edited.Flag)
                 {
                     dial.Close();
-                    DialogService.ShowMessageBox(
+                    await DialogService.ShowMessageBox(
                         "Info",
                         "Soal Berhasil di Update",
                         "Ok");
@@ -415,7 +418,7 @@ else
                 else
                 {
                     dial.Close();
-                    DialogService.ShowMessageBox(
+                    await DialogService.ShowMessageBox(
                         "Error",
                         edited.Message,
                         "Ok");
@@ -424,7 +427,7 @@ else
         }
         else
         {
-            DialogService.ShowMessageBox(
+            await DialogService.ShowMessageBox(
                 "Info",
                 "Nama Paket Soal Tidak Boleh Kosong",
                 "Ok");
@@ -477,6 +480,11 @@ else
         }
 
         StateHasChanged();
+    }
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
     }
 
 }

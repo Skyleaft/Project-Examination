@@ -171,7 +171,7 @@ public class UserExamService : IUserExam
 
     public async Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r, CancellationToken ct)
     {
-        var data = await _dbContext.UserAnswer.FirstOrDefaultAsync(x => x.Id == r.UserAnswerId);
+        var data = await _dbContext.UserAnswer.FirstOrDefaultAsync(x => x.Id == r.UserAnswerId, cancellationToken: ct);
         if (data == null)
             return new ServiceResponse(false, "data tidak ditemukan");
         var exam = await _dbContext.UserExam.FirstOrDefaultAsync(x => x.Id == r.UserExamId, cancellationToken: ct);
@@ -184,11 +184,11 @@ public class UserExamService : IUserExam
         return new ServiceResponse(true, "data berhasil diupdate");
     }
 
-    public async Task<List<UserAnswer>> GetUserAnswers(Guid UserExamId)
+    public async Task<List<UserAnswer>> GetUserAnswers(Guid UserExamId, CancellationToken ct)
     {
-        var data = _dbContext.UserAnswer
+        var data = await _dbContext.UserAnswer
             .Where(x => x.UserExamId == UserExamId)
-            .ToList();
+            .ToListAsync(cancellationToken: ct);
         return data;
     }
 
@@ -218,16 +218,16 @@ public class UserExamService : IUserExam
         return new ServiceResponse(true, "data berhasil diupdate");
     }
 
-    public async Task<ServiceResponse> StartExam(Guid UserExamId)
+    public async Task<ServiceResponse> StartExam(Guid UserExamId, CancellationToken ct)
     {
         var data = await _dbContext
             .UserExam
-            .FirstOrDefaultAsync(x => x.Id == UserExamId);
+            .FirstOrDefaultAsync(x => x.Id == UserExamId, cancellationToken: ct);
         if (data == null)
             return new ServiceResponse(false, "data tidak ditemukan");
         data.IsOngoing = true;
         data.StartDate = DateTime.UtcNow;
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(ct);
         return new ServiceResponse(true, "data berhasil diupdate");
     }
 }

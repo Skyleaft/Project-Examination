@@ -11,7 +11,12 @@
             if (!string.IsNullOrEmpty(data.LastModifiedBy))
             {
                 <MudText Typo="Typo.caption">
-                    <i>*@data.LastModifiedBy @(data.LastModifiedOn.Value.ToString("dd/MM/yyyy HH:mm "))</i>
+                    <i>*
+                        @if (data.LastModifiedOn != null)
+                        {
+                            @data.LastModifiedOn.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm ")
+                        }
+                    </i>
                 </MudText>
             }
         }

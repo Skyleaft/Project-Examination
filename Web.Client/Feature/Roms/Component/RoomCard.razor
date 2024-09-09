@@ -11,7 +11,7 @@
                 if (!string.IsNullOrEmpty(data?.LastModifiedBy))
                 {
                     <MudText Typo="Typo.caption">*Diperbarui Oleh : @data.LastModifiedBy</MudText>
-                    <MudText Typo="Typo.caption"> Tanggal : @data.LastModifiedOn?.ToString("dd/MM/yyyy")</MudText>
+                    <MudText Typo="Typo.caption"> Tanggal : @data.LastModifiedOn?.ToLocalTime().ToString("dd/MM/yyyy")</MudText>
                 }
             }
         </MudPaper>

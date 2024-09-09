@@ -19,7 +19,7 @@ public class Endpoint : Endpoint<Exam, CreatedResponse<Exam>>
 
     public override async Task HandleAsync(Exam r, CancellationToken ct)
     {
-        var res = await _examService.Create(r);
+        var res = await _examService.Create(r,ct);
         await SendCreatedAtAsync($"/exam/{res.Data.Id}", res.Data, res, cancellation: ct);
     }
 }

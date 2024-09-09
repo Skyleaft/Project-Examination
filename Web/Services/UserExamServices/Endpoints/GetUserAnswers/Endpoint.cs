@@ -18,7 +18,7 @@ public class Endpoint : EndpointWithoutRequest<List<UserAnswer>>
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var res = await _repo.GetUserAnswers(Route<Guid>("Id"));
+        var res = await _repo.GetUserAnswers(Route<Guid>("Id"),ct);
         await SendAsync(res, cancellation: ct);
     }
 }
