@@ -24,52 +24,60 @@
     else
     {
         <MudCard>
-            <MudCardMedia Image="@strImage" Height="100"/>
-            <MudCardHeader Class="mb-n7">
+            <MudCardMedia Image="@strImage" Height="130"/>
+            <MudCardHeader Class="mb-n7" >
                 <MudText Typo="Typo.h6">@data.Room.Nama</MudText>
-                <MudSpacer/>
+                <MudSpacer />
+                @if (!data.Room.IsActive)
+                {
+                    <MudText Typo="Typo.body2">Ujian Belum Dibuka</MudText>
+                }
+                else if (data.Room.JadwalStart.ToLocalTime() > DateTime.Now.ToLocalTime())
+                {
+                    <MudText Typo="Typo.body2">Ujian Belum Dimulai</MudText>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="OnLihat">Lihat</MudButton>
+                }
             </MudCardHeader>
-            <MudCardContent>
-                <MudPaper MaxWidth="300px" Elevation="0">
-                    <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
-                    <MudText Typo="Typo.body2">Kode Ruangan :<b>@data.Room.Kode</b></MudText>
-                    <MudStack Row="true" Spacing="2">
-                        <MudText Typo="Typo.body2">Mulai : @data.Room.JadwalStart.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
-                        <MudText Typo="Typo.body2">Selesai : @data.Room.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
-                    </MudStack>
-                    @{
-                        if (data.IsDone && data.ScoreNormalizeData!=null)
-                        {
-                            <MudText Typo="Typo.body2">Nilai Terakhir :<b>@data.ScoreNormalizeData.Value.ToString("F2")</b></MudText>
-                        }
-                    }
-                </MudPaper>
+            <MudCardContent >
+                <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                    <MudPaper Width="310px" Elevation="0">
+                        <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
+                        <MudStack Row="true" Spacing="3" Justify="Justify.SpaceBetween" StretchItems="StretchItems.All" AlignItems="AlignItems.Center">
+                            <MudStack Spacing="0">
+                                <MudText Align="Align.Start">Mulai</MudText>
+                                <MudText Typo="Typo.caption" Align="Align.Start">@data.Room.JadwalStart.ToLocalTime().ToString("dd-MMM-yyyy HH:mm") </MudText>
+                            </MudStack>
+                            <MudStack Spacing="0">
+                                <MudText Align="Align.End">Selesai</MudText>
+                                <MudText Typo="Typo.caption" Align="Align.End">@data.Room.JadwalEnd.ToLocalTime().ToString("dd-MMM-yyyy HH:mm")</MudText>
+                            </MudStack>
+                        </MudStack>
+                    </MudPaper>
+                </MudHidden>
+                
+                
+                <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+                    <MudPaper Width="280" MinWidth="270px" Elevation="0">
+                        <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
+                        <MudStack Row="true" Spacing="2" StretchItems="StretchItems.All" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                            <MudStack Spacing="0">
+                                <MudText Typo="Typo.subtitle1" Align="Align.Center">Mulai</MudText>
+                                <MudText Typo="Typo.caption" Align="Align.Start">@data.Room.JadwalStart.ToLocalTime().ToString("dd-MMM-yyyy HH:mm") </MudText>
+                            </MudStack>
+                            <MudStack Spacing="0">
+                                <MudText Typo="Typo.subtitle1" Align="Align.Center">Selesai</MudText>
+                                <MudText Typo="Typo.caption" Align="Align.End">@data.Room.JadwalEnd.ToLocalTime().ToString("dd-MMM-yyyy HH:mm")</MudText>
+                            </MudStack>
+                        </MudStack>
+                    </MudPaper>
+                </MudHidden>
 
 
             </MudCardContent>
-            <MudCardActions>
-                <MudSpacer/>
-                @{
-                    if (!data.Room.IsActive)
-                    {
-                        <MudText Typo="Typo.body2">Ujian Belum Dibuka</MudText>
-                    }
-                    else if (data.Room.JadwalStart.ToLocalTime() > DateTime.Now.ToLocalTime())
-                    {
-                        <MudText Typo="Typo.body2">Ujian Belum Dimulai</MudText>
-                    }
-                    @* else if (data.Room.JadwalEnd.ToLocalTime() < DateTime.Now.ToLocalTime()) *@
-                    @* { *@
-                    @*     <MudText Typo="Typo.body2">Ujian Telah Berakhir</MudText> *@
-                    @* } *@
-                    else
-                    {
-                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnLihat">Lihat</MudButton>
-                    }
-                }
 
-
-            </MudCardActions>
         </MudCard>
     }
 }
@@ -81,10 +89,11 @@
 
     [Inject] NavigationManager _navigationManager { get; set; }
 
+    private int cardWidth;
     private CancellationTokenSource cts = new CancellationTokenSource();
-    
+
     private string strImage = "/images/room-bg.jpg";
-    DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter", CloseButton = true};
+    DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter", CloseButton = true };
 
     protected override async Task OnInitializedAsync()
     {
@@ -99,7 +108,7 @@
             {
                 strImage = $"data:image;base64,{Convert.ToBase64String(data.Room.Thumbnail)}";
             }
-            
+
 
             StateHasChanged();
         }
@@ -111,7 +120,7 @@
         var parameters = new DialogParameters<UserRoomDialog>();
         parameters.Add(x => x.userExam, data);
         parameters.Add(x => x.room, data.Room);
-        var form = await Dialog.ShowAsync<UserRoomDialog>("Detail Ruangan", parameters, maxWidth);
+        var form = await Dialog.ShowAsync<UserRoomDialog>(data.Room.Nama, parameters, maxWidth);
         var result = await form.Result;
         if (!result.Canceled)
             await RefreshData.InvokeAsync(1);

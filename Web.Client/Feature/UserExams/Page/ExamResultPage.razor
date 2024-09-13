@@ -29,7 +29,7 @@
                             {
                                 <MudButton Variant="CheckSoalIsAnswer(item.Soal)"
                                            OnClick="()=>OnNomorSoalClick(item)"
-                                           Color="Color.Primary"
+                                           Color="@_answerColor"
                                            Style="width: 50px; height: 50px;">
                                     @item.Soal.Nomor
                                 </MudButton>
@@ -169,6 +169,7 @@
     private Room room;
     private bool isLoading = true;
     private CancellationTokenSource cts = new CancellationTokenSource();
+    private Color _answerColor;
     
     DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 
@@ -193,9 +194,26 @@
     private Variant CheckSoalIsAnswer(Soal? soal)
     {
         if (userExam.UserAnswers == null)
-            return Variant.Outlined;
+        {
+            _answerColor = Color.Default;
+            return Variant.Outlined; 
+        }
+
         if (userExam.UserAnswers.Find(x => x.SoalId == soal.Id).SoalJawabanId == null)
+        {
+            _answerColor = Color.Default;
             return Variant.Outlined;
+        }
+
+        if (userExam.UserAnswers.Find(x => x.SoalId == soal.Id).SoalJawaban.Point != soal.MaxPoint)
+        {
+            _answerColor = Color.Error;
+        }
+        else
+        {
+            _answerColor = Color.Success; 
+        }
+        
         return Variant.Filled;
     }
 

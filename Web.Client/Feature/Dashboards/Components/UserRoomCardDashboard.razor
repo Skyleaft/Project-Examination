@@ -29,48 +29,55 @@
             <MudCardHeader Class="mb-n7">
                 <MudText Typo="Typo.h6">@data.Room.Nama</MudText>
                 <MudSpacer/>
+                @if (!data.Room.IsActive)
+                {
+                <MudText Typo="Typo.body2">Ujian Belum Dibuka</MudText>
+                }
+                else if (data.Room.JadwalStart.ToLocalTime() > DateTime.Now.ToLocalTime())
+                {
+                <MudText Typo="Typo.body2">Ujian Belum Dimulai</MudText>
+                }
+                else
+                {
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="OnLihat">Lihat</MudButton>
+                }
             </MudCardHeader>
             <MudCardContent>
-                <MudPaper MaxWidth="300px" Elevation="0">
-                    <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
-                    <MudText Typo="Typo.body2">Kode Ruangan :<b>@data.Room.Kode</b></MudText>
-                    <MudStack Row="true" Spacing="2">
-                        <MudText Typo="Typo.body2">Mulai : @data.Room.JadwalStart.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
-                        <MudText Typo="Typo.body2">Selesai : @data.Room.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
-                    </MudStack>
-                    @{
-                        if (data.IsDone)
-                        {
-                            <MudText Typo="Typo.body2">Nilai Terakhir :<b>@data.ScoreNormalizeData</b></MudText>
-                        }
-                    }
-                </MudPaper>
+                <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                    <MudPaper Width="310px" Elevation="0">
+                        <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
+                        <MudStack Row="true" Spacing="3" Justify="Justify.SpaceBetween" StretchItems="StretchItems.All" AlignItems="AlignItems.Center">
+                            <MudStack Spacing="0">
+                                <MudText Align="Align.Start">Mulai</MudText>
+                                <MudText Typo="Typo.caption" Align="Align.Start">@data.Room.JadwalStart.ToLocalTime().ToString("dd-MMM-yyyy HH:mm") </MudText>
+                            </MudStack>
+                            <MudStack Spacing="0">
+                                <MudText Align="Align.End">Selesai</MudText>
+                                <MudText Typo="Typo.caption" Align="Align.End">@data.Room.JadwalEnd.ToLocalTime().ToString("dd-MMM-yyyy HH:mm")</MudText>
+                            </MudStack>
+                        </MudStack>
+                    </MudPaper>
+                </MudHidden>
 
 
+                <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+                    <MudPaper Width="280" MinWidth="270px" Elevation="0">
+                        <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
+                        <MudStack Row="true" Spacing="2" StretchItems="StretchItems.All" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                            <MudStack Spacing="0">
+                                <MudText Typo="Typo.subtitle1" Align="Align.Center">Mulai</MudText>
+                                <MudText Typo="Typo.caption" Align="Align.Start">@data.Room.JadwalStart.ToLocalTime().ToString("dd-MMM-yyyy HH:mm") </MudText>
+                            </MudStack>
+                            <MudStack Spacing="0">
+                                <MudText Typo="Typo.subtitle1" Align="Align.Center">Selesai</MudText>
+                                <MudText Typo="Typo.caption" Align="Align.End">@data.Room.JadwalEnd.ToLocalTime().ToString("dd-MMM-yyyy HH:mm")</MudText>
+                            </MudStack>
+                        </MudStack>
+                    </MudPaper>
+                </MudHidden>
             </MudCardContent>
-            <MudCardActions>
-                <MudSpacer/>
-                @{
-                    if (!data.Room.IsActive)
-                    {
-                        <MudText Typo="Typo.body2">Ujian Belum Dibuka</MudText>
-                    }
-                    else if (data.Room.JadwalStart.ToLocalTime() > DateTime.Now.ToLocalTime())
-                    {
-                        <MudText Typo="Typo.body2">Ujian Belum Dimulai</MudText>
-                    }
-                    @* else if (data.Room.JadwalEnd.ToLocalTime() < DateTime.Now.ToLocalTime()) *@
-                    @* { *@
-                    @*     <MudText Typo="Typo.body2">Ujian Telah Berakhir</MudText> *@
-                    @* } *@
-                    else
-                    {
-                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="OnLihat">Lihat</MudButton>
-                    }
-                }
 
 
-            </MudCardActions>
         </MudCard>
     }
 }
@@ -109,7 +116,7 @@
 
     private async Task OnLihat()
     {
-        
+        _navigationManager.NavigateTo("userroom");
     }
 
     public async ValueTask DisposeAsync()
