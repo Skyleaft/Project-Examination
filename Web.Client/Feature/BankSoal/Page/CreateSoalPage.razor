@@ -254,13 +254,13 @@ else
                                            StartIcon="@Icons.Material.Filled.Add">
                                     Tambah Jawaban
                                 </MudButton>
-                                <MudButton OnClick="Add5Jawaban"
+                                <MudButton OnClick="Add4Jawaban"
                                            FullWidth="false"
                                            Variant="Variant.Outlined"
                                            Color="Color.Primary"
                                            Class="py-2"
                                            StartIcon="@Icons.Material.Filled.Add">
-                                    5
+                                    4
                                 </MudButton>
                             </MudStack>
 
@@ -366,12 +366,14 @@ else
     private void AddSoal()
     {
         var totalSoal = model.Soals.Count;
+        var soalJawaban = new List<SoalJawaban>();
+        soalJawaban.Add(new SoalJawaban());
         var createdSoal = new Soal
         {
             Id = Guid.NewGuid(),
             Nomor = totalSoal + 1,
             ExamId = model.Id,
-            PilihanJawaban = new List<SoalJawaban>()
+            PilihanJawaban = soalJawaban
         };
         currentSoal = createdSoal;
         model.Soals.Add(createdSoal);
@@ -455,11 +457,11 @@ else
         StateHasChanged();
     }
 
-    private void Add5Jawaban()
+    private void Add4Jawaban()
     {
-        if (currentSoal.PilihanJawaban.Count == 0)
+        if (currentSoal.PilihanJawaban.Count == 1)
         {
-            for (var i = 1; i < 6; i++)
+            for (var i = 1; i < 5; i++)
             {
                 currentSoal.PilihanJawaban.Add(new SoalJawaban
                 {

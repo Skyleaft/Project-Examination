@@ -65,6 +65,12 @@
                                              Min="0" Max="50"/>
                         }
                     }
+                    <MudField Label="Munculkan Kunci Jawaban?" 
+                              HelperText="Munculkan Kunci Jawaban Ketika Sudah Mengerjakan Ujian" 
+                              Variant="Variant.Outlined" 
+                              InnerPadding="false">
+                        <MudSwitch @bind-Value="room.IsShowKunci" Color="Color.Success" />
+                    </MudField>
                     <div class="d-flex justify-center">
                         <MudImage ObjectFit="ObjectFit.Cover" Height="200" Src="@imagePath"  Elevation="25" Class="rounded-lg mx-4"/>
                     </div>
@@ -130,8 +136,12 @@
     string imagePath = "/images/room-bg.jpg";
 
     IEnumerable<Exam> _exams = new List<Exam>();
+
     DateTime? dateStart = DateTime.Today;
     DateTime? dateEnd = DateTime.Today;
+
+    DateOnly dateOnlyStart = DateOnly.FromDateTime(DateTime.Today);
+    DateOnly dateOnlyEnd=DateOnly.FromDateTime(DateTime.Today);
 
     TimeSpan? timeStart = new TimeSpan(00, 00, 00);
     TimeSpan? timeEnd = new TimeSpan(00, 00, 00);
@@ -153,8 +163,10 @@
             {
                 dateStart = room.JadwalStart.ToLocalTime();
                 dateEnd = room.JadwalEnd.ToLocalTime();
-                timeStart = room.JadwalStart.ToLocalTime().TimeOfDay;
-                timeEnd = room.JadwalEnd.ToLocalTime().TimeOfDay;
+                dateOnlyStart = DateOnly.FromDateTime(dateStart.Value);
+                dateOnlyEnd = DateOnly.FromDateTime(dateEnd.Value);
+                timeStart = dateStart.Value.TimeOfDay;
+                timeEnd = dateEnd.Value.TimeOfDay;
             }
 
             StateHasChanged();
@@ -175,8 +187,13 @@
 
     private async Task OnValidSubmit(EditContext context)
     {
-        room.JadwalStart = dateStart.Value.ToUniversalTime() + timeStart.Value;
-        room.JadwalEnd = dateEnd.Value.ToUniversalTime() + timeEnd.Value;
+        dateOnlyStart = DateOnly.FromDateTime(dateStart.Value);
+        dateOnlyEnd = DateOnly.FromDateTime(dateEnd.Value);
+        var startFixed = dateOnlyStart.ToDateTime(new TimeOnly(timeStart.Value.Ticks));
+        var endFixed = dateOnlyEnd.ToDateTime(new TimeOnly(timeEnd.Value.Ticks));
+        
+        room.JadwalStart = startFixed.ToUniversalTime();
+        room.JadwalEnd = endFixed.ToUniversalTime();
         var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
         var dial = await DialogService.ShowAsync<BluryDialog>("Harap Tunggu...", options);
 
@@ -208,6 +225,7 @@
         }
         else
         {
+            
             var created = await _roomRepo.Create(room);
             if (created.isSuccess)
             {

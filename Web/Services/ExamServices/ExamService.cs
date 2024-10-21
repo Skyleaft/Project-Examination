@@ -93,7 +93,7 @@ public class ExamService : IExam
         var data = await _dbContext.Exam.WhereIf(!string.IsNullOrEmpty(r.Search),
                 x => x.Nama.ToLower()
                     .Contains(r.Search.ToLower()))
-            .OrderBy(x => x.Id)
+            .OrderByDescending(x => x.CreatedOn)
             .ToPaginatedList(r.Page, r.PageSize, r.OrderBy, r.Direction, ct);
         return data;
     }

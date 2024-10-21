@@ -20,6 +20,11 @@ public class ExamView
 
     public int TotalSoal
     {
-        get { return Soals?.Count ?? 0; }
+        get
+        {
+            if (Soals == null || !Soals.Any())
+                return 0;
+            return Soals?.Count ?? 0;
+        }
     }
 }

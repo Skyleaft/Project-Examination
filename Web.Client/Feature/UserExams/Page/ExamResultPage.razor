@@ -193,14 +193,8 @@
 
     private Variant CheckSoalIsAnswer(Soal? soal)
     {
-        if (room.IsRepeatable)
+        if (room.IsShowKunci)
         {
-            if (userExam.UserAnswers == null)
-            {
-                _answerColor = Color.Default;
-                return Variant.Outlined; 
-            }
-
             if (userExam.UserAnswers.Find(x => x.SoalId == soal.Id).SoalJawabanId == null)
             {
                 _answerColor = Color.Default;
@@ -210,14 +204,17 @@
             if (userExam.UserAnswers.Find(x => x.SoalId == soal.Id).SoalJawaban.Point != soal.MaxPoint)
             {
                 _answerColor = Color.Error;
+                return Variant.Filled;
             }
             else
             {
                 _answerColor = Color.Success; 
+                return Variant.Filled;
             }
         }
         
-        return Variant.Filled;
+        _answerColor = Color.Default;
+        return Variant.Outlined; 
     }
 
     private async Task OnBackHome()
@@ -241,7 +238,7 @@
 
     private async Task OnNomorSoalClick(UserAnswer? jawaban)
     {
-        if (room.IsRepeatable)
+        if (room.IsShowKunci)
         {
             var parameters = new DialogParameters<ViewJawabanDialog>();
             parameters.Add(x => x.jawabanUser, jawaban);

@@ -11,12 +11,22 @@ public class Exam : IGenericModifier
 
     public int TotalSoal
     {
-        get { return Soals?.Count ?? 0; }
+        get
+        {
+            if (Soals == null || !Soals.Any())
+                return 0;
+            return Soals?.Count ?? 0;
+        }
     }
 
     public int TotalPoint
     {
-        get { return Soals?.Sum(x => x.MaxPoint) ?? 0; }
+        get
+        {
+            if (Soals == null || !Soals.Any())
+                return 0;
+            return Soals?.Sum(x => x.MaxPoint) ?? 0;
+        }
     }
 
     public byte[]? Thumbnail { get; set; }

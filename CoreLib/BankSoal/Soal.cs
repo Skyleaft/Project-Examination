@@ -11,16 +11,37 @@ public class Soal
 
     public int BobotPoint
     {
-        get { return PilihanJawaban?.Sum(x => x.Point) ?? 0; }
+        get
+        {
+            if (PilihanJawaban == null || !PilihanJawaban.Any())
+            {
+                return 0;
+            }
+            return PilihanJawaban?.Sum(x => x.Point) ?? 0;
+        }
     }
 
     public int MaxPoint
     {
-        get { return PilihanJawaban?.Max(x => x.Point) ?? 0; }
+        get
+        {
+            if (PilihanJawaban == null || !PilihanJawaban.Any())
+            {
+                return 0;
+            }
+            return PilihanJawaban?.Max(x => x.Point) ?? 0;
+        }
     }
 
     public int MinPoint
     {
-        get { return PilihanJawaban?.Min(x => x.Point) ?? 0; }
+        get
+        {
+            if (PilihanJawaban == null || !PilihanJawaban.Any())
+            {
+                return 0;
+            }
+            return PilihanJawaban?.Min(x => x.Point) ?? 0;
+        }
     }
 }
