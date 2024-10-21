@@ -193,25 +193,28 @@
 
     private Variant CheckSoalIsAnswer(Soal? soal)
     {
-        if (userExam.UserAnswers == null)
+        if (room.IsRepeatable)
         {
-            _answerColor = Color.Default;
-            return Variant.Outlined; 
-        }
+            if (userExam.UserAnswers == null)
+            {
+                _answerColor = Color.Default;
+                return Variant.Outlined; 
+            }
 
-        if (userExam.UserAnswers.Find(x => x.SoalId == soal.Id).SoalJawabanId == null)
-        {
-            _answerColor = Color.Default;
-            return Variant.Outlined;
-        }
+            if (userExam.UserAnswers.Find(x => x.SoalId == soal.Id).SoalJawabanId == null)
+            {
+                _answerColor = Color.Default;
+                return Variant.Outlined;
+            }
 
-        if (userExam.UserAnswers.Find(x => x.SoalId == soal.Id).SoalJawaban.Point != soal.MaxPoint)
-        {
-            _answerColor = Color.Error;
-        }
-        else
-        {
-            _answerColor = Color.Success; 
+            if (userExam.UserAnswers.Find(x => x.SoalId == soal.Id).SoalJawaban.Point != soal.MaxPoint)
+            {
+                _answerColor = Color.Error;
+            }
+            else
+            {
+                _answerColor = Color.Success; 
+            }
         }
         
         return Variant.Filled;
@@ -238,12 +241,16 @@
 
     private async Task OnNomorSoalClick(UserAnswer? jawaban)
     {
-        var parameters = new DialogParameters<ViewJawabanDialog>();
-        parameters.Add(x => x.jawabanUser, jawaban);
-        parameters.Add(x=>x.room,room);
-        parameters.Add(x=>x.forceShowJawaban, userExam.RetryCount==0);
-        var form = await Dialog.ShowAsync<ViewJawabanDialog>("Pembahasan Soal", parameters, maxWidth);
-        var result = await form.Result;
+        if (room.IsRepeatable)
+        {
+            var parameters = new DialogParameters<ViewJawabanDialog>();
+            parameters.Add(x => x.jawabanUser, jawaban);
+            parameters.Add(x=>x.room,room);
+            parameters.Add(x=>x.forceShowJawaban, userExam.RetryCount==0);
+            var form = await Dialog.ShowAsync<ViewJawabanDialog>("Pembahasan Soal", parameters, maxWidth);
+            var result = await form.Result;
+        }
+        
     }
 
 }
