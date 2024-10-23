@@ -15,7 +15,6 @@ public class Endpoint : Endpoint<FindRequest, PaginatedResponse<Exam>>
     public override void Configure()
     {
         Post("/exam/Find");
-        ResponseCache(60);
     }
 
     public override async Task HandleAsync(FindRequest r, CancellationToken ct)

@@ -8,7 +8,6 @@ public class Endpoint(AppDbContext repo) : EndpointWithoutRequest<List<Kota>>
     public override void Configure()
     {
         Get("/ref/kota/all");
-        ResponseCache(60);
     }
 
     public override async Task HandleAsync(CancellationToken ct)

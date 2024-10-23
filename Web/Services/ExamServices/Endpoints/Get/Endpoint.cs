@@ -14,7 +14,6 @@ public class Endpoint : EndpointWithoutRequest<Exam>
     public override void Configure()
     {
         Get("/exam/{Id}");
-        ResponseCache(60);
     }
 
     public override async Task HandleAsync(CancellationToken ct)

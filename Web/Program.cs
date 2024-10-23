@@ -95,7 +95,7 @@ builder.Services.AddResponseCompression(options =>
     options.EnableForHttps = true; // Optional: Enable compression for HTTPS
 });
 
-builder.Services.AddFastEndpoints().AddResponseCaching();
+builder.Services.AddFastEndpoints();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
@@ -106,8 +106,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
 app.MapDefaultEndpoints();
-app.UseResponseCaching()
-    .UseFastEndpoints(c =>
+app.UseFastEndpoints(c =>
     {
         c.Endpoints.RoutePrefix = "api";
         c.Serializer.RequestDeserializer = async (req, tDto, jCtx, ct) =>
