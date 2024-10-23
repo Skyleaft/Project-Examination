@@ -22,7 +22,7 @@ public class ExamService(HttpClient _httpClient) : IExam
         return new CreatedResponse<Exam>(false, res.ReasonPhrase);
     }
 
-    public async Task<ServiceResponse> Update(Exam r, CancellationToken ct)
+    public async Task<ServiceResponse> Update(Exam r,CancellationToken ct)
     {
         var res = await _httpClient.PutAsJsonAsync($"api/exam/{r.Id}", r, cancellationToken: ct);
         if (res.IsSuccessStatusCode)

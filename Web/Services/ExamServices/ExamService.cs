@@ -29,38 +29,68 @@ public class ExamService : IExam
         if (exam == null) return new ServiceResponse(false, "data tidak ditemukan");
 
         r.LastModifiedOn = DateTime.UtcNow;
-        _dbContext.Entry(exam).CurrentValues.SetValues(r);
+        var entry = _dbContext.Entry(exam);
+        entry.CurrentValues.SetValues(r);
+        entry.Property(x => x.CreatedOn).IsModified = false;
+        entry.Property(x => x.LastModifiedOn).IsModified = true;
+        entry.Property(x => x.Nama).IsModified = true;
+        entry.Property(x => x.Thumbnail).IsModified = true;
+        
 
-        // Delete children
-        foreach (var existingChild in exam.Soals)
+        var deletedSoal = entry.Entity.Soals.Except(r.Soals).ToList();
+        var addedSoal = r.Soals.Except(entry.Entity.Soals).ToList();
+        var updatedSoal = entry.Entity.Soals.Intersect(r.Soals).ToList();
+
+        foreach (var updated in updatedSoal)
         {
-            if (!r.Soals.Any(c => c.Id == existingChild.Id))
-                _dbContext.Soal.Remove(existingChild);
-            if (existingChild.PilihanJawaban != null) 
-                _dbContext.SoalJawaban.RemoveRange(existingChild.PilihanJawaban);
+            var entrySoal = _dbContext.Entry(updated);
+            entrySoal.CurrentValues.SetValues(updated);
+            entrySoal.Property(x => x.ExamId).IsModified = false;
+            entrySoal.Property(x => x.Pertanyaan).IsModified = true;
+            entrySoal.Property(x => x.Nomor).IsModified = true;
+            entrySoal.Property(x => x.isMultipleJawaban).IsModified = true;
+        }
+        foreach (var deleted in deletedSoal)
+        {
+            _dbContext.Soal.Remove(deleted);
+        }
+        foreach (var added in addedSoal)
+        {
+            _dbContext.Soal.Add(added);
         }
 
-        // Update and Insert children
-        foreach (var soal in r.Soals)
-        {
-            var existingChild = exam.Soals
-                .FirstOrDefault(x => x.Id == soal.Id);
+        
 
-            if (existingChild != null)
-            {
-                // Update child
-                _dbContext.Entry(existingChild).CurrentValues.SetValues(soal);
-                if (soal.PilihanJawaban != null) 
-                    _dbContext.SoalJawaban.AddRange(soal.PilihanJawaban);
-            }
-
-            else
-            {
-                _dbContext.Soal.Add(soal);
-                if (soal.PilihanJawaban != null) 
-                    _dbContext.SoalJawaban.AddRange(soal.PilihanJawaban);
-            }
-        }
+        // // Delete children
+        // foreach (var existingChild in exam.Soals)
+        // {
+        //     if (!r.Soals.Any(c => c.Id == existingChild.Id))
+        //         _dbContext.Soal.Remove(existingChild);
+        //     if (existingChild.PilihanJawaban != null) 
+        //         _dbContext.SoalJawaban.RemoveRange(existingChild.PilihanJawaban);
+        // }
+        //
+        // // Update and Insert children
+        // foreach (var soal in r.Soals)
+        // {
+        //     var existingChild = exam.Soals
+        //         .FirstOrDefault(x => x.Id == soal.Id);
+        //
+        //     if (existingChild != null)
+        //     {
+        //         // Update child
+        //         _dbContext.Entry(existingChild).CurrentValues.SetValues(soal);
+        //         if (soal.PilihanJawaban != null) 
+        //             _dbContext.SoalJawaban.AddRange(soal.PilihanJawaban);
+        //     }
+        //
+        //     else
+        //     {
+        //         _dbContext.Soal.Add(soal);
+        //         if (soal.PilihanJawaban != null) 
+        //             _dbContext.SoalJawaban.AddRange(soal.PilihanJawaban);
+        //     }
+        // }
 
         await _dbContext.SaveChangesAsync(ct);
         return new ServiceResponse(true, "data berhasil diupdate");

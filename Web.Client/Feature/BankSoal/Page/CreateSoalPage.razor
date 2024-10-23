@@ -41,8 +41,6 @@ else
                                   Label="Nama Paket Soal"/>
                     <MudField Variant="Variant.Outlined" Class="mt-3" Label="Pengaturan Soal">
                         <div class="d-flex flex-row flex-grow-1 gap-4">
-                            <MudSwitch @bind-Value="@model.IsRandomize"
-                                       Label="Acak Soal?" Color="Color.Success"/>
                             <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg">
                                 <ActivatorContent>
                                     <MudFab Color="Color.Primary"
@@ -214,6 +212,8 @@ else
                                                          Min="0"
                                                          Class="flex-grow-0"
                                                          Style="width: 60px;max-width: 60px"
+                                                         Required
+                                                         RequiredError="Jawaban Wajib diisi"
                                                          Label="Point"
                                                          Variant="Variant.Outlined"/>
                                         <MudTextField Label="@urutan"
@@ -284,6 +284,7 @@ else
     [Inject] IExam examRepo { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Parameter] public int Id { get; set; }
+    [Inject] ISnackbar _snackbar { get; set; }
 
     bool isLoading = true;
     readonly bool _readOnly = false;
@@ -388,6 +389,20 @@ else
 
     private async Task OnSaveExam()
     {
+        var valid = "";
+        foreach (var item in model.Soals)
+        {
+            valid = ValidateSoal(item);
+        }
+
+        if (!string.IsNullOrEmpty(valid))
+        {
+            await DialogService.ShowMessageBox(
+                "Info",
+                valid,
+                "Ok");
+            return;
+        }
         if (!string.IsNullOrEmpty(model.Nama))
         {
             var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
@@ -412,18 +427,26 @@ else
                 if (edited.Flag)
                 {
                     dial.Close();
-                    await DialogService.ShowMessageBox(
-                        "Info",
-                        "Soal Berhasil di Update",
-                        "Ok");
+                    _snackbar.Add(
+                        @<div>
+                            <h3>Success</h3>
+                            <ul>
+                                <li>Soal Berhasil di Update</li>
+                            </ul>
+                        </div>
+                        , Severity.Success);
                 }
                 else
                 {
                     dial.Close();
-                    await DialogService.ShowMessageBox(
-                        "Error",
-                        edited.Message,
-                        "Ok");
+                    _snackbar.Add(
+                        @<div>
+                            <h3>Error</h3>
+                            <ul>
+                                <li>@edited.Message</li>
+                            </ul>
+                        </div>
+                        , Severity.Error);
                 }
             }
         }
@@ -483,10 +506,27 @@ else
 
         StateHasChanged();
     }
+    
     public async ValueTask DisposeAsync()
     {
         await cts.CancelAsync();
         cts.Dispose();
+    }
+
+    private string ValidateSoal(Soal soal)
+    {
+        if (string.IsNullOrEmpty(soal.Pertanyaan))
+        {
+            return "Pertanyaan Wajib diisi";
+        }
+        foreach(var item in soal.PilihanJawaban)
+        {
+            if (string.IsNullOrEmpty(item.Jawaban))
+            {
+                return "Jawaban Wajib Diisi";
+            }
+        }
+        return "";
     }
 
 }

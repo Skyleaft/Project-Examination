@@ -198,7 +198,11 @@
             req.Page = 1;
             req.PageSize = 3000;
             req.Search = searchString;
+            if (table.Context.CurrentSortLabel != null)
+            {
                 req.OrderBy = table.Context.CurrentSortLabel.SortLabel;
+            }
+
             req.Direction = (int)table.TableContext.SortDirection;
             if (selectedRoom != null)
                 req.Filter = selectedRoom.Nama;

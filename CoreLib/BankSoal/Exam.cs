@@ -6,7 +6,6 @@ public class Exam : IGenericModifier
 {
     public int Id { get; set; }
     public string Nama { get; set; }
-    public bool IsRandomize { get; set; }
     public List<Soal>? Soals { get; set; }
 
     public int TotalSoal
