@@ -9,26 +9,24 @@
         <MudStack Class="pa-2 mr-2">
             <MudText Typo="Typo.body1">@data.Soal.Nomor</MudText>
         </MudStack>
-        <MudPaper Class="flex-1 d-flex flex-column" Elevation="0">
+        <MudStack>
             <MudText Class="m-2">@((MarkupString)data.Soal.Pertanyaan)</MudText>
-
+            <MudDivider></MudDivider>
             <MudForm @ref="form">
-            @if (data != null)
-            {
+                @if (data != null)
+                {
                 <MudRadioGroup @ref="refJawaban" T="SoalJawaban?" Class="mt-1" ValueChanged="OnPilihJawaban" Value="data.SoalJawaban">
                     @foreach (var jawaban in data.Soal!.PilihanJawaban!)
                     {
-                        <MudItem xs="12" Class="my-1">
-                            <MudRadio Value="@jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
-                        </MudItem>
+                    <MudItem xs="12" Class="my-1">
+                        <MudRadio Value="@jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
+                    </MudItem>
                     }
 
                 </MudRadioGroup>
-                
-            }
-</MudForm>
-
-        </MudPaper>
+                }
+            </MudForm>
+        </MudStack>
         <MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
             <MudStack>
                 <MudSpacer/>
@@ -36,7 +34,7 @@
                 <MudSpacer/>
             </MudStack>
         </MudHidden>
-        
+
 
     </div>
 
@@ -57,7 +55,14 @@
 
     protected override void OnInitialized()
     {
+        
         data.Soal.PilihanJawaban = data.Soal.PilihanJawaban.Shuffle().ToList();
+    }
+
+    protected override void OnParametersSet()
+    {
+        data.Soal.Pertanyaan = data.Soal.Pertanyaan.Replace("&nbsp;", " ");
+        base.OnParametersSet();
     }
 
 
@@ -68,11 +73,10 @@
         {
             
             //reselect if reloaded
-            if(data.SoalJawaban!=null)
-                data.SoalJawaban = data.Soal.PilihanJawaban.Find(x=>x.Id == data.SoalJawabanId);
+            if (data.SoalJawaban != null)
+                data.SoalJawaban = data.Soal.PilihanJawaban.Find(x => x.Id == data.SoalJawabanId);
             StateHasChanged();
         }
-        
     }
 
     private async Task OnPilihJawaban(SoalJawaban? obj)
@@ -81,11 +85,11 @@
             return;
         if (refJawaban == null)
             return;
-        
+
         data.SoalJawaban = obj;
         data.SoalJawabanId = obj.Id;
-        
-        
+
+
         await UpdateJawaban.InvokeAsync(obj);
         StateHasChanged();
     }

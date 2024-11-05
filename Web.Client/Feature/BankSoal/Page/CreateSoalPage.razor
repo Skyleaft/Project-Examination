@@ -519,6 +519,10 @@ else
         {
             return "Pertanyaan Wajib diisi";
         }
+        
+        //validate kalo copas langsung biasanya ngerusak
+        soal.Pertanyaan = soal.Pertanyaan.Replace("&nbsp;", " ");
+        
         foreach(var item in soal.PilihanJawaban)
         {
             if (string.IsNullOrEmpty(item.Jawaban))
