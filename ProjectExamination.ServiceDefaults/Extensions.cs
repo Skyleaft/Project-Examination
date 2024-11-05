@@ -39,17 +39,17 @@ public static class Extensions
     public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
     {
         var seqURL =builder.Configuration["SEQ_URL"];
-        var seqApiKeys = builder.Configuration["SEQ_API_KEY"];
+        var ApiKeys = builder.Configuration["API_KEY"];
         builder.Logging.AddOpenTelemetry(logging =>
         {
             logging.IncludeFormattedMessage = true;
             logging.IncludeScopes = true;
-            logging.AddOtlpExporter(a =>
-            {
-                a.Endpoint = new Uri(seqURL);
-                a.Protocol = OtlpExportProtocol.HttpProtobuf;
-                a.Headers = $"X-Seq-ApiKey={seqApiKeys}";
-            });
+            // logging.AddOtlpExporter(a =>
+            // {
+            //     a.Endpoint = new Uri(seqURL);
+            //     a.Protocol = OtlpExportProtocol.HttpProtobuf;
+            //     a.Headers = $"X-Seq-ApiKey={ApiKeys}";
+            // });
         });
 
         builder.Services.AddOpenTelemetry()
@@ -79,6 +79,9 @@ public static class Extensions
 
         if (useOtlpExporter)
         {
+            var ApiKeys = builder.Configuration["API_KEY"];
+            builder.Services.Configure<OtlpExporterOptions>(
+                o => o.Headers = $"x-otlp-api-key={ApiKeys}");
             builder.Services.AddOpenTelemetry().UseOtlpExporter();
         }
 
