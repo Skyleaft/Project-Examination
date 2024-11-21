@@ -19,7 +19,7 @@ public class UserExam
     public DateTime? EndDate { get; set; }
     public TimeSpan TimeLeft { get; set; }
     public int? RetryCount { get; set; }
-    public List<UserAnswer>? UserAnswers { get; set; }
+    public List<UserAnswer>? UserAnswers { get; set; } = new();
 
     public int? CalculateScore
     {
@@ -36,7 +36,7 @@ public class UserExam
     {
         get
         {
-            if (UserAnswers != null && UserAnswers.First().Soal!=null && CalculateScore!=null)
+            if (UserAnswers != null && UserAnswers.Count>0 && UserAnswers.First().Soal!=null && CalculateScore!=null && CalculateScore!=0)
                 return ((double)CalculateScore / (double)UserAnswers.Sum(x=>x.Soal?.MaxPoint??0)) * 100;
             return 0;
         }
