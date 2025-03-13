@@ -1,8 +1,5 @@
-﻿@using System.Diagnostics.CodeAnalysis
-@using global::CoreLib.RoomSet
-@using global::CoreLib.TakeExam
-@using Web.Client.Interfaces
-@inject IDialogService Dialog
+﻿@inject IDialogService Dialog
+@using CoreLib.TakeExam
 @implements IAsyncDisposable
 
 @{
@@ -25,9 +22,9 @@
     {
         <MudCard>
             <MudCardMedia Image="@strImage" Height="130"/>
-            <MudCardHeader Class="mb-n7" >
+            <MudCardHeader Class="mb-n7">
                 <MudText Typo="Typo.h6">@data.Room.Nama</MudText>
-                <MudSpacer />
+                <MudSpacer/>
                 @if (!data.Room.IsActive)
                 {
                     <MudText Typo="Typo.body2">Ujian Belum Dibuka</MudText>
@@ -41,35 +38,41 @@
                     <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="OnLihat">Lihat</MudButton>
                 }
             </MudCardHeader>
-            <MudCardContent >
+            <MudCardContent>
                 <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
                     <MudPaper Width="310px" Elevation="0">
                         <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
-                        <MudStack Row="true" Spacing="3" Justify="Justify.SpaceBetween" StretchItems="StretchItems.All" AlignItems="AlignItems.Center">
+                        <MudStack Row="true" Spacing="3" Justify="Justify.SpaceBetween" StretchItems="StretchItems.All"
+                                  AlignItems="AlignItems.Center">
                             <MudStack Spacing="0">
                                 <MudText Align="Align.Start">Mulai</MudText>
-                                <MudText Typo="Typo.caption" Align="Align.Start">@data.Room.JadwalStart.ToLocalTime().ToString("dd-MMM-yyyy HH:mm") </MudText>
+                                <MudText Typo="Typo.caption"
+                                         Align="Align.Start">@data.Room.JadwalStart.ToLocalTime().ToString("dd-MMM-yyyy HH:mm") </MudText>
                             </MudStack>
                             <MudStack Spacing="0">
                                 <MudText Align="Align.End">Selesai</MudText>
-                                <MudText Typo="Typo.caption" Align="Align.End">@data.Room.JadwalEnd.ToLocalTime().ToString("dd-MMM-yyyy HH:mm")</MudText>
+                                <MudText Typo="Typo.caption"
+                                         Align="Align.End">@data.Room.JadwalEnd.ToLocalTime().ToString("dd-MMM-yyyy HH:mm")</MudText>
                             </MudStack>
                         </MudStack>
                     </MudPaper>
                 </MudHidden>
-                
-                
+
+
                 <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
                     <MudPaper Width="280" MinWidth="270px" Elevation="0">
                         <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
-                        <MudStack Row="true" Spacing="2" StretchItems="StretchItems.All" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                        <MudStack Row="true" Spacing="2" StretchItems="StretchItems.All" Justify="Justify.Center"
+                                  AlignItems="AlignItems.Center">
                             <MudStack Spacing="0">
                                 <MudText Typo="Typo.subtitle1" Align="Align.Center">Mulai</MudText>
-                                <MudText Typo="Typo.caption" Align="Align.Start">@data.Room.JadwalStart.ToLocalTime().ToString("dd-MMM-yyyy HH:mm") </MudText>
+                                <MudText Typo="Typo.caption"
+                                         Align="Align.Start">@data.Room.JadwalStart.ToLocalTime().ToString("dd-MMM-yyyy HH:mm") </MudText>
                             </MudStack>
                             <MudStack Spacing="0">
                                 <MudText Typo="Typo.subtitle1" Align="Align.Center">Selesai</MudText>
-                                <MudText Typo="Typo.caption" Align="Align.End">@data.Room.JadwalEnd.ToLocalTime().ToString("dd-MMM-yyyy HH:mm")</MudText>
+                                <MudText Typo="Typo.caption"
+                                         Align="Align.End">@data.Room.JadwalEnd.ToLocalTime().ToString("dd-MMM-yyyy HH:mm")</MudText>
                             </MudStack>
                         </MudStack>
                     </MudPaper>
@@ -90,7 +93,7 @@
     [Inject] NavigationManager _navigationManager { get; set; }
 
     private int cardWidth;
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private CancellationTokenSource cts = new();
 
     private string strImage = "/images/room-bg.jpg";
     DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter", CloseButton = true };

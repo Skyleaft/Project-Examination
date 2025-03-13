@@ -1,5 +1,5 @@
-﻿@using global::CoreLib.RoomSet
-@using global::CoreLib.TakeExam
+﻿@using CoreLib.RoomSet
+@using CoreLib.TakeExam
 @using Web.Client.Interfaces
 @inject IDialogService Dialog
 <MudCard>
@@ -25,8 +25,10 @@
             <MudDivider DividerType="DividerType.Middle" Class="mb-2"></MudDivider>
             <MudText Typo="Typo.body2">Kode Ruangan :<b>@data.Kode</b></MudText>
             <MudStack Row="true" Spacing="2">
-                <MudText Typo="Typo.body2">Mulai : @data.JadwalStart.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
-                <MudText Typo="Typo.body2">Selesai : @data.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+                <MudText Typo="Typo.body2">Mulai
+                    : @data.JadwalStart.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+                <MudText Typo="Typo.body2">Selesai
+                    : @data.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
             </MudStack>
             <MudText Typo="Typo.body2"> Jumlah Peserta :@_totalPeserta</MudText>
         </MudPaper>
@@ -43,7 +45,8 @@
             {
                 if (data.IsActive)
                 {
-                    <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="OnDeactive">Non-Aktifkan</MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="OnDeactive">Non-Aktifkan
+                    </MudButton>
                 }
                 else
                 {
@@ -65,7 +68,7 @@
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IRoom _roomRepo { get; set; }
     private bool isWaitActiveState;
-    
+
 
     DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 

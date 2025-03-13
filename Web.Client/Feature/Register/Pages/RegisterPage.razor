@@ -1,15 +1,15 @@
 ﻿@page "/userclient/register"
+@layout BlankLayout
+@inject HttpClient HttpClient
 @using System.Text
-@using global::CoreLib.Common
-@using global::CoreLib.Users
+@using CoreLib.Common
+@using CoreLib.Users
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using MimeKit
 @using MimeKit.Text
 @using Web.Client.Feature.UserManagements
 @using Web.Client.Interfaces
-@layout BlankLayout
-@inject HttpClient HttpClient
 @implements IAsyncDisposable
 
 
@@ -59,8 +59,10 @@
                                                    Variant="Variant.Outlined"
                                                    AnchorOrigin="Origin.BottomCenter">
                                             <MudSelectItem T="string" Value="@("Mahasiswa")">Mahasiswa</MudSelectItem>
-                                            <MudSelectItem T="string" Value="@("Guru Honorer")">Guru Honorer</MudSelectItem>
-                                            <MudSelectItem T="string" Value="@("Pegawai Honorer")">Pegawai Honorer</MudSelectItem>
+                                            <MudSelectItem T="string" Value="@("Guru Honorer")">Guru Honorer
+                                            </MudSelectItem>
+                                            <MudSelectItem T="string" Value="@("Pegawai Honorer")">Pegawai Honorer
+                                            </MudSelectItem>
                                         </MudSelect>
 
                                         <MudTextField Label="Nomor Telepon" HelperText="Max. 15 characters"
@@ -71,7 +73,8 @@
                                                       For="@(() => userModel.PhoneNumber)"/>
                                         <MudAutocomplete T="Provinsi" Label="Provinsi"
                                                          Variant="Variant.Outlined"
-                                                         AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                                         AdornmentIcon="@Icons.Material.Filled.Search"
+                                                         AdornmentColor="Color.Primary"
                                                          Strict="false"
                                                          ValueChanged="(Provinsi selected) => { SelectedProv = selected; FilterKota(SelectedProv.Id); SelectedKota = null; }"
                                                          ToStringFunc="@(e => e == null ? null : $"{e.NamaProvinsi}")"
@@ -82,7 +85,8 @@
                                                 FilterKota(SelectedProv.Id);
                                                 <MudAutocomplete T="Kota" Label="Kota"
                                                                  Variant="Variant.Outlined"
-                                                                 AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                                                 AdornmentIcon="@Icons.Material.Filled.Search"
+                                                                 AdornmentColor="Color.Primary"
                                                                  Strict="false"
                                                                  ValueChanged="kota => { SelectedKota = kota; userModel.KotaId = kota.Id; }"
                                                                  ToStringFunc="@(e => e == null ? null : $"{e.NamaKota}")"
@@ -135,7 +139,7 @@
 
                                 </MudCardContent>
                             </MudCard>
-                        </MudItem >
+                        </MudItem>
                     </MudGrid>
                 </MudCardContent>
             </MudCard>
@@ -159,8 +163,8 @@
         Role = "User"
     };
 
-    private CancellationTokenSource cts = new CancellationTokenSource();
-    
+    private readonly CancellationTokenSource cts = new();
+
     Provinsi SelectedProv;
     Kota SelectedKota;
 
@@ -234,7 +238,7 @@
             else
             {
                 dial.Close();
-                userModel = new()
+                userModel = new UserAddDTO
                 {
                     Role = "User"
                 };
@@ -360,7 +364,7 @@
 "
         };
 
-        return await _mailService.SendMailAsync(email,cts.Token);
+        return await _mailService.SendMailAsync(email, cts.Token);
     }
 
     public async Task FilterKota(string ProvID)
@@ -400,7 +404,7 @@
     {
         _navigationManager.NavigateTo("/", true);
     }
-    
+
     public async ValueTask DisposeAsync()
     {
         await cts.CancelAsync();

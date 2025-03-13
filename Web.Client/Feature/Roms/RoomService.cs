@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 using CoreLib.Common;
 using CoreLib.RoomSet;
 using Newtonsoft.Json;
@@ -14,8 +15,8 @@ public class RoomService(HttpClient _httpClient) : IRoom
     public async Task<CreatedResponse<Room>> Create(Room r)
     {
         var jsonContent = JsonConvert.SerializeObject(r);
-        var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
-        var res= await _httpClient.PostAsync($"api/room/", content);
+        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+        var res = await _httpClient.PostAsync("api/room/", content);
         if (res.IsSuccessStatusCode)
         {
             var created = await res.Content.ReadFromJsonAsync<CreatedResponse<Room>>();
@@ -28,8 +29,8 @@ public class RoomService(HttpClient _httpClient) : IRoom
     public async Task<ServiceResponse> Update(Room r)
     {
         var jsonContent = JsonConvert.SerializeObject(r);
-        var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
-        var res= await _httpClient.PutAsync($"api/room/{r.Id}", content);
+        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+        var res = await _httpClient.PutAsync($"api/room/{r.Id}", content);
         if (res.IsSuccessStatusCode)
         {
             var data = await res.Content.ReadFromJsonAsync<ServiceResponse>();
@@ -53,7 +54,7 @@ public class RoomService(HttpClient _httpClient) : IRoom
 
     public async Task<Room> Get(Guid Id, CancellationToken ct)
     {
-        var data = await _httpClient.GetFromJsonAsync<Room>($"/api/room/{Id}", cancellationToken: ct);
+        var data = await _httpClient.GetFromJsonAsync<Room>($"/api/room/{Id}", ct);
         return data;
     }
 
@@ -72,7 +73,7 @@ public class RoomService(HttpClient _httpClient) : IRoom
 
     public async Task<RoomView> GetRoomOnly(Guid Id, CancellationToken ct)
     {
-        var data = await _httpClient.GetFromJsonAsync<RoomView>($"/api/roomview/only/{Id}", cancellationToken: ct);
+        var data = await _httpClient.GetFromJsonAsync<RoomView>($"/api/roomview/only/{Id}", ct);
         return data;
     }
 
@@ -85,7 +86,8 @@ public class RoomService(HttpClient _httpClient) : IRoom
         return data;
     }
 
-    public async Task<PaginatedResponse<RoomExam>> FindRoomView(FindRequest r, CancellationToken ct, string? Username = "")
+    public async Task<PaginatedResponse<RoomExam>> FindRoomView(FindRequest r, CancellationToken ct,
+        string? Username = "")
     {
         var res = await _httpClient.PostAsJsonAsync("api/room/findroomview", r, ct);
         var data = new PaginatedResponse<RoomExam>();

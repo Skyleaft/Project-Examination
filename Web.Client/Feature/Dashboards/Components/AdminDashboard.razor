@@ -30,14 +30,14 @@
             <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalOperator</MudText>
         </MudPaper>
     </MudItem>
-    
+
     <MudItem xs="12" sm="4">
         <MudPaper Elevation="2" Class="pa-4">
             <MudText Align="Align.Center">Total Soal</MudText>
             <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalSoal</MudText>
         </MudPaper>
     </MudItem>
-    
+
     <MudItem xs="12" sm="4">
         <MudPaper Elevation="2" Class="pa-4">
             <MudText Align="Align.Center">Total Ruangan</MudText>
@@ -65,7 +65,7 @@
             <MudText Typo="Typo.h3" Align="Align.Center">@data.TotalUjianBelumSelesai</MudText>
         </MudPaper>
     </MudItem>
-    
+
     @if (isLoading)
     {
         <div class="d-none d-flex align-center flex-grow-1 ma-8">
@@ -81,7 +81,7 @@
                 <MudDataGrid Items="data.InactiveUsers" Filterable="true">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6">Daftar User Belum Aktif</MudText>
-                        <MudSpacer />
+                        <MudSpacer/>
                     </ToolBarContent>
                     <Columns>
                         <PropertyColumn Property="x => x.NamaLengkap" Title="Nama Lengkap"/>
@@ -99,12 +99,12 @@
                 <MudDataGrid Items="data.LatestLoginUsers">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6">Log User Login Terahir</MudText>
-                        <MudSpacer />
+                        <MudSpacer/>
                     </ToolBarContent>
                     <Columns>
                         <PropertyColumn Property="x => x.NamaLengkap" Title="Nama Lengkap"/>
                         <PropertyColumn Property="x => x.LastLogin.ToLocalTime()"
-                                        Format="dd-MMM-yyyy HH:mm" 
+                                        Format="dd-MMM-yyyy HH:mm"
                                         Title="Terahir Login"/>
                     </Columns>
                 </MudDataGrid>
@@ -112,22 +112,19 @@
         </MudItem>
     }
 
-    
-    
 
-    
 </MudGrid>
 
 @code {
     [Inject] IDashboard _dashboards { get; set; }
 
-    Random random = new Random();
-    private ChartOptions options = new ChartOptions();
+    Random random = new();
+    private ChartOptions options = new();
 
     private UserExamView? selectedView;
 
     private AdminDashboardData data = new();
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private CancellationTokenSource cts = new();
     bool isLoading = true;
 
 
@@ -140,7 +137,6 @@
             isLoading = false;
 
 
-
             StateHasChanged();
         }
     }
@@ -150,5 +146,5 @@
         await cts.CancelAsync();
         cts.Dispose();
     }
-    
+
 }

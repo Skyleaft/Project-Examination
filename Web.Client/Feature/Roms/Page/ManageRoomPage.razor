@@ -1,7 +1,7 @@
 ﻿@page "/room/manage"
 @implements IBrowserViewportObserver
-@using global::CoreLib.Common
-@using global::CoreLib.RoomSet
+@using CoreLib.Common
+@using CoreLib.RoomSet
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Feature.Roms.Component
 @using Web.Client.Interfaces
@@ -73,7 +73,7 @@
     [Inject] IRoom _repo { get; set; }
     [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
 
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private readonly CancellationTokenSource cts = new();
     readonly DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 
 
@@ -130,7 +130,6 @@
         {
             await PageChanged(1);
         }
-            
     }
 
     public async ValueTask DisposeAsync()

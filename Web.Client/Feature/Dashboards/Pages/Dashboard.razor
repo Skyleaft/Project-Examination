@@ -1,14 +1,10 @@
 ﻿@page "/"
-@using System.Security.Claims
-@using CoreLib.Dashboards
-@using CoreLib.TakeExam
-@using Microsoft.AspNetCore.Authorization
-@using Newtonsoft.Json
-@using Web.Client.Interfaces
-@using Web.Client.Feature.Dashboards.Components
 @layout MainLayout
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+@using Web.Client.Feature.Dashboards.Components
+@using Web.Client.Interfaces
 @implements IAsyncDisposable
 
 <AuthorizeView Roles="User">
@@ -26,9 +22,9 @@
 
 @code {
     [Inject] IDashboard _dashboards { get; set; }
-    
-    private CancellationTokenSource cts = new CancellationTokenSource();
-    
+
+    private readonly CancellationTokenSource cts = new();
+
     public async ValueTask DisposeAsync()
     {
         await cts.CancelAsync();

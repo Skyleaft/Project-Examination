@@ -5,16 +5,16 @@
 @inject IDialogService Dialog
 @inject ISessionStorageService SessionStorage
 @implements IBrowserViewportObserver
-@implements IAsyncDisposable
 @using Blazored.SessionStorage
-@using global::CoreLib.BankSoal
-@using global::CoreLib.Common
-@using global::CoreLib.RoomSet
-@using global::CoreLib.TakeExam
+@using CoreLib.BankSoal
+@using CoreLib.Common
+@using CoreLib.RoomSet
+@using CoreLib.TakeExam
 @using Microsoft.AspNetCore.Authorization
 @using MudBlazor.Services
-@using Web.Client.Interfaces
 @using Web.Client.Feature.UserExams.Component
+@using Web.Client.Interfaces
+@implements IAsyncDisposable
 
 <NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="OnBeforeNavBack"/>
 
@@ -32,7 +32,7 @@ else
         <MudItem md="9" xs="12">
             <MudGrid Justify="Justify.SpaceBetween">
                 <MudItem xs="12">
-                    <div id="scroll_soal" class="ma-0" style="height:@(_height*0.8)px;overflow: auto;">
+                    <div id="scroll_soal" class="ma-0" style="height:@(_height * 0.8)px;overflow: auto;">
                         @{
                             foreach (var item in soalPaging.Items)
                             {
@@ -46,17 +46,18 @@ else
                                 }
                                 else
                                 {
-                                    <SoalCard data="item" UpdateJawaban="async (sj) => await OnUpdateJawaban(sj, item)"/>
+                                    <SoalCard data="item"
+                                              UpdateJawaban="async sj => await OnUpdateJawaban(sj, item)"/>
                                 }
                             }
                         }
                     </div>
                 </MudItem>
                 <MudItem xs="12">
-                    <div class="d-none d-flex align-center flex-grow-1 mb-2" style="height:@(_height*0.1)px">
+                    <div class="d-none d-flex align-center flex-grow-1 mb-2" style="height:@(_height * 0.1)px">
                         <MudSpacer/>
-                        <MudPagination  @ref="refPaging" 
-                                        Color="Color.Primary"
+                        <MudPagination @ref="refPaging"
+                                       Color="Color.Primary"
                                        Selected="@currentPage"
                                        Count="@soalPaging.TotalPage"
                                        SelectedChanged="PageChanged"/>
@@ -65,7 +66,7 @@ else
                 </MudItem>
             </MudGrid>
 
-            
+
         </MudItem>
         <MudItem md="3" xs="12">
             <MudPaper Class="pa-4">
@@ -133,24 +134,23 @@ else
     [Inject] IUserExam _userExamRepo { get; set; }
     [Inject] IRoom _roomRepo { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
-    [Inject]
-    private IBrowserViewportService BrowserViewportService { get; set; }
+    [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
 
     private MudPagination refPaging;
-    int currentPage=1;
+    int currentPage = 1;
 
-    private int _width = 0;
-    private int _height = 0;
+    private int _width;
+    private int _height;
 
     private Room room;
     private UserExam userExam;
 
     private List<UserAnswer> jawabanUser = new();
-    
+
     MudWatch _watch = new();
     PaginatedResponse<UserAnswer> soalPaging;
     TimeSpan _timer;
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private readonly CancellationTokenSource cts = new();
 
     bool isLoading = true;
     bool reRender = true;
@@ -160,53 +160,49 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        
-        
     }
-    
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            await BrowserViewportService.SubscribeAsync(this, fireImmediately: true);
-            
+            await BrowserViewportService.SubscribeAsync(this);
+
             var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             if (auth is not null)
             {
             }
-            
-            userExam = await _userExamRepo.Get(new Guid(Id),cts.Token);
+
+            userExam = await _userExamRepo.Get(new Guid(Id), cts.Token);
             soalPaging = await userExam.UserAnswers!.OrderBy(x => x.Soal!.Nomor).ToPagingList(1, 10);
-            room = await _roomRepo.Get(userExam.RoomId,cts.Token);
-        
-            
+            room = await _roomRepo.Get(userExam.RoomId, cts.Token);
+
+
             _timer = userExam.TimeLeft;
-            
-            
+
+
             //jawabanUser = await _userExamRepo.GetUserAnswers(userExam.Id);
             // foreach (var item in jawabanUser)
             // {
             //     item.Soal = room.Exam.Soals.Find(x => x.Id == item.SoalId);
             // }
-            
-            
+
+
             reRender = false;
             isLoading = false;
             isLoadTime = false;
-            
+
 
             StateHasChanged();
             await DelayStart();
         }
-        
-
     }
 
     private async Task DelayStart()
     {
-        await Task.Delay(1000,cts.Token);
+        await Task.Delay(1000, cts.Token);
         Console.WriteLine("Timer Start");
         _watch.Start();
         StateHasChanged();
@@ -230,16 +226,16 @@ else
         await reRenderSoal();
         StateHasChanged();
     }
-    
-    private void OnNavigNumber(int nomor)
+
+    private async Task OnNavigNumber(int nomor)
     {
         var page = Math.Floor((double)nomor / 10);
-        refPaging.NavigateTo((int)page);
+        await refPaging.NavigateToAsync((int)page);
     }
 
     private async Task reRenderSoal()
     {
-        await Task.Delay(150,cts.Token);
+        await Task.Delay(150, cts.Token);
         reRender = false;
     }
 
@@ -249,7 +245,7 @@ else
         userExam.IsOngoing = false;
         userExam.IsDone = true;
         userExam.TimeLeft = _watch.Value;
-        var res = await _userExamRepo.Update(userExam,cts.Token);
+        var res = await _userExamRepo.Update(userExam, cts.Token);
         if (res.Flag)
         {
             await SessionStorage.RemoveItemAsync(privateKey);
@@ -272,7 +268,7 @@ else
             userExam.IsOngoing = false;
             userExam.EndDate = DateTime.UtcNow;
             userExam.TimeLeft = _watch.Value;
-            var res = await _userExamRepo.Update(userExam,cts.Token);
+            var res = await _userExamRepo.Update(userExam, cts.Token);
             if (res.Flag)
             {
                 await SessionStorage.RemoveItemAsync(privateKey);
@@ -295,22 +291,20 @@ else
     {
         await _watch.Stop();
         //Console.WriteLine(JsonSerializer.Serialize(obj));
-        var dto = new UpdateJawabanDTO()
+        var dto = new UpdateJawabanDTO
         {
-            SoalJawabanId = obj?.Id??null,
+            SoalJawabanId = obj?.Id ?? null,
             UserExamId = userExam.Id,
             UserAnswerId = userAnswer.Id,
             TimeLeft = _watch.Value
         };
-        
-        var res = await _userExamRepo.UpdateJawaban(dto,cts.Token);
+
+        var res = await _userExamRepo.UpdateJawaban(dto, cts.Token);
         if (res.Flag)
         {
             _watch.Start();
         }
-        else
-        {
-        }
+
         _watch.Start();
     }
 
@@ -320,7 +314,7 @@ else
         cts.Dispose();
         await BrowserViewportService.UnsubscribeAsync(this);
     }
-    
+
     Guid IBrowserViewportObserver.Id { get; } = Guid.NewGuid();
 
     ResizeOptions IBrowserViewportObserver.ResizeOptions { get; } = new()
@@ -337,6 +331,5 @@ else
         return InvokeAsync(StateHasChanged);
     }
 
-    
 
 }

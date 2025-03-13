@@ -1,9 +1,8 @@
 ﻿@page "/userroom"
 @attribute [Authorize(Roles = "Superuser,User")]
 @implements IBrowserViewportObserver
-@using global::CoreLib.Common
-@using global::CoreLib.RoomSet
-@using global::CoreLib.TakeExam
+@using CoreLib.Common
+@using CoreLib.TakeExam
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Feature.UserRoom.Components
 @using Web.Client.Interfaces
@@ -31,7 +30,8 @@
         <MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
             <MudSpacer/>
         </MudHidden>
-        <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary" OnClick="() => PageChanged(1)"></MudIconButton>
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Primary"
+                       OnClick="() => PageChanged(1)"></MudIconButton>
         <MudButton StartIcon="@Icons.Material.Filled.Search"
                    Variant="Variant.Outlined"
                    Class="pa-4"
@@ -59,9 +59,6 @@
                         <UserRoomCard data="@item" RefreshData="@PageChanged"/>
                     }
                 }
-
-
-
             }
         }
     </MudPaper>
@@ -78,7 +75,7 @@
     [Inject] IUserExam _repo { get; set; }
     [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
 
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private readonly CancellationTokenSource cts = new();
     string search;
     private Breakpoint curentBreak;
     private bool isLoading = true;
@@ -89,7 +86,7 @@
         PageSize = 15
     };
 
-    PaginatedResponse<UserExam> data=new();
+    PaginatedResponse<UserExam> data = new();
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -109,14 +106,14 @@
         var authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authstate.User;
     }
-    
+
 
     private async Task PageChanged(int page)
     {
         isLoading = true;
         request.Page = page;
         data = await _repo.Find(request, cts.Token);
-        await Task.Delay(200,cts.Token);
+        await Task.Delay(200, cts.Token);
         isLoading = false;
     }
 
@@ -157,7 +154,7 @@
 
     public Guid Id { get; }
 
-    readonly DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter",CloseButton = true};
+    readonly DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter", CloseButton = true };
 
     private async Task OnSearchRoom()
     {

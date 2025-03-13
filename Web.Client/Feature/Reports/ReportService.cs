@@ -9,7 +9,7 @@ public class ReportService(HttpClient _httpClient) : IReport
 {
     public async Task<ExamReport> Get(Guid Id, CancellationToken ct)
     {
-        var data = await _httpClient.GetFromJsonAsync<ExamReport>($"/api/report/{Id}", cancellationToken: ct);
+        var data = await _httpClient.GetFromJsonAsync<ExamReport>($"/api/report/{Id}", ct);
         return data;
     }
 

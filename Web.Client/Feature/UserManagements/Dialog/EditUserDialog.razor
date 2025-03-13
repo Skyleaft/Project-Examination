@@ -1,5 +1,5 @@
-﻿@using global::CoreLib.Common
-@using global::CoreLib.Users
+﻿@using CoreLib.Common
+@using CoreLib.Users
 @using Web.Client.Interfaces
 @inject IJSRuntime JSRuntime
 <EditForm Model="@userModel" OnValidSubmit="OnValidSubmit">
@@ -50,7 +50,8 @@
                                               For="@(() => userModel.PhoneNumber)"/>
                                 <MudAutocomplete T="Provinsi" Label="Provinsi"
                                                  Variant="Variant.Outlined"
-                                                 AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                                 AdornmentIcon="@Icons.Material.Filled.Search"
+                                                 AdornmentColor="Color.Primary"
                                                  Strict="false"
                                                  Value="SelectedProv"
                                                  ValueChanged="(Provinsi selected) => { SelectedProv = selected; FilterKota(SelectedProv.Id); SelectedKota = null; }"
@@ -62,7 +63,8 @@
                                         FilterKota(SelectedProv.Id);
                                         <MudAutocomplete T="Kota" Label="Kota"
                                                          Variant="Variant.Outlined"
-                                                         AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                                         AdornmentIcon="@Icons.Material.Filled.Search"
+                                                         AdornmentColor="Color.Primary"
                                                          Strict="false"
                                                          Value="SelectedKota"
                                                          ValueChanged="kota => { SelectedKota = kota; userModel.KotaId = kota.Id; }"
@@ -86,11 +88,13 @@
                         <MudCardContent>
                             <MudStack Spacing="3">
                                 <div class="d-flex justify-center">
-                                    <MudImage ObjectFit="ObjectFit.Cover" Height="150" Src="@imagePath"  Elevation="25" Class="rounded-lg mx-4"/>
+                                    <MudImage ObjectFit="ObjectFit.Cover" Height="150" Src="@imagePath" Elevation="25"
+                                              Class="rounded-lg mx-4"/>
                                 </div>
                                 <div class="d-flex align-center mb-5 mt-2">
                                     <MudSpacer/>
-                                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg, .jpeg">
+                                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles"
+                                                   Accept=".png, .jpg, .jpeg">
                                         <ActivatorContent>
                                             <MudFab Color="Color.Primary"
                                                     StartIcon="@Icons.Material.Filled.Image"
@@ -121,12 +125,13 @@
                                     Reset Password
                                 </MudButton>
                                 <MudStack Row="true" Spacing="2">
-                                    <MudText>Email Status <b>@(userModel.EmailConfirmed ? "Active" : "Non Active")</b></MudText>
+                                    <MudText>Email Status <b>@(userModel.EmailConfirmed ? "Active" : "Non Active")</b>
+                                    </MudText>
                                     <MudButton Variant="Variant.Outlined" FullWidth="true" OnClick="OnConfirmEmail">
                                         Manual Confirm Email
                                     </MudButton>
                                 </MudStack>
-                                
+
                             </MudStack>
 
                         </MudCardContent>
@@ -145,7 +150,8 @@
                            Color="Color.Primary"
                            Class="pa-4"
                            StartIcon="@Icons.Material.Rounded.Save"
-                           Variant="Variant.Filled">Simpan</MudButton>
+                           Variant="Variant.Filled">Simpan
+                </MudButton>
 
             </MudStack>
         </DialogActions>
@@ -153,7 +159,7 @@
 </EditForm>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IUser _userService { get; set; }
     [Inject] IReferences _reference { get; set; }
@@ -201,7 +207,6 @@
             userModel.Photo = memstream.ToArray();
             imagePath = $"data:image;base64,{Convert.ToBase64String(userModel.Photo)}";
         }
-        
     }
 
     public async Task FilterKota(string ProvID)
@@ -265,7 +270,7 @@
                 _navigationManager.ToAbsoluteUri("userclient/ResetPassword").AbsoluteUri,
                 new Dictionary<string, object?> { ["userId"] = userModel.Id, ["code"] = token });
             var parameters = new DialogParameters<ResetPassDialog> { { x => x.urlReset, reseturi } };
-            DialogService.ShowAsync<ResetPassDialog>("Reset URL",parameters);
+            DialogService.ShowAsync<ResetPassDialog>("Reset URL", parameters);
         }
     }
 

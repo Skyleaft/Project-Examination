@@ -22,13 +22,13 @@
                 <MudText Typo="Typo.h5">Filter Ujian</MudText>
                 <MudSelect T="UserExamView?" Label="Pilih Ujian" @bind-Value="selectedView">
                     @{
-                    if (!isLoading)
-                    {
-                    foreach (var item in data.RiwayatUjian)
-                    {
-                    <MudSelectItem T="UserExamView" Value="@item">@item.Room.Nama</MudSelectItem>
-                    }
-                    }
+                        if (!isLoading)
+                        {
+                            foreach (var item in data.RiwayatUjian)
+                            {
+                                <MudSelectItem T="UserExamView" Value="@item">@item.Room.Nama</MudSelectItem>
+                            }
+                        }
                     }
                 </MudSelect>
                 <MudButton FullWidth
@@ -58,13 +58,13 @@
         <MudPaper Elevation="2" Class="d-flex flex-wrap justify-xs-center justify-md-start gap-4 pa-4">
 
             @{
-            if (!isLoading)
-            {
-            foreach (var item in data.UjianBerlangsung)
-            {
-            <UserRoomCardDashboard data="item"/>
-            }
-            }
+                if (!isLoading)
+                {
+                    foreach (var item in data.UjianBerlangsung)
+                    {
+                        <UserRoomCardDashboard data="item"/>
+                    }
+                }
             }
         </MudPaper>
     </MudItem>
@@ -73,13 +73,13 @@
         <MudPaper Elevation="2" Class="d-flex flex-wrap justify-xs-center justify-md-start gap-4 pa-4">
 
             @{
-            if (!isLoading)
-            {
-            foreach (var item in data.UjianAkanDatang)
-            {
-            <UserRoomCardDashboard data="item"/>
-            }
-            }
+                if (!isLoading)
+                {
+                    foreach (var item in data.UjianAkanDatang)
+                    {
+                        <UserRoomCardDashboard data="item"/>
+                    }
+                }
             }
         </MudPaper>
     </MudItem>
@@ -87,19 +87,17 @@
 
 @code {
     [Inject] IDashboard _dashboards { get; set; }
-    
-    Random random = new Random();
-    private ChartOptions options = new ChartOptions();
+
+    Random random = new();
+    private ChartOptions options = new();
 
     private UserExamView? selectedView;
 
     private DashboardData data = new();
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private CancellationTokenSource cts = new();
     bool isLoading = true;
 
-    public List<ChartSeries> Series = new List<ChartSeries>()
-    {
-    };
+    public List<ChartSeries> Series = new();
 
     public string[] XAxisLabels = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
@@ -107,7 +105,7 @@
     {
         options.InterpolationOption = InterpolationOption.Straight;
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
@@ -118,7 +116,7 @@
             StateHasChanged();
         }
     }
-    
+
     public async ValueTask DisposeAsync()
     {
         await cts.CancelAsync();
@@ -129,9 +127,9 @@
     {
         if (selectedView != null)
         {
-            Series = new List<ChartSeries>()
+            Series = new List<ChartSeries>
             {
-                new ChartSeries()
+                new()
                 {
                     Name = selectedView.Room.Nama,
                     Data = selectedView.HistoryScoreNormalize?.ToArray() ?? new double[0],
@@ -141,4 +139,5 @@
             StateHasChanged();
         }
     }
+
 }

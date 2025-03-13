@@ -1,9 +1,8 @@
-﻿@using System.Text.Json.Serialization
-@using global::CoreLib.BankSoal
-@using global::CoreLib.RoomSet
-@using global::CoreLib.TakeExam
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@using CoreLib.BankSoal
+@using CoreLib.RoomSet
+@using CoreLib.TakeExam
 @using Web.Client.Shared.Extensions
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IAsyncDisposable
 
 <MudDialog>
@@ -20,13 +19,15 @@
                             <MudItem xs="12" Class="my-1">
                                 @if (jawaban.Point == maxpoint && room.JadwalEnd.ToLocalTime() < DateTime.UtcNow.ToLocalTime())
                                 {
-                                    <div class="d-none d-block rounded" style="height:100%; width:100%;background-color: rgba(151,227,159,0.85);">
+                                    <div class="d-none d-block rounded"
+                                         style="height:100%; width:100%;background-color: rgba(151,227,159,0.85);">
                                         <MudRadio Value="@jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
                                     </div>
                                 }
                                 else if (jawaban.Point == maxpoint && forceShowJawaban)
                                 {
-                                    <div class="d-none d-block rounded" style="height:100%; width:100%;background-color: rgba(151,227,159,0.85);">
+                                    <div class="d-none d-block rounded"
+                                         style="height:100%; width:100%;background-color: rgba(151,227,159,0.85);">
                                         <MudRadio Value="@jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
                                     </div>
                                 }
@@ -34,7 +35,7 @@
                                 {
                                     <MudRadio Value="@jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
                                 }
-                            
+
 
                             </MudItem>
                         }
@@ -57,7 +58,7 @@
 
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     [Parameter] public UserAnswer jawabanUser { get; set; }
     [Parameter] public Room room { get; set; }
     [Parameter] public bool forceShowJawaban { get; set; }
@@ -65,19 +66,19 @@
     [Inject] ISnackbar _snackbar { get; set; }
     private MudRadioGroup<SoalJawaban>? refJawaban;
 
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private readonly CancellationTokenSource cts = new();
 
     void Cancel()
     {
         MudDialog.Cancel();
     }
-    
+
     protected override void OnInitialized()
     {
-        MudDialog.Title = $"Pembahasan Soal Nomor {jawabanUser.Soal.Nomor}";
+        MudDialog.SetTitleAsync($"Pembahasan Soal Nomor {jawabanUser.Soal.Nomor}");
         jawabanUser.Soal.PilihanJawaban = jawabanUser.Soal.PilihanJawaban.Shuffle().ToList();
     }
-    
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -85,8 +86,8 @@
         if (firstRender)
         {
             //reselect if reloaded
-            if(jawabanUser.SoalJawaban!=null)
-                jawabanUser.SoalJawaban = jawabanUser.Soal.PilihanJawaban.Find(x=>x.Id == jawabanUser.SoalJawabanId);
+            if (jawabanUser.SoalJawaban != null)
+                jawabanUser.SoalJawaban = jawabanUser.Soal.PilihanJawaban.Find(x => x.Id == jawabanUser.SoalJawabanId);
 
             StateHasChanged();
         }
@@ -95,7 +96,6 @@
     protected override async Task OnInitializedAsync()
     {
     }
-    
 
 
     public async ValueTask DisposeAsync()

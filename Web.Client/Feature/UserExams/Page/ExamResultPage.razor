@@ -1,17 +1,16 @@
 ﻿@page "/exam/examresult/{Id:Guid}"
-@using Blazored.SessionStorage
-@using global::CoreLib.BankSoal
-@using global::CoreLib.RoomSet
-@using global::CoreLib.TakeExam
-@using Microsoft.AspNetCore.Authorization
-@using Newtonsoft.Json
-@using Web.Client.Feature.UserExams.Component
-@using Web.Client.Interfaces
 @layout UserExamLayout
 @attribute [Authorize(Roles = "Superuser,User")]
 @inject IDialogService Dialog
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ISessionStorageService SessionStorage
+@using Blazored.SessionStorage
+@using CoreLib.BankSoal
+@using CoreLib.RoomSet
+@using CoreLib.TakeExam
+@using Microsoft.AspNetCore.Authorization
+@using Web.Client.Feature.UserExams.Component
+@using Web.Client.Interfaces
 @implements IAsyncDisposable
 
 <NavigationLock ConfirmExternalNavigation="true" OnBeforeInternalNavigation="OnBeforeNavBack"/>
@@ -25,7 +24,7 @@
                     @{
                         if (!isLoading)
                         {
-                            foreach (var item in userExam.UserAnswers.OrderBy(x=>x.Soal.Nomor))
+                            foreach (var item in userExam.UserAnswers.OrderBy(x => x.Soal.Nomor))
                             {
                                 <MudButton Variant="CheckSoalIsAnswer(item.Soal)"
                                            OnClick="()=>OnNomorSoalClick(item)"
@@ -168,10 +167,10 @@
     private UserExam userExam;
     private Room room;
     private bool isLoading = true;
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private readonly CancellationTokenSource cts = new();
     private Color _answerColor;
-    
-    DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
+
+    readonly DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, BackgroundClass = "bg-filter" };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -183,8 +182,8 @@
             {
             }
 
-            userExam = await _userExamRepo.Get(new Guid(Id),cts.Token);
-            room = await _roomRepo.Get(userExam.RoomId,cts.Token);
+            userExam = await _userExamRepo.Get(new Guid(Id), cts.Token);
+            room = await _roomRepo.Get(userExam.RoomId, cts.Token);
 
             isLoading = false;
             StateHasChanged();
@@ -206,15 +205,13 @@
                 _answerColor = Color.Error;
                 return Variant.Filled;
             }
-            else
-            {
-                _answerColor = Color.Success; 
-                return Variant.Filled;
-            }
+
+            _answerColor = Color.Success;
+            return Variant.Filled;
         }
-        
+
         _answerColor = Color.Default;
-        return Variant.Outlined; 
+        return Variant.Outlined;
     }
 
     private async Task OnBackHome()
@@ -242,12 +239,11 @@
         {
             var parameters = new DialogParameters<ViewJawabanDialog>();
             parameters.Add(x => x.jawabanUser, jawaban);
-            parameters.Add(x=>x.room,room);
-            parameters.Add(x=>x.forceShowJawaban, userExam.RetryCount==0);
+            parameters.Add(x => x.room, room);
+            parameters.Add(x => x.forceShowJawaban, userExam.RetryCount == 0);
             var form = await Dialog.ShowAsync<ViewJawabanDialog>("Pembahasan Soal", parameters, maxWidth);
             var result = await form.Result;
         }
-        
     }
 
 }

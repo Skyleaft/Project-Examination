@@ -1,8 +1,8 @@
 ﻿@page "/BankSoal"
 ;
 @implements IBrowserViewportObserver
-@using global::CoreLib.BankSoal
-@using global::CoreLib.Common
+@using CoreLib.BankSoal
+@using CoreLib.Common
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Feature.BankSoal.Component
 @using Web.Client.Interfaces
@@ -73,7 +73,7 @@
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] IExam examRepo { get; set; }
     [Inject] private IBrowserViewportService BrowserViewportService { get; set; }
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private readonly CancellationTokenSource cts = new();
 
     string search;
     private Breakpoint curentBreak;
@@ -93,7 +93,7 @@
     {
         if (firstRender)
         {
-            await BrowserViewportService.SubscribeAsync(this, true);
+            await BrowserViewportService.SubscribeAsync(this);
             dataExam = await examRepo.Find(request, cts.Token);
             isLoading = false;
             StateHasChanged();

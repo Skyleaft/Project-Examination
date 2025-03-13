@@ -1,8 +1,8 @@
-﻿@using global::CoreLib.BankSoal
-@using global::CoreLib.RoomSet
-@using global::CoreLib.TakeExam
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@using CoreLib.BankSoal
+@using CoreLib.RoomSet
+@using CoreLib.TakeExam
 @using Web.Client.Interfaces
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IAsyncDisposable
 
 <MudDialog>
@@ -23,11 +23,13 @@
                 <div class="d-flex justify-space-between flex-grow-1 gap-8">
                     <MudStack Spacing="-2">
                         <MudText Typo="Typo.caption">Jadwal Mulai</MudText>
-                        <MudText Typo="Typo.h6">@room.JadwalStart.ToLocalTime().ToString("dd-MMM-yyyy : hh:mm")</MudText>
+                        <MudText
+                            Typo="Typo.h6">@room.JadwalStart.ToLocalTime().ToString("dd-MMM-yyyy : hh:mm")</MudText>
                     </MudStack>
                     <MudStack Spacing="-2">
                         <MudText Typo="Typo.caption" Align="Align.End">Jadwal Selesai</MudText>
-                        <MudText Typo="Typo.h6" Align="Align.End">@room.JadwalEnd.ToLocalTime().ToString("dd-MMM-yyyy : hh:mm")</MudText>
+                        <MudText Typo="Typo.h6"
+                                 Align="Align.End">@room.JadwalEnd.ToLocalTime().ToString("dd-MMM-yyyy : hh:mm")</MudText>
                     </MudStack>
                 </div>
 
@@ -40,7 +42,8 @@
                         </MudStack>
                         <MudStack Spacing="-2">
                             <MudText Typo="Typo.caption" Align="Align.End">Nilai Terahir</MudText>
-                            <MudText Typo="Typo.h6" Align="Align.Center">@userExam.ScoreNormalizeData?.ToString("F2")</MudText>
+                            <MudText Typo="Typo.h6"
+                                     Align="Align.Center">@userExam.ScoreNormalizeData?.ToString("F2")</MudText>
                         </MudStack>
                     }
                 </div>
@@ -50,20 +53,23 @@
                 @{
                     if (room.IsRepeatable && room.JadwalEnd.ToLocalTime() > DateTime.Now.ToLocalTime())
                     {
-                        <MudText Align="Align.Center" Typo="Typo.h6">Kesempatan Mengulang : @userExam.RetryCount X</MudText>
+                        <MudText Align="Align.Center" Typo="Typo.h6">Kesempatan Mengulang : @userExam.RetryCount X
+                        </MudText>
                         if (!userExam.IsOngoing && userExam.IsDone)
                         {
                             <MudButton FullWidth Variant="Variant.Filled"
                                        OnClick="UlangUjianClick"
                                        Color="Color.Primary"
                                        Size="Size.Large"
-                                       StartIcon="@Icons.Material.Rounded.Refresh">Mengulang Ujian</MudButton>
+                                       StartIcon="@Icons.Material.Rounded.Refresh">Mengulang Ujian
+                            </MudButton>
                         }
                         else
                         {
-                            <MudText Typo="Typo.body1">Jika Anda Sudah Mengerjakan Sekali Anda Dapat Mengulang Ujian Tersebut</MudText>
+                            <MudText Typo="Typo.body1">Jika Anda Sudah Mengerjakan Sekali Anda Dapat Mengulang Ujian
+                                Tersebut
+                            </MudText>
                         }
-
                     }
                 }
 
@@ -77,19 +83,20 @@
                    StartIcon="@Icons.Material.Rounded.ArrowForwardIos"
                    OnClick="NavToRoom" FullWidth
                    Size="Size.Large"
-                   Variant="Variant.Outlined">Masuk Ke Ruangan</MudButton>
+                   Variant="Variant.Outlined">Masuk Ke Ruangan
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] private IUserExam _userExamRepo { get; set; }
     [Inject] private NavigationManager _navigationManager { get; set; }
     [Inject] ISnackbar _snackbar { get; set; }
-    
-    private CancellationTokenSource cts = new CancellationTokenSource();
+
+    private readonly CancellationTokenSource cts = new();
 
     [Parameter]
     public
@@ -123,6 +130,7 @@
             if (auth is not null)
             {
             }
+
             dateStart = room.JadwalStart.ToLocalTime();
             dateEnd = room.JadwalEnd.ToLocalTime();
             timeStart = room.JadwalStart.ToLocalTime().TimeOfDay;
@@ -134,8 +142,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        
-
     }
 
 
@@ -149,7 +155,7 @@
         {
             _navigationManager.NavigateTo($"exam/userexam/{userExam.Id}", true);
         }
-        else if(room.JadwalEnd.ToLocalTime() > DateTime.Now.ToLocalTime())
+        else if (room.JadwalEnd.ToLocalTime() > DateTime.Now.ToLocalTime())
         {
             _navigationManager.NavigateTo($"exam/exambefore/{userExam.Id}", true);
         }
@@ -157,7 +163,6 @@
         {
             _navigationManager.NavigateTo($"exam/examresult/{userExam.Id}", true);
         }
-        
     }
 
     private async Task UlangUjianClick()
@@ -175,7 +180,7 @@
                 , Severity.Error);
             return;
         }
-        
+
         var result = await DialogService.ShowMessageBox(
             "Warning",
             "Yakin Mau Mengulang Ujian?, semua jawaban akan terhapus!",
@@ -186,7 +191,7 @@
             userExam.RetryCount -= 1;
             userExam.IsDone = false;
             userExam.IsOngoing = false;
-        
+
             var res = await _userExamRepo.RetryExam(userExam.Id, cts.Token);
             if (res.Flag)
             {

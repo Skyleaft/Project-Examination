@@ -1,5 +1,5 @@
-﻿@using global::CoreLib.Common
-@using global::CoreLib.Users
+﻿@using CoreLib.Common
+@using CoreLib.Users
 @using Web.Client.Interfaces
 <EditForm Model="@userModel" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator/>
@@ -49,7 +49,8 @@
                                               For="@(() => userModel.PhoneNumber)"/>
                                 <MudAutocomplete T="Provinsi" Label="Provinsi"
                                                  Variant="Variant.Outlined"
-                                                 AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                                 AdornmentIcon="@Icons.Material.Filled.Search"
+                                                 AdornmentColor="Color.Primary"
                                                  Strict="false"
                                                  ValueChanged="(Provinsi selected) => { SelectedProv = selected; FilterKota(SelectedProv.Id); SelectedKota = null; }"
                                                  ToStringFunc="@(e => e == null ? null : $"{e.NamaProvinsi}")"
@@ -60,7 +61,8 @@
                                         FilterKota(SelectedProv.Id);
                                         <MudAutocomplete T="Kota" Label="Kota"
                                                          Variant="Variant.Outlined"
-                                                         AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                                                         AdornmentIcon="@Icons.Material.Filled.Search"
+                                                         AdornmentColor="Color.Primary"
                                                          Strict="false"
                                                          ValueChanged="kota => { SelectedKota = kota; userModel.KotaId = kota.Id; }"
                                                          ToStringFunc="@(e => e == null ? null : $"{e.NamaKota}")"
@@ -116,7 +118,8 @@
                            Color="Color.Primary"
                            Class="pa-4"
                            StartIcon="@Icons.Material.Rounded.Save"
-                           Variant="Variant.Filled">Simpan</MudButton>
+                           Variant="Variant.Filled">Simpan
+                </MudButton>
 
             </MudStack>
         </DialogActions>
@@ -124,7 +127,7 @@
 </EditForm>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     [Inject] HttpClient _httpClient { get; set; }
     [Inject] IUser _userService { get; set; }
     [Inject] IReferences _reference { get; set; }

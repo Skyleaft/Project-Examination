@@ -1,6 +1,6 @@
 ﻿@page "/userclient/confirmEmail"
 @using System.Text
-@using global::CoreLib.Users
+@using CoreLib.Users
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @layout BlankLayout
@@ -9,7 +9,8 @@
     <MudStack Justify="Justify.Center">
         <h3>@statusMessage</h3>
         <EmailConfirmed/>
-        <MudButton OnClick="ToLogin" Variant="Variant.Filled" Class="pa-4" Color="Color.Primary">Menuju Halaman Login</MudButton>
+        <MudButton OnClick="ToLogin" Variant="Variant.Filled" Class="pa-4" Color="Color.Primary">Menuju Halaman Login
+        </MudButton>
     </MudStack>
 </MudContainer>
 

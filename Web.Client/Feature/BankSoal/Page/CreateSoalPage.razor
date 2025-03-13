@@ -1,14 +1,14 @@
 ﻿@page "/client/BankSoal/Create/{Id:int?}"
-@using global::CoreLib.BankSoal
+@rendermode InteractiveWebAssembly
+@layout SoalLayout
+@attribute [Authorize(Roles = "Superuser,Dosen,Operator")]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using CoreLib.BankSoal
 @using Microsoft.AspNetCore.Authorization
 @using MudExRichTextEditor.Extensibility
 @using Web.Client.Feature.BankSoal.Component
 @using Web.Client.Interfaces
 @using Web.Client.Shared.Extensions
-@rendermode InteractiveWebAssembly
-@layout SoalLayout
-@attribute [Authorize(Roles = "Superuser,Dosen,Operator")]
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IAsyncDisposable
 
 @if (isLoading)
@@ -83,7 +83,7 @@ else
                         Simpan
                     </MudButton>
                 </MudCardContent>
-                <MudCardActions >
+                <MudCardActions>
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -128,7 +128,7 @@ else
                         </MudStack>
                     </div>
                 </MudCardContent>
-                <MudCardActions >
+                <MudCardActions>
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -143,7 +143,8 @@ else
                                 <MudText Typo="Typo.h6">Pertanyaan Nomor : @currentSoal.Nomor</MudText>
                             </CardHeaderContent>
                             <CardHeaderActions>
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="OnDelete"/>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                               OnClick="OnDelete"/>
                             </CardHeaderActions>
                         </MudCardHeader>
                         <MudCardContent>
@@ -154,7 +155,8 @@ else
                                              Class="mt-3 mb-4"
                                              Variant="Variant.Outlined"
                                              Value="@currentSoal.BobotPoint"/>
-                            <MudField Label="Lebih Dari Satu Jawaban Benar?" Variant="Variant.Outlined" InnerPadding="false">
+                            <MudField Label="Lebih Dari Satu Jawaban Benar?" Variant="Variant.Outlined"
+                                      InnerPadding="false">
                                 @{
                                     if (currentSoal.PilihanJawaban.Count(x => x.IsBenar) > 1)
                                         currentSoal.isMultipleJawaban = true;
@@ -166,7 +168,7 @@ else
                                 </MudSwitch>
                             </MudField>
                         </MudCardContent>
-                        <MudCardActions >
+                        <MudCardActions>
                         </MudCardActions>
                     </MudCard>
 
@@ -266,7 +268,7 @@ else
 
 
                         </MudCardContent>
-                        <MudCardActions >
+                        <MudCardActions>
                         </MudCardActions>
                     </MudCard>
 
@@ -294,8 +296,8 @@ else
     private string curentUser;
     private readonly string[] alpha = { "A", "B", "C", "D", "E", "F", "G" };
     private string imageUrl;
-    
-    private CancellationTokenSource cts = new CancellationTokenSource();
+
+    private readonly CancellationTokenSource cts = new();
 
     private IQuillModule[] _modules =
     {
@@ -403,6 +405,7 @@ else
                 "Ok");
             return;
         }
+
         if (!string.IsNullOrEmpty(model.Nama))
         {
             var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
@@ -423,7 +426,7 @@ else
             }
             else
             {
-                var edited = await examRepo.Update(model,cts.Token);
+                var edited = await examRepo.Update(model, cts.Token);
                 if (edited.Flag)
                 {
                     dial.Close();
@@ -506,7 +509,7 @@ else
 
         StateHasChanged();
     }
-    
+
     public async ValueTask DisposeAsync()
     {
         await cts.CancelAsync();
@@ -519,17 +522,18 @@ else
         {
             return "Pertanyaan Wajib diisi";
         }
-        
+
         //validate kalo copas langsung biasanya ngerusak
         soal.Pertanyaan = soal.Pertanyaan.Replace("&nbsp;", " ");
-        
-        foreach(var item in soal.PilihanJawaban)
+
+        foreach (var item in soal.PilihanJawaban)
         {
             if (string.IsNullOrEmpty(item.Jawaban))
             {
                 return "Jawaban Wajib Diisi";
             }
         }
+
         return "";
     }
 

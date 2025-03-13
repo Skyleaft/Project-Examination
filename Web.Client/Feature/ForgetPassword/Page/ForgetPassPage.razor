@@ -1,22 +1,21 @@
 ﻿@page "/userclient/forgetpassword"
-@using System.Text
-@using global::CoreLib.Users
+@layout BlankLayout
+@using CoreLib.Users
 @using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.WebUtilities
 @using MimeKit
 @using MimeKit.Text
 @using Web.Client.Interfaces
-@layout BlankLayout
 @implements IAsyncDisposable
 
-<EditForm Model="model"  OnValidSubmit="OnValidSubmit" FormName="forget">
+<EditForm Model="model" OnValidSubmit="OnValidSubmit" FormName="forget">
     <DataAnnotationsValidator/>
     <MudGrid Class="align-content-center justify-center">
         <MudItem xs="9" md="5" lg="3">
             <MudCard Class="pa-4">
                 <MudCardHeader>
                     <CardHeaderContent>
-                        <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Href="/Account/Login">Kembali</MudButton>
+                        <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Href="/Account/Login">Kembali
+                        </MudButton>
                         <MudText Typo="Typo.h5">Lupa Password</MudText>
                     </CardHeaderContent>
                 </MudCardHeader>
@@ -25,13 +24,14 @@
                     <MudText Typo="Typo.caption">jika lupa username silahkan hubungi panitia</MudText>
                     <MudTextField T="string" Label="Username" Class="mt-3" Required="true" MaxLength="30"
                                   @bind-Value="model.Username" Variant="Variant.Outlined"/>
-                    <MudTextField T="string" Label="Nomor Telepon" InputType="InputType.Number" 
+                    <MudTextField T="string" Label="Nomor Telepon" InputType="InputType.Number"
                                   MaxLength="15" InputMode="InputMode.tel" Class="mt-3" Required="true"
                                   @bind-Value="model.NomorHP" Variant="Variant.Outlined"/>
-                    <MudButton ButtonType="ButtonType.Submit" 
-                               Variant="Variant.Filled" 
-                               Color="Color.Primary" Class="ml-auto mt-4" 
-                               FullWidth Style="height:60px">Kirim Reset Password</MudButton>
+                    <MudButton ButtonType="ButtonType.Submit"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary" Class="ml-auto mt-4"
+                               FullWidth Style="height:60px">Kirim Reset Password
+                    </MudButton>
                 </MudCardContent>
             </MudCard>
         </MudItem>
@@ -49,19 +49,18 @@
     [Inject] NavigationManager _navigationManager { get; set; }
     [Inject] ISnackbar _snackbar { get; set; }
 
-    private validuserDTO model = new();
-    
-    private CancellationTokenSource cts = new CancellationTokenSource();
-    
+    private readonly validuserDTO model = new();
+
+    private readonly CancellationTokenSource cts = new();
+
     protected override async Task OnInitializedAsync()
     {
-
     }
-    
+
     private async Task OnValidSubmit(EditContext obj)
     {
         var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
-        
+
         var res = await _userService.ValidateUserReset(model);
         if (res.Valid)
         {
@@ -99,7 +98,6 @@
                         </div>
                         , Severity.Success);
                 }
-
             }
         }
         else
@@ -114,7 +112,7 @@
                 , Severity.Warning);
         }
     }
-    
+
     private async Task<bool> SendEmail(string emailto, string resetUri)
     {
         var email = new MimeMessage();
@@ -209,7 +207,7 @@
 "
         };
 
-        return await _mailService.SendMailAsync(email,cts.Token);
+        return await _mailService.SendMailAsync(email, cts.Token);
     }
 
     public async ValueTask DisposeAsync()

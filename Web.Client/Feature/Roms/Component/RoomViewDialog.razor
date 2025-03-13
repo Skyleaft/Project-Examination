@@ -1,9 +1,7 @@
-﻿@using global::CoreLib.BankSoal
-@using global::CoreLib.Common
-@using global::CoreLib.RoomSet
-@using global::CoreLib.TakeExam
-@using Web.Client.Interfaces
-@inject AuthenticationStateProvider AuthenticationStateProvider
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@using CoreLib.BankSoal
+@using CoreLib.RoomSet
+@using CoreLib.TakeExam
 @implements IAsyncDisposable
 
 <MudDialog>
@@ -44,7 +42,7 @@
 
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     [Parameter] public IEnumerable<UserExam> UserExamsData { get; set; }
     [Parameter] public Room room { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
@@ -54,7 +52,7 @@
 
     private string _searchString;
 
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private readonly CancellationTokenSource cts = new();
 
     void Cancel()
     {
@@ -94,10 +92,9 @@
     {
         if (onGoing)
             return "Mengerjakan";
-        else if (isDone)
+        if (isDone)
             return "Selesai";
-        else
-            return "Belum Dikerjakan";
+        return "Belum Dikerjakan";
     }
 
 

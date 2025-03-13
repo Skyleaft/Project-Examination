@@ -1,9 +1,7 @@
-﻿@using System.Text.Json
-@using global::CoreLib.TakeExam
-@using global::CoreLib.BankSoal
+﻿@using CoreLib.BankSoal
+@using CoreLib.TakeExam
 @using Web.Client.Interfaces
 @using Web.Client.Shared.Extensions
-
 <MudPaper Class="pa-4 ma-2 my-3">
     <div class="d-flex flex-grow-1 gap-1">
         <MudStack Class="pa-2 mr-2">
@@ -15,22 +13,24 @@
             <MudForm @ref="form">
                 @if (data != null)
                 {
-                <MudRadioGroup @ref="refJawaban" T="SoalJawaban?" Class="mt-1" ValueChanged="OnPilihJawaban" Value="data.SoalJawaban">
-                    @foreach (var jawaban in data.Soal!.PilihanJawaban!)
-                    {
-                    <MudItem xs="12" Class="my-1">
-                        <MudRadio Value="@jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
-                    </MudItem>
-                    }
+                    <MudRadioGroup @ref="refJawaban" T="SoalJawaban?" Class="mt-1" ValueChanged="OnPilihJawaban"
+                                   Value="data.SoalJawaban">
+                        @foreach (var jawaban in data.Soal!.PilihanJawaban!)
+                        {
+                            <MudItem xs="12" Class="my-1">
+                                <MudRadio Value="@jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
+                            </MudItem>
+                        }
 
-                </MudRadioGroup>
+                    </MudRadioGroup>
                 }
             </MudForm>
         </MudStack>
         <MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
             <MudStack>
                 <MudSpacer/>
-                <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Rounded.Close" OnClick="() => ClearJawaban(data)"></MudIconButton>
+                <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Rounded.Close"
+                               OnClick="() => ClearJawaban(data)"></MudIconButton>
                 <MudSpacer/>
             </MudStack>
         </MudHidden>
@@ -48,14 +48,13 @@
     private MudForm form;
     SoalJawaban currentJawaban;
 
-    protected async override Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
     {
         currentJawaban = data.SoalJawaban;
     }
 
     protected override void OnInitialized()
     {
-        
         data.Soal.PilihanJawaban = data.Soal.PilihanJawaban.Shuffle().ToList();
     }
 
@@ -71,7 +70,6 @@
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            
             //reselect if reloaded
             if (data.SoalJawaban != null)
                 data.SoalJawaban = data.Soal.PilihanJawaban.Find(x => x.Id == data.SoalJawabanId);

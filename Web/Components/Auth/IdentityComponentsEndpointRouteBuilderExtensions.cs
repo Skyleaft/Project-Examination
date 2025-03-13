@@ -19,7 +19,7 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
         accountGroup.MapPost("/Logout", async (
             ClaimsPrincipal user,
             SignInManager<ApplicationUser> signInManager,
-            [FromForm] string returnUrl) =>
+            [Microsoft.AspNetCore.Mvc.FromForm] string returnUrl) =>
         {
             await signInManager.SignOutAsync();
             return TypedResults.LocalRedirect($"~/{returnUrl}");

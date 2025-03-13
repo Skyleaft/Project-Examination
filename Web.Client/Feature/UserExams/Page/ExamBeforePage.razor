@@ -1,14 +1,14 @@
 ﻿@page "/exam/exambefore/{Id:Guid}"
-@using Blazored.SessionStorage
-@using global::CoreLib.RoomSet
-@using global::CoreLib.TakeExam
-@using Microsoft.AspNetCore.Authorization
-@using Web.Client.Interfaces
 @layout UserExamLayout
 @attribute [Authorize(Roles = "Superuser,User")]
 @inject IDialogService Dialog
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ISessionStorageService SessionStorage
+@using Blazored.SessionStorage
+@using CoreLib.RoomSet
+@using CoreLib.TakeExam
+@using Microsoft.AspNetCore.Authorization
+@using Web.Client.Interfaces
 @implements IAsyncDisposable
 
 <MudContainer MaxWidth="MaxWidth.Medium">
@@ -16,7 +16,8 @@
         <MudText Typo="Typo.h3" Align="Align.Center">Sebelum Memulai Ujian</MudText>
         <MudPaper Height="350px" Style="overflow: auto;" Elevation="0" Class="pa-2">
             <MudText Typo="Typo.h5">Ketentuan Ujian Online</MudText>
-            <p>Selamat datang dalam ujian online. Sebelum memulai ujian, harap membaca dan memahami ketentuan berikut:</p>
+            <p>Selamat datang dalam ujian online. Sebelum memulai ujian, harap membaca dan memahami ketentuan
+                berikut:</p>
 
             <h2>Persiapan Ujian</h2>
             <ul>
@@ -27,8 +28,12 @@
 
             <h2>Pelaksanaan Ujian</h2>
             <ul>
-                <li>- Ujian ini bersifat <strong>tertutup</strong>. Anda tidak diperkenankan membuka buku, catatan, atau sumber lain kecuali yang diizinkan.</li>
-                <li>- Jangan melakukan komunikasi dengan peserta ujian lain atau orang di luar selama ujian berlangsung.</li>
+                <li>- Ujian ini bersifat <strong>tertutup</strong>. Anda tidak diperkenankan membuka buku, catatan, atau
+                    sumber lain kecuali yang diizinkan.
+                </li>
+                <li>- Jangan melakukan komunikasi dengan peserta ujian lain atau orang di luar selama ujian
+                    berlangsung.
+                </li>
                 <li>- Pastikan Anda berada di tempat yang tenang dan bebas dari gangguan.</li>
             </ul>
 
@@ -37,14 +42,18 @@
                 <li>- Login ke sistem ujian dengan akun yang telah disediakan.</li>
                 <li>- Baca setiap soal dengan teliti sebelum menjawab.</li>
                 <li>- Jawablah semua soal sesuai dengan instruksi yang diberikan.</li>
-                <li>- Jika mengalami kendala teknis, segera hubungi pengawas ujian melalui kontak yang telah disediakan.</li>
+                <li>- Jika mengalami kendala teknis, segera hubungi pengawas ujian melalui kontak yang telah
+                    disediakan.
+                </li>
             </ul>
 
             <h2>Kedisiplinan dan Integritas</h2>
             <ul>
                 <li>- Setiap bentuk kecurangan akan dikenakan sanksi sesuai dengan peraturan yang berlaku.</li>
                 <li>- Pengawasan dilakukan secara online melalui kamera dan aplikasi proktor.</li>
-                <li>- Waktu ujian akan tercatat secara otomatis, dan ujian akan berakhir sesuai dengan waktu yang ditentukan.</li>
+                <li>- Waktu ujian akan tercatat secara otomatis, dan ujian akan berakhir sesuai dengan waktu yang
+                    ditentukan.
+                </li>
             </ul>
 
             <h2>Penyerahan Jawaban</h2>
@@ -54,7 +63,8 @@
                 <li>- Setelah menyerahkan jawaban, Anda tidak dapat melakukan perubahan apapun.</li>
             </ul>
 
-            <p>Dengan memulai ujian ini, Anda menyetujui semua ketentuan di atas dan bersedia mengikuti ujian dengan jujur dan bertanggung jawab.</p>
+            <p>Dengan memulai ujian ini, Anda menyetujui semua ketentuan di atas dan bersedia mengikuti ujian dengan
+                jujur dan bertanggung jawab.</p>
 
             <br/>
             <p>Selamat mengerjakan dan semoga sukses!</p>
@@ -103,7 +113,8 @@
                                     <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
                                 </td>
                                 <td>
-                                    <MudText Typo="Typo.body1">@room.JadwalStart.ToLocalTime().ToString("dd/MM/yyyy HH:mm") -> @room.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
+                                    <MudText
+                                        Typo="Typo.body1">@room.JadwalStart.ToLocalTime().ToString("dd/MM/yyyy HH:mm") -> @room.JadwalEnd.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudText>
                                 </td>
                             </tr>
                             <tr>
@@ -114,7 +125,9 @@
                                     <MudText Typo="Typo.body1" Class="mx-2">:</MudText>
                                 </td>
                                 <td>
-                                    <MudText Typo="Typo.body1"><b>@userExam.TimeLeft.TotalMinutes.ToString("0") </b> Menit</MudText>
+                                    <MudText Typo="Typo.body1"><b>@userExam.TimeLeft.TotalMinutes.ToString("0") </b>
+                                        Menit
+                                    </MudText>
                                 </td>
                             </tr>
                         </table>
@@ -147,7 +160,7 @@
     private Room room;
     private bool isLoading = true;
     readonly string privateKey = "zlxkjcoijasdfnwqwesfvlaksnoaiscnzxnocqanqwf";
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private readonly CancellationTokenSource cts = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -163,9 +176,9 @@
             {
             }
 
-            userExam = await _userExamRepo.Get(new Guid(Id),cts.Token);
-            room = await _roomRepo.Get(userExam.RoomId,cts.Token);
-            
+            userExam = await _userExamRepo.Get(new Guid(Id), cts.Token);
+            room = await _roomRepo.Get(userExam.RoomId, cts.Token);
+
             isLoading = false;
             StateHasChanged();
         }

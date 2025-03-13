@@ -1,13 +1,13 @@
 ﻿@page "/report/manage"
-@using global::CoreLib.Common
-@using global::CoreLib.Report
-@using global::CoreLib.RoomSet
-@using Microsoft.AspNetCore.Authorization
-@using Web.Client.Interfaces
-@using Web.Client.Services
 @inject IDialogService Dialog
 @inject IJSRuntime js
 @attribute [Authorize(Roles = "Superuser,Dosen,Operator")]
+@using CoreLib.Common
+@using CoreLib.Report
+@using CoreLib.RoomSet
+@using Microsoft.AspNetCore.Authorization
+@using Web.Client.Interfaces
+@using Web.Client.Services
 @implements IAsyncDisposable
 
 <MudText Typo="Typo.h4" Align="Align.Center">Kelola Hasil Ujian</MudText>
@@ -23,11 +23,11 @@
                                  Value="selectedRoom"
                                  ToStringFunc="@(e => e == null ? null : $"{e.Nama} - {e.Kode}")"
                                  SearchFunc="SearchFunc"/>
-                <MudIconButton Icon="@Icons.Material.Rounded.Clear" 
+                <MudIconButton Icon="@Icons.Material.Rounded.Clear"
                                Variant="Variant.Text"
                                OnClick="OnFilterReset"/>
             </MudStack>
-            
+
         </MudItem>
         <MudItem lg="6" xs="12">
             <MudTextField T="string"
@@ -42,7 +42,7 @@
         <MudItem lg="3" xs="12">
             <MudStack Row="true">
                 <MudSelect Dense="true" T="int"
-                           Label="Export Type" 
+                           Label="Export Type"
                            @bind-Value="exportType"
                            Variant="Variant.Outlined">
                     <MudSelectItem Value="0">Current</MudSelectItem>
@@ -61,10 +61,10 @@
 </MudPaper>
 
 <MudTable ServerData="ServerReload"
-          Dense="true" Hover="true" @ref="table" MultiSelection="true" 
+          Dense="true" Hover="true" @ref="table" MultiSelection="true"
           Class="mt-2" Height="55vh">
     <ToolBarContent>
-        
+
     </ToolBarContent>
     <HeaderContent>
         <MudTh>
@@ -120,12 +120,12 @@
     private IEnumerable<Room> RoomsRef = new List<Room>();
     private int totalItems;
     private string searchString = "";
-    int exportType = 0;
+    int exportType;
     Room selectedRoom;
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private readonly CancellationTokenSource cts = new();
 
     DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
-    
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -193,7 +193,7 @@
                     , Severity.Error);
                 return;
             }
-            
+
             var req = new FindRequest();
             req.Page = 1;
             req.PageSize = 3000;
@@ -212,7 +212,7 @@
         else if (exportType == 1)
         {
             selectedRoom = null;
-            var load = await table.ServerData.Invoke(new TableState()
+            var load = await table.ServerData.Invoke(new TableState
             {
                 Page = 0,
                 PageSize = 3000,
@@ -236,7 +236,8 @@
                     , Severity.Error);
                 return;
             }
-            else if (table.SelectedItems.Count == 0)
+
+            if (table.SelectedItems.Count == 0)
             {
                 _snackbar.Add(
                     @<div>
@@ -259,7 +260,7 @@
             x.NamaLengkap,
             x.NomorTelepon,
             Jadwal = x.Jadwal.ToString("dd/MM/yyyy"),
-            SesiUjian=x.NamaRoom,
+            SesiUjian = x.NamaRoom,
             x.Score,
             x.MaxScore,
             x.Nilai
@@ -290,7 +291,7 @@
             table.ReloadServerData();
         }
     }
-    
+
     public async ValueTask DisposeAsync()
     {
         await cts.CancelAsync();

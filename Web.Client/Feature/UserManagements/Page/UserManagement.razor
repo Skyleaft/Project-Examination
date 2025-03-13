@@ -1,6 +1,6 @@
 ﻿@page "/UserManagement"
-@using global::CoreLib.Common
-@using global::CoreLib.Users
+@using CoreLib.Common
+@using CoreLib.Users
 @using Mapster
 @using Microsoft.AspNetCore.Authorization
 @using Web.Client.Feature.UserManagements.Dialog
@@ -24,7 +24,7 @@
                     Tambah
                 </MudButton>
             </MudStack>
-            
+
         </MudItem>
         <MudItem lg="6" xs="12">
             <MudTextField T="string"
@@ -93,8 +93,10 @@
         <MudTd DataLabel="Asal Kota">@context.Kota.NamaKota - @context.Kota.Provinsi.NamaProvinsi</MudTd>
         <MudTd DataLabel="Email">@context.Email</MudTd>
         <MudTd DataLabel="Action">
-            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" aria-label="delete" OnClick="() => OnDelete(context)"></MudIconButton>
-            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="Edit" OnClick="() => OnEdit(context)"></MudIconButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" aria-label="delete"
+                           OnClick="() => OnDelete(context)"></MudIconButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="Edit"
+                           OnClick="() => OnEdit(context)"></MudIconButton>
         </MudTd>
     </RowTemplate>
     <NoRecordsContent>
@@ -113,11 +115,11 @@
     [Inject] ISnackbar _snackbar { get; set; }
     private IEnumerable<ApplicationUser> pagedData;
     private MudTable<ApplicationUser> table;
-    private CancellationTokenSource cts = new CancellationTokenSource();
+    private CancellationTokenSource cts = new();
 
     private int totalItems;
     private string searchString = "";
-    int exportType = 0;
+    int exportType;
 
     readonly DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackgroundClass = "bg-filter" };
 
@@ -201,7 +203,7 @@
         var data = table.FilteredItems;
         if (exportType == 0)
         {
-            if (data.Count()==0)
+            if (data.Count() == 0)
             {
                 _snackbar.Add(
                     @<div>
@@ -214,11 +216,12 @@
                     , Severity.Error);
                 return;
             }
+
             data = table.FilteredItems;
         }
         else if (exportType == 1)
         {
-            var load = await table.ServerData.Invoke(new TableState()
+            var load = await table.ServerData.Invoke(new TableState
             {
                 Page = 0,
                 PageSize = 3000,
@@ -242,7 +245,8 @@
                     , Severity.Error);
                 return;
             }
-            else if (table.SelectedItems.Count == 0)
+
+            if (table.SelectedItems.Count == 0)
             {
                 _snackbar.Add(
                     @<div>
@@ -269,7 +273,7 @@
             x.Kota.NamaKota,
             x.Kota.Provinsi.NamaProvinsi,
             x.Email,
-            x.PhoneNumber,
+            x.PhoneNumber
         }).ToList();
         var excelFile = ExcelService.GenerateExcelWorkbook(filterd);
         js.InvokeVoidAsync("saveAsFile",

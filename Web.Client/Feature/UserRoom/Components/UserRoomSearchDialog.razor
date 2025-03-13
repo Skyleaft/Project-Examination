@@ -1,8 +1,8 @@
-﻿@using System.Security.Claims
-@using global::CoreLib.RoomSet
-@using global::CoreLib.TakeExam
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@using System.Security.Claims
+@using CoreLib.RoomSet
+@using CoreLib.TakeExam
 @using Web.Client.Interfaces
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IAsyncDisposable
 
 <MudDialog>
@@ -52,25 +52,26 @@
         </MudPaper>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Primary" 
-                   OnClick="CreateUserExam" 
+        <MudButton Color="Color.Primary"
+                   OnClick="CreateUserExam"
                    StartIcon="@Icons.Material.Rounded.PlaylistAddCheck"
                    FullWidth
                    Variant="Variant.Outlined"
-                   Class="pa-3 ma-3">Daftar Ujian</MudButton>
+                   Class="pa-3 ma-3">Daftar Ujian
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] private IUserExam _userExam { get; set; }
     [Inject] private IRoom _roomRepo { get; set; }
     [Inject] private NavigationManager _navigationManager { get; set; }
     [Inject] ISnackbar _snackbar { get; set; }
-    
-    private CancellationTokenSource cts = new CancellationTokenSource();
+
+    private readonly CancellationTokenSource cts = new();
 
     private Room room;
 
@@ -111,7 +112,7 @@
     {
         if (room != null)
         {
-            var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false};
+            var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
             var dial = await DialogService.ShowAsync<BluryDialog>("Registering...", options);
 
             var listSoal = new List<UserAnswer>();
@@ -123,7 +124,7 @@
                 });
             }
 
-            bool isExpired = DateTime.UtcNow>room.JadwalEnd;
+            var isExpired = DateTime.UtcNow > room.JadwalEnd;
 
             var data = new CreateUserExamDTO
             {
@@ -137,12 +138,12 @@
                 isExpired = isExpired
             };
 
-            var created = await _userExam.Create(data,cts.Token);
+            var created = await _userExam.Create(data, cts.Token);
             await Task.Delay(400);
             if (created.isSuccess)
             {
                 dial.Close();
-                
+
                 MudDialog.Close(DialogResult.Ok(true));
                 _snackbar.Add(
                     @<div>
@@ -174,7 +175,7 @@
         if (!string.IsNullOrEmpty(kodeRoom))
         {
             room = await _roomRepo.Get(kodeRoom);
-            await Task.Delay(400,cts.Token);
+            await Task.Delay(400, cts.Token);
             if (room == null)
             {
                 DialogService.ShowMessageBox(
@@ -187,7 +188,7 @@
         isLoading = false;
         StateHasChanged();
     }
-    
+
     public async ValueTask DisposeAsync()
     {
         await cts.CancelAsync();
