@@ -2,6 +2,7 @@
 using Microsoft.JSInterop;
 using MudExRichTextEditor;
 using MudExRichTextEditor.Extensibility;
+using MudExRichTextEditor.Types;
 
 namespace Web.Client.Shared.Extensions;
 
@@ -41,4 +42,5 @@ public class QuilImageCompress : IQuillModule
     public string[] JsFiles => new[] { "/js/quill.imageCompressor.min.js" };
     public string[] CssFiles => Array.Empty<string>();
     public string JsConfigFunction => null;
+    public IEnumerable<QuillTool> Tools { get; }
 }

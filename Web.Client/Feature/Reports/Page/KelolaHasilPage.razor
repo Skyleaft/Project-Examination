@@ -6,6 +6,7 @@
 @using CoreLib.Report
 @using CoreLib.RoomSet
 @using Microsoft.AspNetCore.Authorization
+@using MiniExcelLibs
 @using Web.Client.Interfaces
 @using Web.Client.Services
 @implements IAsyncDisposable
@@ -45,9 +46,8 @@
                            Label="Export Type"
                            @bind-Value="exportType"
                            Variant="Variant.Outlined">
-                    <MudSelectItem Value="0">Current</MudSelectItem>
-                    <MudSelectItem Value="1">All Data</MudSelectItem>
-                    <MudSelectItem Value="2">Selected</MudSelectItem>
+                    <MudSelectItem Value="0">All Data</MudSelectItem>
+                    <MudSelectItem Value="1">Selected</MudSelectItem>
                 </MudSelect>
                 <MudIconButton Variant="Variant.Text"
                                OnClick="OnExportClick"
@@ -180,37 +180,6 @@
         var data = table.FilteredItems;
         if (exportType == 0)
         {
-            if (data.Count() == 0)
-            {
-                _snackbar.Add(
-                    @<div>
-                        <h3>Info ERROR!!</h3>
-                        <ul>
-                            <li>Data Tabel Kosong</li>
-                            <li>Harap isi tabel terlebih dahulu</li>
-                        </ul>
-                    </div>
-                    , Severity.Error);
-                return;
-            }
-
-            var req = new FindRequest();
-            req.Page = 1;
-            req.PageSize = 3000;
-            req.Search = searchString;
-            if (table.Context.CurrentSortLabel != null)
-            {
-                req.OrderBy = table.Context.CurrentSortLabel.SortLabel;
-            }
-
-            req.Direction = (int)table.TableContext.SortDirection;
-            if (selectedRoom != null)
-                req.Filter = selectedRoom.Nama;
-            var load = await _report.Find(req, cts.Token);
-            data = load.Items;
-        }
-        else if (exportType == 1)
-        {
             selectedRoom = null;
             var load = await table.ServerData.Invoke(new TableState
             {
@@ -223,7 +192,7 @@
         }
         else
         {
-            if (data.Count() == 0)
+            if (data.Count() == 1)
             {
                 _snackbar.Add(
                     @<div>
@@ -265,7 +234,10 @@
             x.MaxScore,
             x.Nilai
         }).ToList();
-        var excelFile = ExcelService.GenerateExcelWorkbook(filterd);
+        //var excelFile = ExcelService.GenerateExcelWorkbook(filterd);
+        using var stream = new MemoryStream();
+        await stream.SaveAsAsync(filterd);  // MiniExcel extension method
+        var excelFile= stream.ToArray();
         js.InvokeVoidAsync("saveAsFile",
             $"hasil_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.xlsx",
             Convert.ToBase64String(excelFile)
