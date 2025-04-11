@@ -12,7 +12,6 @@
 @using Web.Client.Interfaces
 @implements IAsyncDisposable
 
-
 <EditForm Model="userModel" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit" FormName="register">
     <DataAnnotationsValidator/>
     <MudGrid Class="align-content-center justify-center">
@@ -221,37 +220,17 @@
         {
             dial.Close();
             dial = await DialogService.ShowAsync<BluryDialog>("Sedang Mengirim Verifikasi Email...", options);
-            var mail = await SendEmail(created.Data.Id.ToString());
-            if (!mail)
-            {
-                dial.Close();
-                _snackbar.Add(
-                    @<div>
-                        <h3>Info ERROR!!</h3>
-                        <ul>
-                            <li>IMail Services</li>
-                            <li>Ada Error di Send Email</li>
-                        </ul>
-                    </div>
-                    , Severity.Error);
-            }
-            else
-            {
-                dial.Close();
-                userModel = new UserAddDTO
-                {
-                    Role = "User"
-                };
-                _snackbar.Add(
-                    @<div>
-                        <h3>Info!!</h3>
-                        <ul>
-                            <li>Success</li>
-                            <li>Akun Berhasil Didaftarkan, Silahkan Cek Email Anda</li>
-                        </ul>
-                    </div>
-                    , Severity.Success);
-            }
+            await SendEmail(created.Data.Id.ToString());
+            dial.Close();
+            _snackbar.Add(
+                @<div>
+                    <h3>Info!!</h3>
+                    <ul>
+                        <li>Success</li>
+                        <li>Akun Berhasil Didaftarkan, Silahkan Cek Email Anda</li>
+                    </ul>
+                </div>
+                , Severity.Success);
         }
         else
         {
@@ -263,7 +242,7 @@
         }
     }
 
-    private async Task<bool> SendEmail(string userId)
+    private async Task SendEmail(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -271,14 +250,8 @@
         var emailConfirmationLink = _navigationManager.GetUriWithQueryParameters(
             _navigationManager.ToAbsoluteUri("userclient/confirmEmail").AbsoluteUri,
             new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code });
-
-        var email = new MimeMessage();
-        email.From.Add(MailboxAddress.Parse("info@mzstudio.space"));
-        email.To.Add(MailboxAddress.Parse(userModel.Email));
-        email.Subject = "Konfirmasi Email Aplikasi Ujian Online";
-        email.Body = new TextPart(TextFormat.Html)
-        {
-            Text = $@"
+        
+        var bodyEmail = $@"
 <!DOCTYPE html>
 <html lang=""en"">
 <head>
@@ -362,9 +335,9 @@
 </body>
 </html>
 "
-        };
+            ;
 
-        return await _mailService.SendMailAsync(email, cts.Token);
+           _mailService.SendMailBackground(userModel.Email,"Konfirmasi Email Aplikasi Ujian Online",bodyEmail, cts.Token);
     }
 
     public async Task FilterKota(string ProvID)

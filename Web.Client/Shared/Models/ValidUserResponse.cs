@@ -1,4 +1,4 @@
-﻿namespace Web.Client.Feature.ForgetPassword;
+﻿namespace Web.Components.ForgetPassword;
 
 public class ValidUserResponse
 {

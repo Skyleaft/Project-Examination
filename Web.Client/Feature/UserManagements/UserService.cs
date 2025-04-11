@@ -1,10 +1,9 @@
 ﻿using System.Net.Http.Json;
 using CoreLib.Common;
 using CoreLib.Users;
-using Web.Client.Feature.ForgetPassword;
-using Web.Client.Feature.Register;
 using Web.Client.Interfaces;
 using Web.Client.Shared.Models;
+using Web.Components.ForgetPassword;
 
 namespace Web.Client.Feature.UserManagements;
 

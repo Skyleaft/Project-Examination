@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Web.Client.Feature.Register;
+namespace Web.Client.Shared.Models;
 
 public class PasswordReset
 {

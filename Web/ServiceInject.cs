@@ -1,5 +1,6 @@
 ﻿using Web.Client.Feature.Register;
 using Web.Services.DashboardService;
+using Web.Services.Email;
 using Web.Services.ExamServices;
 using Web.Services.ReferenceServices;
 using Web.Services.ReportServices;
@@ -18,7 +19,7 @@ public static class ServiceInject
         services.AddScoped<IReferences, ReferenceService>();
         services.AddScoped<IRoom, RoomService>();
         services.AddScoped<IUserExam, UserExamService>();
-        services.AddScoped<IMailService, EmailService>();
+        services.AddTransient<IMailService, EmailService>();
         services.AddScoped<IReport, ReportService>();
         services.AddScoped<IDashboard, DashboardService>();
         return services;

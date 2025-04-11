@@ -1,6 +1,6 @@
 ﻿@inject AuthenticationStateProvider authStateProvicder
 @inject NavigationManager navManager
-@page "/Account/Login"
+@page "/account/Login"
 @using Blazored.LocalStorage
 @using CoreLib.Users
 @using Microsoft.AspNetCore.Authentication
@@ -12,6 +12,7 @@
 @inject IdentityRedirectManager RedirectManager
 @inject IUser _user
 @implements IAsyncDisposable
+@attribute [ExcludeFromInteractiveRouting]
 
 <EditForm Model="model" method="post" OnValidSubmit="OnValidSubmit" FormName="login">
     <DataAnnotationsValidator/>

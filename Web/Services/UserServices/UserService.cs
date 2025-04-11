@@ -2,11 +2,10 @@
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Web.Client.Feature.ForgetPassword;
-using Web.Client.Feature.Register;
 using Web.Client.Feature.UserManagements;
 using Web.Client.Shared.Models;
 using Web.Common.Database;
+using Web.Components.ForgetPassword;
 
 namespace Web.Services.UserServices;
 

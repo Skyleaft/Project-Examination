@@ -4,6 +4,7 @@ namespace Web.Client.Interfaces;
 
 public interface IMailService
 {
-    bool SendMail(MimeMessage email);
-    Task<bool> SendMailAsync(MimeMessage email, CancellationToken ct);
+    void SendMail(MimeMessage email);
+    Task SendMailAsync(string toEmail, string subject, string body, CancellationToken ct);
+    void SendMailBackground(string toEmail, string subject, string body, CancellationToken ct);
 }

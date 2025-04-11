@@ -24,7 +24,7 @@
 
     <link rel="icon" type="image/png" href="favicon.png"/>
 
-    <HeadOutlet @rendermode="RenderModeForPage"/>
+    <HeadOutlet @rendermode="PageRenderMode"/>
 </head>
 
 <body>
@@ -229,7 +229,7 @@
     </div>
 </div>
 
-<Routes @rendermode="RenderModeForPage"/>
+<Routes @rendermode="PageRenderMode"/>
 <script src="_framework/blazor.web.js"></script>
 <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 <script src="_content/CodeBeam.MudBlazor.Extensions/MudExtensions.min.js"></script>
@@ -241,35 +241,26 @@
 @code {
     [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
 
-    private IComponentRenderMode? RenderModeForPage
+    private IComponentRenderMode? PageRenderMode
     {
         get
         {
-            if (HttpContext.Request.Path.StartsWithSegments("/Account"))
+            if (HttpContext.AcceptsInteractiveRouting())
+            {
+                if (HttpContext.Request.Path.StartsWithSegments("/userclient"))
+                {
+                    return InteractiveServer;
+                }
+                else
+                {
+                    return InteractiveServer;
+                }
+            }
+            else
             {
                 return null;
             }
-
-            if (HttpContext.Request.Path.StartsWithSegments("/client"))
-            {
-                return new InteractiveWebAssemblyRenderMode(false);
-            }
-
-            if (HttpContext.Request.Path.StartsWithSegments("/userclient"))
-            {
-                return new InteractiveServerRenderMode(true);
-            }
-
-            if (HttpContext.Request.Path.StartsWithSegments("/exam"))
-            {
-                return new InteractiveWebAssemblyRenderMode(false);
-            }
-
-            return new InteractiveAutoRenderMode(true);
         }
-        // HttpContext.Request.Path.StartsWithSegments("/Account")
-        //     ? null
-        //     : new InteractiveAutoRenderMode(false);
     }
 
 }

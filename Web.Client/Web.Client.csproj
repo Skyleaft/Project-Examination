@@ -24,6 +24,13 @@
     <_ContentIncludedByDefault Remove="wwwroot\css\app.css" />
     <_ContentIncludedByDefault Remove="Feature\BankSoal\Page\Component\ExamCard.razor" />
     <_ContentIncludedByDefault Remove="Feature\BankSoal\Page\Component\RichToolBarContent.razor" />
+    <_ContentIncludedByDefault Remove="Feature\Register\Pages\ConfirmEmailPage.razor" />
+    <_ContentIncludedByDefault Remove="Feature\Register\Pages\RegisterPage.razor" />
+    <_ContentIncludedByDefault Remove="Feature\Register\Pages\ResetPasswordPage.razor" />
+    <_ContentIncludedByDefault Remove="Register\Pages\ConfirmEmailPage.razor" />
+    <_ContentIncludedByDefault Remove="Register\Pages\RegisterPage.razor" />
+    <_ContentIncludedByDefault Remove="Register\Pages\ResetPasswordPage.razor" />
+    <_ContentIncludedByDefault Remove="Feature\ForgetPassword\Page\ForgetPassPage.razor" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Properties\launchSettings.json" />
@@ -34,6 +41,10 @@
   <ItemGroup>
     <AdditionalFiles Include="Feature\BankSoal\Component\RichToolBarContent.razor" />
     <AdditionalFiles Include="Feature\Dashboards\Pages\Dashboard.razor" />
+    <AdditionalFiles Include="Feature\ForgetPassword\Page\ForgetPassPage.razor" />
+    <AdditionalFiles Include="Feature\Register\Pages\ConfirmEmailPage.razor" />
+    <AdditionalFiles Include="Feature\Register\Pages\RegisterPage.razor" />
+    <AdditionalFiles Include="Feature\Register\Pages\ResetPasswordPage.razor" />
     <AdditionalFiles Include="Feature\UserManagements\Dialog\AddUserDialog.razor" />
     <AdditionalFiles Include="Feature\UserManagements\Dialog\EditUserDialog.razor" />
     <AdditionalFiles Include="Feature\UserManagements\Page\UserManagement.razor" />

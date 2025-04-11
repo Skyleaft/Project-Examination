@@ -5,6 +5,7 @@
 @using MimeKit
 @using MimeKit.Text
 @using Web.Client.Interfaces
+@using Web.Components.ForgetPassword
 @implements IAsyncDisposable
 
 <EditForm Model="model" OnValidSubmit="OnValidSubmit" FormName="forget">
@@ -71,33 +72,17 @@
                 var reseturi = _navigationManager.GetUriWithQueryParameters(
                     _navigationManager.ToAbsoluteUri("userclient/ResetPassword").AbsoluteUri,
                     new Dictionary<string, object?> { ["userId"] = res.Id, ["code"] = token });
-                var mail = await SendEmail(res.Email, reseturi);
-                if (!mail)
-                {
-                    dial.Close();
-                    _snackbar.Add(
-                        @<div>
-                            <h3>Info ERROR!!</h3>
-                            <ul>
-                                <li>IMail Services</li>
-                                <li>Ada Error di Send Email</li>
-                            </ul>
-                        </div>
-                        , Severity.Error);
-                }
-                else
-                {
-                    dial.Close();
-                    _snackbar.Add(
-                        @<div>
-                            <h3>Info!!</h3>
-                            <ul>
-                                <li>Success</li>
-                                <li>Reset URL Berhasil Digenerate, Silahkan Cek Email Anda</li>
-                            </ul>
-                        </div>
-                        , Severity.Success);
-                }
+                SendEmail(res.Email, reseturi);
+                dial.Close();
+                _snackbar.Add(
+                    @<div>
+                        <h3>Info!!</h3>
+                        <ul>
+                            <li>Success</li>
+                            <li>Reset URL Berhasil Digenerate, Silahkan Cek Email Anda</li>
+                        </ul>
+                    </div>
+                    , Severity.Success);
             }
         }
         else
@@ -113,15 +98,9 @@
         }
     }
 
-    private async Task<bool> SendEmail(string emailto, string resetUri)
+    private void SendEmail(string emailto, string resetUri)
     {
-        var email = new MimeMessage();
-        email.From.Add(MailboxAddress.Parse("info@mzstudio.space"));
-        email.To.Add(MailboxAddress.Parse(emailto));
-        email.Subject = "Reset Password - Siaplulusp3k";
-        email.Body = new TextPart(TextFormat.Html)
-        {
-            Text = $@"
+            var emailBody = $@"
 <!DOCTYPE html>
 <html lang=""en"">
 <head>
@@ -205,9 +184,8 @@
 </body>
 </html>
 "
-        };
-
-        return await _mailService.SendMailAsync(email, cts.Token);
+        ;
+            _mailService.SendMailBackground(emailto,"Reset Password - Siaplulusp3k",emailBody, cts.Token);
     }
 
     public async ValueTask DisposeAsync()

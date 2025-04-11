@@ -19,6 +19,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FastEndpoints" Version="5.35.0" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.18" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.20.12" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
@@ -51,6 +53,10 @@
     <_ContentIncludedByDefault Remove="Components\Features\UserManagement\Dialog\EditUserDialog.razor" />
     <_ContentIncludedByDefault Remove="Components\Features\UserManagement\View\UserManagement.razor" />
     <_ContentIncludedByDefault Remove="Components\Features\Register\Page.razor" />
+    <_ContentIncludedByDefault Remove="Components\Register\Pages\ConfirmEmailPage.razor" />
+    <_ContentIncludedByDefault Remove="Components\Register\Pages\RegisterPage.razor" />
+    <_ContentIncludedByDefault Remove="Components\Register\Pages\ResetPasswordPage.razor" />
+    <_ContentIncludedByDefault Remove="Components\ForgetPassword\Page\ForgetPassPage.razor" />
   </ItemGroup>
   <ItemGroup>
     <None Include="compilerconfig.json" />

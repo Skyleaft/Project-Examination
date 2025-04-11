@@ -2,6 +2,8 @@ using System.Text.Json.Serialization;
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using CoreLib.Common;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -84,7 +86,7 @@ builder.Services.AddScoped<INotificationService, InMemoryNotificationService>();
 builder.Services.AddScoped<LayoutService>();
 builder.Services.AddScoped<Navigation>();
 // Add services to the container.
-builder.Services.AddRazorComponents()
+builder.Services.AddRazorComponents(opt =>opt.DetailedErrors = builder.Environment.IsDevelopment())
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
@@ -96,6 +98,15 @@ builder.Services.AddResponseCompression(options =>
 });
 
 builder.Services.AddFastEndpoints();
+var hangfiredb = builder.Configuration.GetConnectionString("hangfire");
+builder.Services.AddHangfire(x =>
+{
+    x.SetDataCompatibilityLevel(CompatibilityLevel.Version_180);
+    x.UseSimpleAssemblyNameTypeSerializer();
+    x.UseRecommendedSerializerSettings();
+    x.UsePostgreSqlStorage(hangfiredb);
+});
+builder.Services.AddHangfireServer();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
@@ -105,6 +116,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
+app.UseAuthorization();
 app.MapDefaultEndpoints();
 app.UseFastEndpoints(c =>
     {
@@ -115,7 +127,7 @@ app.UseFastEndpoints(c =>
             return Newtonsoft.Json.JsonConvert.DeserializeObject(await reader.ReadToEndAsync(), tDto);
         };
     });
-
+app.MapHangfireDashboard();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

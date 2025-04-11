@@ -1,5 +1,4 @@
-﻿using Web.Client.Feature.Register;
-using Web.Client.Shared.Models;
+﻿using Web.Client.Shared.Models;
 
 namespace Web.Services.UserServices.Endpoints.ResetPassword;
 
