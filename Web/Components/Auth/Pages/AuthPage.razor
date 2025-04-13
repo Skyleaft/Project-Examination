@@ -79,7 +79,7 @@
     [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
     [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
     [SupplyParameterFromQuery] private bool? isLogout { get; set; }
-    [SupplyParameterFromForm] private LoginDTO model { get; } = new();
+    [SupplyParameterFromForm] private LoginDTO model { get; set;} = new();
     [Inject] ISnackbar Snackbar { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] HttpClient httpClient { get; set; }
