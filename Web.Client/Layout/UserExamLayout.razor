@@ -30,48 +30,56 @@
     private MudThemeProvider _mudThemeProvider;
     [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; }
     private HubConnection? hubConnection;
+    private bool isConnected;
 
     protected override async Task OnInitializedAsync()
     {
         LayoutService.SetBaseTheme(Themes.LandingPageTheme());
         LayoutService.MajorUpdateOccurred += LayoutServiceOnMajorUpdateOccured;
 
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity is not null && user.Identity.IsAuthenticated)
-        {
-            var deviceInfo = await JS.InvokeAsync<string>("userInfo.getDeviceInfo");
-            GeolocationResult? location = null;
-            try
-            {
-                location = await JS.InvokeAsync<GeolocationResult>("userInfo.getLocation");
-                Console.WriteLine($"Location : {location.Latitude} {location.Longitude}");
-            }
-            catch
-            {
-                location = new GeolocationResult { Latitude = 0, Longitude = 0 };
-            }
-
-            hubConnection = new HubConnectionBuilder()
-                .WithUrl(Navigation.ToAbsoluteUri($"/presenceHub?device={Uri.EscapeDataString(deviceInfo)}&lat={location.Latitude}&lng={location.Longitude}&user={user.Identity.Name}"), options =>
-                {
-                    options.HttpMessageHandlerFactory = innerHandler =>
-                        new IncludeRequestCredentialsMessageHandler { InnerHandler = innerHandler };
-                })
-                .WithAutomaticReconnect()
-                .Build();
-
-            hubConnection.On<List<OnlineUser>>("UserListUpdated", users =>
-            {
-                OnlineUserStateService.UpdateOnlineUsers(users);
-                InvokeAsync(StateHasChanged);
-            });
-
-            await hubConnection.StartAsync();
-        }
-
         base.OnInitialized();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender && !isConnected)
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                var deviceInfo = await JS.InvokeAsync<string>("userInfo.getDeviceInfo");
+                GeolocationResult? location = null;
+                try
+                {
+                    location = await JS.InvokeAsync<GeolocationResult>("userInfo.getLocation");
+                    Console.WriteLine($"Location : {location.Latitude} {location.Longitude}");
+                }
+                catch
+                {
+                    location = new GeolocationResult { Latitude = 0, Longitude = 0 };
+                }
+
+                hubConnection = new HubConnectionBuilder()
+                    .WithUrl(Navigation.ToAbsoluteUri($"/presenceHub?device={Uri.EscapeDataString(deviceInfo)}&lat={location.Latitude}&lng={location.Longitude}&user={user.Identity.Name}"), options =>
+                    {
+                        options.HttpMessageHandlerFactory = innerHandler =>
+                            new IncludeRequestCredentialsMessageHandler { InnerHandler = innerHandler };
+                    })
+                    .WithAutomaticReconnect()
+                    .Build();
+
+                hubConnection.On<List<OnlineUser>>("UserListUpdated", users =>
+                {
+                    OnlineUserStateService.UpdateOnlineUsers(users);
+                    InvokeAsync(StateHasChanged);
+                });
+
+                await hubConnection.StartAsync();
+            }
+        }
     }
 
     public void Dispose()
