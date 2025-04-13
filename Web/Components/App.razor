@@ -14,14 +14,18 @@
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet"/>
     <link href="_content/CodeBeam.MudBlazor.Extensions/MudExtensions.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" integrity="sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css"
+          integrity="sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww" crossorigin="anonymous">
     <!-- The loading of KaTeX is deferred to speed up page rendering -->
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" integrity="sha384-hIoBPJpTUs74ddyc4bFZSM1TVlQDA60VBbJS0oA934VSz82sBx1X7kSx2ATBDIyd" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"
+            integrity="sha384-hIoBPJpTUs74ddyc4bFZSM1TVlQDA60VBbJS0oA934VSz82sBx1X7kSx2ATBDIyd"
+            crossorigin="anonymous"></script>
     <!-- To automatically render math in text elements, include the auto-render extension: -->
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"
+            integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"
             onload="renderMathInElement(document.body);"></script>
     <script src="https://unpkg.com/quill-image-compress@1.2.11/dist/quill.imageCompressor.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
     <link rel="icon" type="image/png" href="favicon.png"/>
 
     <HeadOutlet @rendermode="PageRenderMode"/>
@@ -49,9 +53,8 @@
 
         .loading-progress circle:last-child {
             stroke: #1b6ec2;
-            stroke-dasharray:
-                calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8),
-                500%;
+            stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8),
+            500%;
             transition: stroke-dasharray 0.05s ease-in-out;
         }
 
@@ -75,8 +78,10 @@
         <div class="mud-wasm" style="animation-direction:alternate-reverse;animation-duration:4s;"></div>
         <div class="mud-wasm" style="animation-duration:5s;"></div>
         <div class="mud-wasm-cont ">
-            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                 width="256px" height="256px" viewBox="0 0 128 128" enable-background="new 0 0 128 128" xml:space="preserve">
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                 xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                 width="256px" height="256px" viewBox="0 0 128 128" enable-background="new 0 0 128 128"
+                 xml:space="preserve">
                 <g>
                     <g>
                         <g>
@@ -205,7 +210,8 @@
 				l47.618-18.739L62.463,4.277L14.849,23.022z"/>
                         </g>
                         <g>
-                            <polygon fill="#fff" points="93.268,48.032 93.15,31.566 67.531,21.398 69.004,17.685 97.127,28.845 97.263,48.004 			"/>
+                            <polygon fill="#fff"
+                                     points="93.268,48.032 93.15,31.566 67.531,21.398 69.004,17.685 97.127,28.845 97.263,48.004 			"/>
                         </g>
                         <g>
                             <path fill="#fff" d="M62.547,22.096c-4.472,0-7.737-2.045-7.765-4.862c-0.01-0.997,0.396-1.943,1.176-2.737
@@ -230,10 +236,12 @@
 </div>
 
 <Routes @rendermode="PageRenderMode"/>
+<script src="js/userinfo.js"></script>
 <script src="_framework/blazor.web.js"></script>
 <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 <script src="_content/CodeBeam.MudBlazor.Extensions/MudExtensions.min.js"></script>
 <script src="/js/FileHandler.js"></script>
+
 </body>
 
 </html>
@@ -249,21 +257,18 @@
             {
                 if (HttpContext.Request.Path.StartsWithSegments("/userclient"))
                 {
-                    return InteractiveServer;
+                    return new InteractiveServerRenderMode(false);
                 }
-                else if (HttpContext.Request.Path.StartsWithSegments("/exam"))
+
+                if (HttpContext.Request.Path.StartsWithSegments("/exam"))
                 {
                     return InteractiveWebAssembly;
                 }
-                else
-                {
-                    return InteractiveAuto;
-                }
+
+                return new InteractiveAutoRenderMode(false);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 

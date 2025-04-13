@@ -13,10 +13,7 @@ public class Soal
     {
         get
         {
-            if (PilihanJawaban == null || !PilihanJawaban.Any())
-            {
-                return 0;
-            }
+            if (PilihanJawaban == null || !PilihanJawaban.Any()) return 0;
             return PilihanJawaban?.Sum(x => x.Point) ?? 0;
         }
     }
@@ -25,10 +22,7 @@ public class Soal
     {
         get
         {
-            if (PilihanJawaban == null || !PilihanJawaban.Any())
-            {
-                return 0;
-            }
+            if (PilihanJawaban == null || !PilihanJawaban.Any()) return 0;
             return PilihanJawaban?.Max(x => x.Point) ?? 0;
         }
     }
@@ -37,10 +31,7 @@ public class Soal
     {
         get
         {
-            if (PilihanJawaban == null || !PilihanJawaban.Any())
-            {
-                return 0;
-            }
+            if (PilihanJawaban == null || !PilihanJawaban.Any()) return 0;
             return PilihanJawaban?.Min(x => x.Point) ?? 0;
         }
     }

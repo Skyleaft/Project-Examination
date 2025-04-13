@@ -1,4 +1,5 @@
 ﻿namespace CoreLib.Common;
+
 public class FindRequest
 {
     public string Search { get; set; }

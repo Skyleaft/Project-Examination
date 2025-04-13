@@ -6,14 +6,12 @@ using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using MudExtensions.Services;
+using Newtonsoft.Json;
 using Web;
-using Web.Client.Feature.BankSoal.Page;
 using Web.Client.Services;
 using Web.Client.Services.Notifications;
 using Web.Client.Services.UserPreferences;
@@ -22,6 +20,8 @@ using Web.Client.Shared.Models;
 using Web.Common.Database;
 using Web.Components;
 using Web.Components.Auth;
+using Web.Services.HubServices;
+using _Imports = Web.Client._Imports;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,13 +45,13 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddScoped<ProtectedSessionStorage>();
-builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddCors();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
-builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthenticationStateProvider>();
+
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -64,7 +64,7 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailS
 var connectionString = builder.Configuration.GetConnectionString("mzserver")
                        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<AppDbContext>(o =>
-    o.UseNpgsql(connectionString, options=>options.EnableRetryOnFailure()), 
+        o.UseNpgsql(connectionString, options => options.EnableRetryOnFailure()),
     optionsLifetime: ServiceLifetime.Scoped);
 
 builder.Services.AddIdentityCore<ApplicationUser>(o =>
@@ -85,17 +85,16 @@ builder.Services.AddScoped<IUserPreferencesService, UserPreferencesService>();
 builder.Services.AddScoped<INotificationService, InMemoryNotificationService>();
 builder.Services.AddScoped<LayoutService>();
 builder.Services.AddScoped<Navigation>();
-// Add services to the container.
-builder.Services.AddRazorComponents(opt =>opt.DetailedErrors = builder.Environment.IsDevelopment())
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
 
-// Add response compression middleware
-builder.Services.AddResponseCompression(options =>
-{
-    options.Providers.Add<GzipCompressionProvider>();
-    options.EnableForHttps = true; // Optional: Enable compression for HTTPS
-});
+// Add services to the container.
+builder.Services.AddRazorComponents(opt => opt.DetailedErrors = builder.Environment.IsDevelopment())
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization(
+        options => options.SerializeAllClaims = true);
+;
+
+builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddFastEndpoints();
 var hangfiredb = builder.Configuration.GetConnectionString("hangfire");
@@ -107,27 +106,27 @@ builder.Services.AddHangfire(x =>
     x.UsePostgreSqlStorage(hangfiredb);
 });
 builder.Services.AddHangfireServer();
-
+builder.Services.AddSingleton<OnlineUserService>();
+builder.Services.AddSingleton<OnlineUserStateService>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
 
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapDefaultEndpoints();
+app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 app.UseFastEndpoints(c =>
+{
+    c.Endpoints.RoutePrefix = "api";
+    c.Serializer.RequestDeserializer = async (req, tDto, jCtx, ct) =>
     {
-        c.Endpoints.RoutePrefix = "api";
-        c.Serializer.RequestDeserializer = async (req, tDto, jCtx, ct) =>
-        {
-            using var reader = new StreamReader(req.Body);
-            return Newtonsoft.Json.JsonConvert.DeserializeObject(await reader.ReadToEndAsync(), tDto);
-        };
-    });
+        using var reader = new StreamReader(req.Body);
+        return JsonConvert.DeserializeObject(await reader.ReadToEndAsync(), tDto);
+    };
+});
 app.MapHangfireDashboard();
+app.MapHub<PresenceHub>("/presenceHub");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -136,10 +135,11 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 else
+{
     app.UseWebAssemblyDebugging();
+}
 
 app.UseHttpsRedirection();
-app.UseResponseCompression();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
@@ -186,7 +186,7 @@ app.MapRazorComponents<App>()
     .DisableAntiforgery()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(CreateSoalPage).Assembly);
+    .AddAdditionalAssemblies(typeof(_Imports).Assembly);
 
 app.MapAdditionalIdentityEndpoints();
 

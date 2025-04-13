@@ -1,6 +1,7 @@
 ﻿@if (!string.IsNullOrEmpty(DisplayMessage))
 {
-    <MudAlert Severity="@(DisplayMessage.StartsWith("Error") ? Severity.Error : Severity.Success)">@DisplayMessage</MudAlert>
+    <MudAlert
+        Severity="@(DisplayMessage.StartsWith("Error") ? Severity.Error : Severity.Success)">@DisplayMessage</MudAlert>
 }
 
 @code {

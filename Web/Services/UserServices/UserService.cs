@@ -138,26 +138,26 @@ public class UserService : IUser
         finduser.LastLogin = DateTime.UtcNow;
         await _appDbContext.SaveChangesAsync(ct);
         return new ServiceResponse(true, "Berhasil Login");
-        
     }
 
     public async Task<ValidUserResponse> ValidateUserReset(validuserDTO r)
     {
         var finduser = await _userManager.FindByNameAsync(r.Username);
-        if (finduser == null) return new ValidUserResponse()
-        {
-            Valid = false,
-            Message = "Username tidak ditemukan"
-        };
-        
-        if(finduser.PhoneNumber!=r.NomorHP)
-            return new ValidUserResponse( )
+        if (finduser == null)
+            return new ValidUserResponse
+            {
+                Valid = false,
+                Message = "Username tidak ditemukan"
+            };
+
+        if (finduser.PhoneNumber != r.NomorHP)
+            return new ValidUserResponse
             {
                 Valid = false,
                 Message = "Nomor HP tidak sesuai"
             };
-        
-        return new ValidUserResponse()
+
+        return new ValidUserResponse
         {
             Valid = true,
             Username = finduser.UserName,

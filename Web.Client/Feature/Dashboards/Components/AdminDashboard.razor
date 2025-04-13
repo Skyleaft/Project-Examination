@@ -2,6 +2,8 @@
 @using CoreLib.TakeExam
 @using Web.Client.Interfaces
 @implements IAsyncDisposable
+
+
 <MudGrid Class="mb-4">
     <MudItem xs="12" sm="4">
         <MudPaper Elevation="2" Class="pa-4">
@@ -66,6 +68,8 @@
         </MudPaper>
     </MudItem>
 
+    <UserOnline></UserOnline>
+
     @if (isLoading)
     {
         <div class="d-none d-flex align-center flex-grow-1 ma-8">
@@ -118,6 +122,7 @@
 @code {
     [Inject] IDashboard _dashboards { get; set; }
 
+
     Random random = new();
     private ChartOptions options = new();
 
@@ -126,8 +131,7 @@
     private AdminDashboardData data = new();
     private CancellationTokenSource cts = new();
     bool isLoading = true;
-
-
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);

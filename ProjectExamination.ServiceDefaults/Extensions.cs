@@ -5,7 +5,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
-using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
@@ -38,7 +37,7 @@ public static class Extensions
 
     public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
     {
-        var seqURL =builder.Configuration["SEQ_URL"];
+        var seqURL = builder.Configuration["SEQ_URL"];
         var ApiKeys = builder.Configuration["API_KEY"];
         builder.Logging.AddOpenTelemetry(logging =>
         {

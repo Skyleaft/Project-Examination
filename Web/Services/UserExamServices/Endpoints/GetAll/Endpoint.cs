@@ -18,7 +18,7 @@ public class Endpoint : EndpointWithoutRequest<IEnumerable<UserExam>>
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var res = await _repo.GetAll(Route<Guid>("Id"),ct);
+        var res = await _repo.GetAll(Route<Guid>("Id"), ct);
         await SendAsync(res, cancellation: ct);
     }
 }

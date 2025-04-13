@@ -1,6 +1,4 @@
-﻿using Web.Client.Feature.UserManagements;
-
-namespace Web.Services.UserServices.Endpoints.GenerateResetPassword;
+﻿namespace Web.Services.UserServices.Endpoints.GenerateResetPassword;
 
 public class Endpoint(IUser repo) : EndpointWithoutRequest<string>
 {

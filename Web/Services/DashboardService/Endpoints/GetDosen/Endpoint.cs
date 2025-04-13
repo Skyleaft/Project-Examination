@@ -5,8 +5,8 @@ namespace Web.Services.DashboardService.Endpoints.GetDosen;
 
 public class Endpoint : EndpointWithoutRequest<DosenDashboardData>
 {
-    private readonly IDashboard _repo;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IDashboard _repo;
 
     public Endpoint(IDashboard repo, IHttpContextAccessor httpContextAccessor)
     {
@@ -22,7 +22,7 @@ public class Endpoint : EndpointWithoutRequest<DosenDashboardData>
     public override async Task HandleAsync(CancellationToken ct)
     {
         var userID = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var res = await _repo.GetDosen(ct,userID);
+        var res = await _repo.GetDosen(ct, userID);
         await SendAsync(res, cancellation: ct);
     }
 }

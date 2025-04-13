@@ -8,7 +8,6 @@
 @using Microsoft.AspNetCore.Authorization
 @using MiniExcelLibs
 @using Web.Client.Interfaces
-@using Web.Client.Services
 @implements IAsyncDisposable
 
 <MudText Typo="Typo.h4" Align="Align.Center">Kelola Hasil Ujian</MudText>
@@ -242,8 +241,8 @@
         }).ToList();
         //var excelFile = ExcelService.GenerateExcelWorkbook(filterd);
         using var stream = new MemoryStream();
-        await stream.SaveAsAsync(filterd);  // MiniExcel extension method
-        var excelFile= stream.ToArray();
+        await stream.SaveAsAsync(filterd); // MiniExcel extension method
+        var excelFile = stream.ToArray();
         js.InvokeVoidAsync("saveAsFile",
             $"hasil_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.xlsx",
             Convert.ToBase64String(excelFile)

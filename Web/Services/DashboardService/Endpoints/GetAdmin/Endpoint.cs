@@ -1,12 +1,11 @@
-﻿using System.Security.Claims;
-using CoreLib.Dashboards;
+﻿using CoreLib.Dashboards;
 
 namespace Web.Services.DashboardService.Endpoints.GetAdmin;
 
 public class Endpoint : EndpointWithoutRequest<AdminDashboardData>
 {
-    private readonly IDashboard _repo;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IDashboard _repo;
 
     public Endpoint(IDashboard repo, IHttpContextAccessor httpContextAccessor)
     {

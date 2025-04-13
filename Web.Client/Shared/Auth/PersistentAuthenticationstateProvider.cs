@@ -18,10 +18,10 @@ public class PersistentAuthenticationStateProvider : AuthenticationStateProvider
 
         Claim[] claims =
         [
-            new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),
-            new Claim(ClaimTypes.Name, userInfo.Name),
-            new Claim(ClaimTypes.Role, userInfo.Role),
-            new Claim(ClaimTypes.Email, userInfo.Email)
+            new(ClaimTypes.NameIdentifier, userInfo.UserId),
+            new(ClaimTypes.Name, userInfo.Name),
+            new(ClaimTypes.Role, userInfo.Role),
+            new(ClaimTypes.Email, userInfo.Email)
         ];
 
         _authenticationStateTask = Task.FromResult(

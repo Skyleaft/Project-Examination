@@ -1,5 +1,4 @@
 ﻿using CoreLib.Report;
-using CoreLib.RoomSet;
 
 namespace Web.Services.ReportServices.Endpoints.Get;
 

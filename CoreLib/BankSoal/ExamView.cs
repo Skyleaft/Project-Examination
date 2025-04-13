@@ -4,7 +4,6 @@ public class ExamView
 {
     public ExamView()
     {
-        
     }
 
     public ExamView(Exam exam)
@@ -12,6 +11,7 @@ public class ExamView
         Id = exam.Id;
         Nama = exam.Nama;
     }
+
     public int Id { get; set; }
     public string Nama { get; set; }
     public List<SoalView>? Soals { get; set; }

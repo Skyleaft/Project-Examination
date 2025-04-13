@@ -86,7 +86,7 @@ public class Themes
 
     private static readonly Typography LandingPageTypography = new()
     {
-        Default = new DefaultTypography()
+        Default = new DefaultTypography
         {
             FontFamily = new[] { "Poppins", "Roboto", "Arial", "sans-serif", "Helvetica" },
             LetterSpacing = "normal"

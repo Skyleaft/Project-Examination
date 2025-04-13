@@ -1,5 +1,4 @@
-﻿using CoreLib.Common;
-using CoreLib.RoomSet;
+﻿using CoreLib.RoomSet;
 
 namespace Web.Services.RoomServices.Endpoints.AllRefference;
 
@@ -7,7 +6,7 @@ public class Endpoint : EndpointWithoutRequest<IEnumerable<Room>>
 {
     private readonly IRoom _repo;
 
-    public Endpoint(IRoom examService )
+    public Endpoint(IRoom examService)
     {
         _repo = examService;
     }

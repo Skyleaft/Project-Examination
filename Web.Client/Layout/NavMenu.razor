@@ -2,10 +2,13 @@
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Beranda</MudNavLink>
 
     <AuthorizeView Roles="Superuser,Operator">
-        <MudNavLink Href="UserManagement" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AccountBox">UserManagement</MudNavLink>
+        <MudNavLink Href="UserManagement" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AccountBox">
+            UserManagement
+        </MudNavLink>
     </AuthorizeView>
     <AuthorizeView Roles="Operator,Superuser, Dosen">
-        <MudNavLink Href="/BankSoal" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Bank Soal</MudNavLink>
+        <MudNavLink Href="/BankSoal" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Bank Soal
+        </MudNavLink>
         <MudNavGroup Title="Manajemen Ruangan" Icon="@Icons.Material.Filled.Assessment" Expanded="true">
             <MudNavLink Href="/room/view">Ruangan Ujian</MudNavLink>
             <MudNavLink Href="/room/manage">Kelola Ruangan Ujian</MudNavLink>
@@ -16,6 +19,7 @@
         </MudNavGroup>
     </AuthorizeView>
     <AuthorizeView Roles="User,Superuser">
-        <MudNavLink Href="/userroom" Icon="@Icons.Material.Filled.Assessment" Match="NavLinkMatch.All">Ruangan</MudNavLink>
+        <MudNavLink Href="/userroom" Icon="@Icons.Material.Filled.Assessment" Match="NavLinkMatch.All">Ruangan
+        </MudNavLink>
     </AuthorizeView>
 </MudNavMenu>

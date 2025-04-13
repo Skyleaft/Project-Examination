@@ -1,6 +1,4 @@
-﻿using CoreLib.TakeExam;
-
-namespace CoreLib.Dashboards;
+﻿namespace CoreLib.Dashboards;
 
 public class DosenDashboardData
 {
@@ -10,7 +8,6 @@ public class DosenDashboardData
     public IEnumerable<NilaiUser> Top10 { get; set; }
     public IEnumerable<NilaiUser> Bottom10 { get; set; }
     public IEnumerable<RoomAnalys> RoomAnalysis { get; set; }
-    
 }
 
 public class NilaiUser

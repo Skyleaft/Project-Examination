@@ -29,16 +29,16 @@
                             Generate
                         </MudButton>
                     </MudStack>
-                    
-                    <MudAutocomplete Label="Soal" T="Exam" 
+
+                    <MudAutocomplete Label="Soal" T="Exam"
                                      Variant="Variant.Outlined"
-                                     @bind-Value="selectedExam" 
-                                     SearchFunc="SearchFunc" 
-                                     Clearable="true" 
+                                     @bind-Value="selectedExam"
+                                     SearchFunc="SearchFunc"
+                                     Clearable="true"
                                      ToStringFunc="@(e => e == null ? null : $"{e.Nama} - {e.CreatedOn.Value.ToString("dd/MM/yyyy")}")"
                                      ShowProgressIndicator="true"
-                                     DropdownSettings="new DropdownSettings(){OverflowBehavior=OverflowBehavior.FlipNever}">
-                        
+                                     DropdownSettings="new DropdownSettings {OverflowBehavior=OverflowBehavior.FlipNever}">
+
                     </MudAutocomplete>
 
                     <MudStack Row="true" Spacing="2" Class="pa-2">
@@ -121,8 +121,7 @@
     [Inject] private IRoom _roomRepo { get; set; }
     [Inject] ISnackbar _snackbar { get; set; }
 
-    [Parameter]
-    public Room room { get; set; } = new();
+    [Parameter] public Room room { get; set; } = new();
 
     [Parameter] public bool isEdit { get; set; }
 
@@ -152,8 +151,6 @@
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            
-
             StateHasChanged();
         }
     }

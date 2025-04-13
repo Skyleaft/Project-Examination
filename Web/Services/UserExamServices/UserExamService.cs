@@ -57,10 +57,7 @@ public class UserExamService : IUserExam
         entry.Entity.RetryCount = r.RetryCount;
         entry.Entity.ScoreData = r.CalculateScore;
         entry.Entity.ScoreNormalizeData = nomalizeScore;
-        if (entry.Entity.HistoryScoreNormalize == null)
-        {
-            entry.Entity.HistoryScoreNormalize = new List<double>();
-        }
+        if (entry.Entity.HistoryScoreNormalize == null) entry.Entity.HistoryScoreNormalize = new List<double>();
 
         entry.Entity.HistoryScoreNormalize.Add((double)nomalizeScore);
 
@@ -183,10 +180,10 @@ public class UserExamService : IUserExam
 
     public async Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r, CancellationToken ct)
     {
-        var data = await _dbContext.UserAnswer.FirstOrDefaultAsync(x => x.Id == r.UserAnswerId, cancellationToken: ct);
+        var data = await _dbContext.UserAnswer.FirstOrDefaultAsync(x => x.Id == r.UserAnswerId, ct);
         if (data == null)
             return new ServiceResponse(false, "data tidak ditemukan");
-        var exam = await _dbContext.UserExam.FirstOrDefaultAsync(x => x.Id == r.UserExamId, cancellationToken: ct);
+        var exam = await _dbContext.UserExam.FirstOrDefaultAsync(x => x.Id == r.UserExamId, ct);
         var entry = _dbContext.Entry(data);
         entry.Entity.SoalJawabanId = r.SoalJawabanId;
 
@@ -200,7 +197,7 @@ public class UserExamService : IUserExam
     {
         var data = await _dbContext.UserAnswer
             .Where(x => x.UserExamId == UserExamId)
-            .ToListAsync(cancellationToken: ct);
+            .ToListAsync(ct);
         return data;
     }
 
@@ -209,18 +206,15 @@ public class UserExamService : IUserExam
         var data = await _dbContext
             .UserExam
             .Include(x => x.UserAnswers)
-            .FirstOrDefaultAsync(x => x.Id == UserExamId, cancellationToken: ct);
+            .FirstOrDefaultAsync(x => x.Id == UserExamId, ct);
         if (data == null)
             return new ServiceResponse(false, "data tidak ditemukan");
 
         var duration = await _dbContext.Room
             .Where(x => x.Id == data.RoomId)
             .Select(x => x.Durasi)
-            .FirstOrDefaultAsync(cancellationToken: ct);
-        foreach (var item in data.UserAnswers)
-        {
-            item.SoalJawabanId = null;
-        }
+            .FirstOrDefaultAsync(ct);
+        foreach (var item in data.UserAnswers) item.SoalJawabanId = null;
 
         data.IsDone = false;
         data.IsOngoing = false;
@@ -234,7 +228,7 @@ public class UserExamService : IUserExam
     {
         var data = await _dbContext
             .UserExam
-            .FirstOrDefaultAsync(x => x.Id == UserExamId, cancellationToken: ct);
+            .FirstOrDefaultAsync(x => x.Id == UserExamId, ct);
         if (data == null)
             return new ServiceResponse(false, "data tidak ditemukan");
         data.IsOngoing = true;

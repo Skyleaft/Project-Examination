@@ -1,6 +1,4 @@
 ﻿using CoreLib.TakeExam;
-using Microsoft.EntityFrameworkCore;
-using CoreLib.Users;
 
 namespace CoreLib.RoomSet;
 

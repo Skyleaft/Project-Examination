@@ -10,19 +10,19 @@ public static class EncryptionHelper
 
     public static string EncryptString(string plainText)
     {
-        byte[] keyBytes = Encoding.UTF8.GetBytes(key);
-        byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
-        byte[] plainBytes = Encoding.UTF8.GetBytes(plainText);
+        var keyBytes = Encoding.UTF8.GetBytes(key);
+        var ivBytes = Encoding.UTF8.GetBytes(iv);
+        var plainBytes = Encoding.UTF8.GetBytes(plainText);
 
-        using (Aes aes = Aes.Create())
+        using (var aes = Aes.Create())
         {
             aes.Key = keyBytes;
             aes.IV = ivBytes;
-            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+            var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
-            using (MemoryStream ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
-                using (CryptoStream cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
                 {
                     cs.Write(plainBytes, 0, plainBytes.Length);
                     cs.FlushFinalBlock();
@@ -31,24 +31,24 @@ public static class EncryptionHelper
             }
         }
     }
-    
+
     public static string DecryptString(string cipherText)
     {
-        byte[] keyBytes = Encoding.UTF8.GetBytes(key);
-        byte[] ivBytes = Encoding.UTF8.GetBytes(iv);
-        byte[] cipherBytes = Convert.FromBase64String(cipherText);
+        var keyBytes = Encoding.UTF8.GetBytes(key);
+        var ivBytes = Encoding.UTF8.GetBytes(iv);
+        var cipherBytes = Convert.FromBase64String(cipherText);
 
-        using (Aes aes = Aes.Create())
+        using (var aes = Aes.Create())
         {
             aes.Key = keyBytes;
             aes.IV = ivBytes;
-            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+            var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
-            using (MemoryStream ms = new MemoryStream(cipherBytes))
+            using (var ms = new MemoryStream(cipherBytes))
             {
-                using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
                 {
-                    using (StreamReader reader = new StreamReader(cs))
+                    using (var reader = new StreamReader(cs))
                     {
                         return reader.ReadToEnd();
                     }

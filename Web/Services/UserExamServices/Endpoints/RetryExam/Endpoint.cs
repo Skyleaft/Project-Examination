@@ -17,7 +17,7 @@ public class Endpoint : EndpointWithoutRequest<ServiceResponse>
     }
 
 
-    public override async Task HandleAsync( CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
         var res = await _repo.RetryExam(Route<Guid>("Id"), ct);
         await SendAsync(res, cancellation: ct);

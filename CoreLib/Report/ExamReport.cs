@@ -14,8 +14,8 @@ public class ExamReport
     public DateTime Jadwal { get; set; }
     public int Score { get; set; }
     public int MaxScore { get; set; }
-    [Column("nilai")]
-    public double Nilai { get; set; }
+
+    [Column("nilai")] public double Nilai { get; set; }
+
     public string UserID { get; set; }
-    
 }

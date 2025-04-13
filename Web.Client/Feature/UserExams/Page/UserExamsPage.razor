@@ -37,7 +37,8 @@ else
                             foreach (var item in soalPaging.Items)
                             {
                                 <SoalCard data="item"
-                                          UpdateJawaban="async sj => await OnUpdateJawaban(sj, item)" reRender="reRender"/>
+                                          UpdateJawaban="async sj => await OnUpdateJawaban(sj, item)"
+                                          reRender="reRender"/>
                             }
                         }
                     </div>

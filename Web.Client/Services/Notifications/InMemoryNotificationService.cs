@@ -67,10 +67,7 @@ public class InMemoryNotificationService : INotificationService
 
     private async Task<DateTime> GetLastReadTimestamp()
     {
-        if (await _localStorageService.ContainKeyAsync(LocalStorageKey) == false)
-        {
-            return DateTime.MinValue;
-        }
+        if (await _localStorageService.ContainKeyAsync(LocalStorageKey) == false) return DateTime.MinValue;
 
         var timestamp = await _localStorageService.GetItemAsync<DateTime>(LocalStorageKey);
         return timestamp;

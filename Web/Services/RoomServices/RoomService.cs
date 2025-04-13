@@ -68,22 +68,6 @@ public class RoomService : IRoom
         return find;
     }
 
-    public Room GetSync(Guid Id)
-    {
-        var find = _dbContext
-            .Room
-            .AsNoTracking()
-            .AsSplitQuery()
-            .Where(x => x.Id == Id)
-            .Include(x => x.Exam)
-            .ThenInclude(y => y.Soals.OrderBy(o => o.Nomor))
-            .ThenInclude(z => z.PilihanJawaban)
-            .FirstOrDefault();
-        if (find == null) return null;
-
-        return find;
-    }
-
     public async Task<Room> Get(string kode)
     {
         var find = await _dbContext
@@ -102,8 +86,8 @@ public class RoomService : IRoom
         var find = await _dbContext
             .Room
             .AsNoTracking()
-            .Select((x)=>x.Adapt<RoomView>())
-            .FirstOrDefaultAsync(x=>x.Id == Id,ct);
+            .Select(x => x.Adapt<RoomView>())
+            .FirstOrDefaultAsync(x => x.Id == Id, ct);
         if (find == null) return null;
 
         return find;
@@ -151,7 +135,7 @@ public class RoomService : IRoom
                      x.Kode.ToLower().Contains(r.Search.ToLower())
             )
             .Where(x => x.CreatedBy == Username)
-            .OrderByDescending(x=>x.CreatedOn)
+            .OrderByDescending(x => x.CreatedOn)
             .Select(y =>
                 new RoomExam
                 {
@@ -178,5 +162,21 @@ public class RoomService : IRoom
                 Kode = x.Kode
             }).ToListAsync(ct);
         return data;
+    }
+
+    public Room GetSync(Guid Id)
+    {
+        var find = _dbContext
+            .Room
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Where(x => x.Id == Id)
+            .Include(x => x.Exam)
+            .ThenInclude(y => y.Soals.OrderBy(o => o.Nomor))
+            .ThenInclude(z => z.PilihanJawaban)
+            .FirstOrDefault();
+        if (find == null) return null;
+
+        return find;
     }
 }

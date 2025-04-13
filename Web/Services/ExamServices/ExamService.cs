@@ -38,8 +38,8 @@ public class ExamService : IExam
 
         var deletedSoal = entry.Entity.Soals.Except(r.Soals).ToList();
         var addedSoal = r.Soals.Except(entry.Entity.Soals).ToList();
-        
-        
+
+
         _dbContext.Soal.RemoveRange(deletedSoal);
         _dbContext.Soal.AddRange(addedSoal);
 

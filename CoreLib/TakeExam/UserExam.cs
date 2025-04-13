@@ -8,9 +8,9 @@ public class UserExam
 {
     public Guid Id { get; set; }
     public ApplicationUser? User { get; set; }
-    [MaxLength(100)]
-    [Required]
-    public string UserId { get; set; }
+
+    [MaxLength(100)] [Required] public string UserId { get; set; }
+
     public bool IsOngoing { get; set; }
     public bool IsDone { get; set; }
     public Guid RoomId { get; set; }
@@ -26,21 +26,24 @@ public class UserExam
         get
         {
             if (UserAnswers != null)
-                return UserAnswers.Sum(x => x.SoalJawaban?.Point??0);
+                return UserAnswers.Sum(x => x.SoalJawaban?.Point ?? 0);
             return 0;
         }
     }
-    public int? ScoreData{ get; set; }
+
+    public int? ScoreData { get; set; }
 
     public double? CalculateScoreNormalize
     {
         get
         {
-            if (UserAnswers != null && UserAnswers.Count>0 && UserAnswers.First().Soal!=null && CalculateScore!=null && CalculateScore!=0)
-                return ((double)CalculateScore / (double)UserAnswers.Sum(x=>x.Soal?.MaxPoint??0)) * 100;
+            if (UserAnswers != null && UserAnswers.Count > 0 && UserAnswers.First().Soal != null &&
+                CalculateScore != null && CalculateScore != 0)
+                return (double)CalculateScore / UserAnswers.Sum(x => x.Soal?.MaxPoint ?? 0) * 100;
             return 0;
         }
     }
-    public double? ScoreNormalizeData{ get; set; }
+
+    public double? ScoreNormalizeData { get; set; }
     public List<double>? HistoryScoreNormalize { get; set; }
 }

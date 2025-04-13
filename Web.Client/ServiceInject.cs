@@ -19,7 +19,7 @@ public static class ServiceInject
         services.AddScoped<IRoom, RoomService>();
         services.AddScoped<IUserExam, UserExamService>();
         services.AddScoped<IReport, ReportService>();
-        services.AddScoped<IDashboard,DashboardService>();
+        services.AddScoped<IDashboard, DashboardService>();
         return services;
     }
 }

@@ -99,7 +99,7 @@
         parameters.Add(x => x.room, data);
         parameters.Add(x => x.UserExamsData, userExamData);
         parameters.Add(x => x.isEdit, true);
-        parameters.Add(x=>x.RefreshData,RefreshData);
+        parameters.Add(x => x.RefreshData, RefreshData);
         var form = await Dialog.ShowAsync<RoomViewDialog>("Detail Ruangan", parameters, maxWidth);
         var result = await form.Result;
         if (!result.Canceled)

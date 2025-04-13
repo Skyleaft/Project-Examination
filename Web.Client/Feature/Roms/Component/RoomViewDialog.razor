@@ -1,9 +1,9 @@
 ﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDialogService Dialog
 @using CoreLib.BankSoal
 @using CoreLib.RoomSet
 @using CoreLib.TakeExam
 @using Web.Client.Interfaces
-@inject IDialogService Dialog
 @implements IAsyncDisposable
 
 <MudDialog>
@@ -11,13 +11,13 @@
         <MudPaper Class="pa-4 ma-2 mb-4">
             <MudStack Spacing="4">
                 <MudText Typo="Typo.h4">@room.Nama</MudText>
-                <MudDataGrid 
+                <MudDataGrid
                     T="UserExam"
-                    Items="@UserExamsData" 
-                             Filterable="true"
-                             FixedHeader="true"
-                             Height="40vh"
-                             ColumnResizeMode="ResizeMode.Column">
+                    Items="@UserExamsData"
+                    Filterable="true"
+                    FixedHeader="true"
+                    Height="40vh"
+                    ColumnResizeMode="ResizeMode.Column">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6">Daftar Peserta Ujian</MudText>
                         <MudSpacer/>
@@ -31,8 +31,10 @@
                         <PropertyColumn Property="x => x.ScoreNormalizeData" Format="F2" Title="Nilai"/>
                         <TemplateColumn CellClass="d-flex justify-end">
                             <CellTemplate>
-                                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="()=>OnDeleteClick(context.Item)" />
-                                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync"/>
+                                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete"
+                                               OnClick="()=>OnDeleteClick(context.Item)"/>
+                                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit"
+                                               OnClick="@context.Actions.StartEditingItemAsync"/>
                             </CellTemplate>
                         </TemplateColumn>
                     </Columns>
@@ -111,21 +113,18 @@
             return "Selesai";
         return "Belum Dikerjakan";
     }
-    
+
     // events
     void StartedEditingItem(UserExam item)
     {
-        
     }
 
     void CanceledEditingItem(UserExam item)
     {
-        
     }
 
     async Task CommittedItemChanges(UserExam item)
     {
-        
     }
 
 
@@ -147,7 +146,7 @@
 
     private async Task RefreshDataExam()
     {
-        UserExamsData = await UserExamRepo.GetAll(room.Id,cts.Token);
+        UserExamsData = await UserExamRepo.GetAll(room.Id, cts.Token);
     }
 
     private async Task OnDeleteClick(UserExam data)

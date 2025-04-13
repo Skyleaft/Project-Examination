@@ -6,8 +6,6 @@
 @using CoreLib.Users
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
-@using MimeKit
-@using MimeKit.Text
 @using Web.Client.Feature.UserManagements
 @using Web.Client.Interfaces
 @implements IAsyncDisposable
@@ -60,12 +58,12 @@
                                 </MudSelectItem>
                             </MudSelect>
 
-                            <MudNumericField  Label="Nomor Telepon" HelperText="Max. 15 characters"
-                                              HideSpinButtons="true"
-                                          Variant="Variant.Outlined"
-                                          MaxLength="15"
-                                          @bind-Value="userModel.PhoneNumber"
-                                          For="@(() => userModel.PhoneNumber)"/>
+                            <MudNumericField Label="Nomor Telepon" HelperText="Max. 15 characters"
+                                             HideSpinButtons="true"
+                                             Variant="Variant.Outlined"
+                                             MaxLength="15"
+                                             @bind-Value="userModel.PhoneNumber"
+                                             For="@(() => userModel.PhoneNumber)"/>
                             <MudAutocomplete T="Provinsi?" Label="Provinsi"
                                              Variant="Variant.Outlined"
                                              AdornmentIcon="@Icons.Material.Filled.Search"
@@ -73,7 +71,7 @@
                                              Clearable="true"
                                              ResetValueOnEmptyText="true"
                                              ValueChanged="OnProvChanged"
-                                             DropdownSettings="new DropdownSettings(){OverflowBehavior=OverflowBehavior.FlipNever}"
+                                             DropdownSettings="new DropdownSettings {OverflowBehavior=OverflowBehavior.FlipNever}"
                                              Strict="false"
                                              ShowProgressIndicator="true"
                                              ToStringFunc="@(e => e == null ? null : $"{e.NamaProvinsi}")"
@@ -87,7 +85,7 @@
                                                      Variant="Variant.Outlined"
                                                      AdornmentIcon="@Icons.Material.Filled.Search"
                                                      AdornmentColor="Color.Primary"
-                                                     DropdownSettings="new DropdownSettings(){OverflowBehavior=OverflowBehavior.FlipNever}"
+                                                     DropdownSettings="new DropdownSettings {OverflowBehavior=OverflowBehavior.FlipNever}"
                                                      Clearable="true"
                                                      Strict="false"
                                                      ResetValueOnEmptyText="true"
@@ -154,7 +152,7 @@
     [Inject] IMailService _mailService { get; set; }
     [Inject] ISnackbar _snackbar { get; set; }
 
-    private UserAddDTO userModel = new()
+    private readonly UserAddDTO userModel = new()
     {
         Role = "User"
     };
@@ -247,7 +245,7 @@
         var emailConfirmationLink = _navigationManager.GetUriWithQueryParameters(
             _navigationManager.ToAbsoluteUri("userclient/confirmEmail").AbsoluteUri,
             new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code });
-        
+
         var bodyEmail = $@"
 <!DOCTYPE html>
 <html lang=""en"">
@@ -334,7 +332,7 @@
 "
             ;
 
-           _mailService.SendMailBackground(userModel.Email,"Konfirmasi Email Aplikasi Ujian Online",bodyEmail, cts.Token);
+        _mailService.SendMailBackground(userModel.Email, "Konfirmasi Email Aplikasi Ujian Online", bodyEmail, cts.Token);
     }
 
     public async Task OnProvChanged(Provinsi? value)
@@ -345,9 +343,8 @@
             SelectedProv = value;
             filterKota = dataKota
                 .Where(x => x.ProvinsiId == value.Id)
-                .ToList(); 
+                .ToList();
         }
-        
     }
 
     public async Task FilterKota(string ProvID)

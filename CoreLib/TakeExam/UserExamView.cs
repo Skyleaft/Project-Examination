@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using CoreLib.RoomSet;
-using CoreLib.Users;
+﻿using CoreLib.RoomSet;
 
 namespace CoreLib.TakeExam;
 
@@ -8,7 +6,6 @@ public class UserExamView
 {
     public UserExamView()
     {
-        
     }
 
     public UserExamView(UserExam userExam)
@@ -26,6 +23,7 @@ public class UserExamView
         ScoreNormalizeData = userExam.ScoreNormalizeData;
         HistoryScoreNormalize = userExam.HistoryScoreNormalize;
     }
+
     public Guid Id { get; set; }
     public bool IsOngoing { get; set; }
     public bool IsDone { get; set; }
@@ -35,7 +33,7 @@ public class UserExamView
     public DateTime? EndDate { get; set; }
     public TimeSpan TimeLeft { get; set; }
     public int? RetryCount { get; set; }
-    public int? ScoreData{ get; set; }
-    public double? ScoreNormalizeData{ get; set; }
+    public int? ScoreData { get; set; }
+    public double? ScoreNormalizeData { get; set; }
     public List<double>? HistoryScoreNormalize { get; set; }
 }

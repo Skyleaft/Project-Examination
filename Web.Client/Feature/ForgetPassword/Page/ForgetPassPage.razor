@@ -2,8 +2,6 @@
 @layout BlankLayout
 @using CoreLib.Users
 @using Microsoft.AspNetCore.Identity
-@using MimeKit
-@using MimeKit.Text
 @using Web.Client.Interfaces
 @using Web.Components.ForgetPassword
 @implements IAsyncDisposable
@@ -100,7 +98,7 @@
 
     private void SendEmail(string emailto, string resetUri)
     {
-            var emailBody = $@"
+        var emailBody = $@"
 <!DOCTYPE html>
 <html lang=""en"">
 <head>
@@ -184,8 +182,8 @@
 </body>
 </html>
 "
-        ;
-            _mailService.SendMailBackground(emailto,"Reset Password - Siaplulusp3k",emailBody, cts.Token);
+            ;
+        _mailService.SendMailBackground(emailto, "Reset Password - Siaplulusp3k", emailBody, cts.Token);
     }
 
     public async ValueTask DisposeAsync()

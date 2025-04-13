@@ -1,18 +1,24 @@
-﻿@inherits LayoutComponentBase
-
+﻿@using Web.Client.Services
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JS
+@inject OnlineUserStateService OnlineUserStateService
 
-<MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="LayoutService.SetDarkMode"/>
+<MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode"
+                  IsDarkModeChanged="LayoutService.SetDarkMode"/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 <MudPopoverProvider/>
+
 
 <MudLayout>
     <MudAppBar Class="docs-appbar-filter" Color="Color.Transparent" Elevation="0"></MudAppBar>
     <MudAppBar Class="docs-appbar" Elevation="0">
         <Appbar DrawerToggleCallback="ToggleDrawer" avaSource="@avatarSource"/>
     </MudAppBar>
-    <MudDrawer Open="@_drawerOpen" OpenChanged="OnDrawerOpenChanged" ClipMode="DrawerClipMode.Docked" Elevation="0" Breakpoint="Breakpoint.Md" aria-label="Navigation Drawer">
+    <MudDrawer Open="@_drawerOpen" OpenChanged="OnDrawerOpenChanged" ClipMode="DrawerClipMode.Docked" Elevation="0"
+               Breakpoint="Breakpoint.Md" aria-label="Navigation Drawer">
         <div class="d-block d-md-none">
             <MudToolBar Dense="true" Gutters="false" Class="docs-gray-bg">
                 <MudIconButton Icon="@Icons.Material.Rounded.Close" Color="Color.Inherit" OnClick="ToggleDrawer"/>
@@ -22,7 +28,7 @@
         </div>
         <NavMenu/>
     </MudDrawer>
-    <MudMainContent >
+    <MudMainContent>
         @{
             if (isLoaded)
             {

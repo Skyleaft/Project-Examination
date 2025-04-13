@@ -1,5 +1,4 @@
-﻿using Web.Client.Feature.Register;
-using Web.Services.DashboardService;
+﻿using Web.Services.DashboardService;
 using Web.Services.Email;
 using Web.Services.ExamServices;
 using Web.Services.ReferenceServices;

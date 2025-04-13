@@ -3,14 +3,15 @@
 @inherits LayoutComponentBase
 @inject LayoutService LayoutService;
 
-<MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="LayoutService.SetDarkMode"/>
+<MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode"
+                  IsDarkModeChanged="LayoutService.SetDarkMode"/>
 
 <MudSnackbarProvider/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 
 <MudLayout>
-    <MudMainContent >
+    <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.False">
             @Body
         </MudContainer>

@@ -20,5 +20,4 @@ public class ReportService(HttpClient _httpClient) : IReport
         if (res.IsSuccessStatusCode) data = await res.Content.ReadFromJsonAsync<PaginatedResponse<ExamReport>>(ct);
         return data;
     }
-    
 }

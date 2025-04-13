@@ -1,13 +1,12 @@
 ﻿using System.Security.Claims;
 using CoreLib.Dashboards;
-using CoreLib.TakeExam;
 
 namespace Web.Services.DashboardService.Endpoints.Get;
 
 public class Endpoint : EndpointWithoutRequest<DashboardData>
 {
-    private readonly IDashboard _repo;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IDashboard _repo;
 
     public Endpoint(IDashboard repo, IHttpContextAccessor httpContextAccessor)
     {
@@ -23,7 +22,7 @@ public class Endpoint : EndpointWithoutRequest<DashboardData>
     public override async Task HandleAsync(CancellationToken ct)
     {
         var userID = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var res = await _repo.Get(ct,userID);
+        var res = await _repo.Get(ct, userID);
         await SendAsync(res, cancellation: ct);
     }
 }

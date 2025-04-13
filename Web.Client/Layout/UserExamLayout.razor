@@ -1,16 +1,25 @@
-﻿@using Web.Client.Services
-@using Web.Client.Shared.Theme
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
 @inject LayoutService LayoutService;
+@inject IJSRuntime JS
+@using Microsoft.AspNetCore.SignalR.Client
+@using Web.Client.Services
+@using Web.Client.Shared.Extensions
+@using Web.Client.Shared.Models
+@using Web.Client.Shared.Theme
+@using Web.Services.HubServices
+@implements IAsyncDisposable
+@inject OnlineUserStateService OnlineUserStateService
 
-<MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="LayoutService.SetDarkMode"/>
+<MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode"
+                  IsDarkModeChanged="LayoutService.SetDarkMode"/>
 
 <MudSnackbarProvider/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 
 <MudLayout>
-    <MudMainContent >
+    <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.False">
             @Body
         </MudContainer>
@@ -19,11 +28,49 @@
 
 @code {
     private MudThemeProvider _mudThemeProvider;
+    [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; }
+    private HubConnection? hubConnection;
 
     protected override async Task OnInitializedAsync()
     {
         LayoutService.SetBaseTheme(Themes.LandingPageTheme());
         LayoutService.MajorUpdateOccurred += LayoutServiceOnMajorUpdateOccured;
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            var deviceInfo = await JS.InvokeAsync<string>("userInfo.getDeviceInfo");
+            GeolocationResult? location = null;
+            try
+            {
+                location = await JS.InvokeAsync<GeolocationResult>("userInfo.getLocation");
+                Console.WriteLine($"Location : {location.Latitude} {location.Longitude}");
+            }
+            catch
+            {
+                location = new GeolocationResult { Latitude = 0, Longitude = 0 };
+            }
+
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl(Navigation.ToAbsoluteUri($"/presenceHub?device={Uri.EscapeDataString(deviceInfo)}&lat={location.Latitude}&lng={location.Longitude}&user={user.Identity.Name}"), options =>
+                {
+                    options.HttpMessageHandlerFactory = innerHandler =>
+                        new IncludeRequestCredentialsMessageHandler { InnerHandler = innerHandler };
+                })
+                .WithAutomaticReconnect()
+                .Build();
+
+            hubConnection.On<List<OnlineUser>>("UserListUpdated", users =>
+            {
+                OnlineUserStateService.UpdateOnlineUsers(users);
+                InvokeAsync(StateHasChanged);
+            });
+
+            await hubConnection.StartAsync();
+        }
+
         base.OnInitialized();
     }
 
@@ -35,6 +82,11 @@
     private void LayoutServiceOnMajorUpdateOccured(object sender, EventArgs e)
     {
         StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection != null) await hubConnection.DisposeAsync();
     }
 
 }

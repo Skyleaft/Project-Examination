@@ -24,7 +24,7 @@ public class Endpoint : Endpoint<Exam, ServiceResponse>
     {
         var username = _httpContextAccessor.HttpContext.User.Identity.Name;
         r.LastModifiedBy = username;
-        var res = await _examService.Update(r,ct);
+        var res = await _examService.Update(r, ct);
         await SendAsync(res, cancellation: ct);
     }
 }

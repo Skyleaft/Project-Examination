@@ -1,0 +1,82 @@
+﻿@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject OnlineUserStateService OnlineUserStateService
+@using Web.Client.Services
+@using Web.Services.HubServices
+@implements IAsyncDisposable
+
+@{
+    <MudItem xs="12" sm="4">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Align="Align.Center">Online User</MudText>
+            @if (OnlineUsers.Count == 0)
+            {
+                <MudText Typo="Typo.h3" Align="Align.Center">No users online.</MudText>
+            }
+            else
+            {
+                <MudText Typo="Typo.h3" Align="Align.Center">@OnlineUsers.Count</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="8">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudDataGrid Items="OnlineUsers" Filterable="true">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Detail Online Users</MudText>
+                    <MudSpacer/>
+                </ToolBarContent>
+                <Columns>
+                    <PropertyColumn Property="x => x.Id" Title="Id"/>
+                    <PropertyColumn Property="x => x.Name" Title="Nama"/>
+                    <PropertyColumn Property="x => x.IpAddress" Title="IP Address"/>
+                    <PropertyColumn Property="x => x.Device" Title="Device"/>
+                    <PropertyColumn Property="x=> locationToString(x.Latitude,x.Longitude)" Title="Location"/>
+                </Columns>
+                <PagerContent>
+                    <MudDataGridPager T="OnlineUser"/>
+                </PagerContent>
+            </MudDataGrid>
+        </MudPaper>
+    </MudItem>
+}
+
+
+@code {
+    private List<OnlineUser> OnlineUsers = new();
+    private List<string> previousUserIds = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Set awal
+        OnlineUsers = OnlineUserStateService.OnlineUsers.ToList();
+
+        // Subscribe ke event
+        OnlineUserStateService.OnlineUsersChanged += HandleOnlineUsersChanged;
+    }
+
+    private void HandleOnlineUsersChanged(List<OnlineUser> users)
+    {
+        var newUser = users.FirstOrDefault(u => !previousUserIds.Contains(u.Id));
+        previousUserIds = users.Select(u => u.Id).ToList();
+
+        OnlineUsers = users;
+        if (newUser != null)
+        {
+            Snackbar.Add($"👤 {newUser.Name} telah terhubung", Severity.Info);
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    private string locationToString(double? lat, double? longt)
+    {
+        return $"{lat} - {longt}";
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        OnlineUserStateService.OnlineUsersChanged -= HandleOnlineUsersChanged;
+    }
+
+}
