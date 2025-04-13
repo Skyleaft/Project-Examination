@@ -2,47 +2,68 @@
 @using CoreLib.TakeExam
 @using Web.Client.Interfaces
 @using Web.Client.Shared.Extensions
-<MudPaper Class="pa-4 ma-2 my-3">
-    <div class="d-flex flex-grow-1 gap-1">
-        <MudStack Class="pa-2 mr-2">
-            <MudText Typo="Typo.body1">@data.Soal.Nomor</MudText>
-        </MudStack>
-        <MudStack>
-            <MudText Class="m-2">@((MarkupString)data.Soal.Pertanyaan)</MudText>
-            <MudDivider></MudDivider>
-            <MudForm @ref="form">
-                @if (data != null)
-                {
-                    <MudRadioGroup @ref="refJawaban" T="SoalJawaban?" Class="mt-1" ValueChanged="OnPilihJawaban"
-                                   Value="data.SoalJawaban">
-                        @foreach (var jawaban in data.Soal!.PilihanJawaban!)
-                        {
-                            <MudItem xs="12" Class="my-1">
-                                <MudRadio Value="@jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
-                            </MudItem>
-                        }
 
-                    </MudRadioGroup>
-                }
-            </MudForm>
-        </MudStack>
-        <MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
-            <MudStack>
-                <MudSpacer/>
-                <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Rounded.Close"
-                               OnClick="() => ClearJawaban(data)"></MudIconButton>
-                <MudSpacer/>
+@{
+    if (reRender)
+    {
+        <MudPaper Class="pa-4 ma-2 my-3">
+            <MudStack Row="true" StretchItems="StretchItems.End">
+                <MudSkeleton Width="50px" Height="75px"></MudSkeleton>
+                <MudStack>
+                    <MudSkeleton Height="50px"></MudSkeleton>
+                    <MudDivider></MudDivider>
+                    <MudSkeleton Class="mt-n10" Height="200px"></MudSkeleton>
+                </MudStack>
             </MudStack>
-        </MudHidden>
+        </MudPaper>
+
+    }
+    else
+    {
+        <MudPaper Class="pa-4 ma-2 my-3">
+            <div class="d-flex flex-grow-1 gap-1">
+                <MudStack Class="pa-2 mr-2">
+                    <MudText Typo="Typo.body1">@data.Soal.Nomor</MudText>
+                </MudStack>
+                <MudStack>
+                    <MudText Class="m-2">@((MarkupString)data.Soal.Pertanyaan)</MudText>
+                    <MudDivider></MudDivider>
+                    <MudForm @ref="form">
+                        @if (data != null)
+                        {
+                            <MudRadioGroup @ref="refJawaban" T="SoalJawaban?" Class="mt-1" ValueChanged="OnPilihJawaban"
+                                           Value="data.SoalJawaban">
+                                @foreach (var jawaban in data.Soal!.PilihanJawaban!)
+                                {
+                                    <MudItem xs="12" Class="my-1">
+                                        <MudRadio Value="@jawaban" Color="Color.Primary">@jawaban.Jawaban</MudRadio>
+                                    </MudItem>
+                                }
+
+                            </MudRadioGroup>
+                        }
+                    </MudForm>
+                </MudStack>
+                <MudHidden Breakpoint="Breakpoint.Xs" Invert="false">
+                    <MudStack>
+                        <MudSpacer/>
+                        <MudIconButton Variant="Variant.Text" Icon="@Icons.Material.Rounded.Close"
+                                       OnClick="() => ClearJawaban(data)"></MudIconButton>
+                        <MudSpacer/>
+                    </MudStack>
+                </MudHidden>
 
 
-    </div>
+            </div>
 
-</MudPaper>
+        </MudPaper>
+    }
+}
 
 @code {
     [Parameter] public UserAnswer data { get; set; }
     [Parameter] public EventCallback<SoalJawaban> UpdateJawaban { get; set; }
+    [Parameter] public bool reRender { get; set; }
     [Inject] IUserExam _userExamRepo { get; set; }
     private MudRadioGroup<SoalJawaban>? refJawaban;
     private MudForm form;

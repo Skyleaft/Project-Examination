@@ -66,6 +66,12 @@ public class UserExamService(HttpClient _httpClient) : IUserExam
         return data;
     }
 
+    public async Task<IEnumerable<UserExam>> GetAll(Guid RoomId, CancellationToken ct)
+    {
+        var data = await _httpClient.GetFromJsonAsync<IEnumerable<UserExam>>($"/api/userexam/get-all/{RoomId}");
+        return data;
+    }
+
     public async Task<PaginatedResponse<UserExam>> Find(FindRequest r, CancellationToken ct, string? UserId = "")
     {
         var res = await _httpClient.PostAsJsonAsync("api/userexam/find", r, ct);

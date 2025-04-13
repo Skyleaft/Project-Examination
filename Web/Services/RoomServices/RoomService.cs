@@ -44,7 +44,7 @@ public class RoomService : IRoom
 
     public async Task<ServiceResponse> Delete(Guid Id)
     {
-        var find = await _dbContext.Room.AsNoTracking().FirstOrDefaultAsync(x => x.Id == Id);
+        var find = await _dbContext.Room.FirstOrDefaultAsync(x => x.Id == Id);
         if (find == null) return new ServiceResponse(false, "data tidak ditemukan");
 
         _dbContext.Room.Remove(find);

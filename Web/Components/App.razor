@@ -251,9 +251,13 @@
                 {
                     return InteractiveServer;
                 }
+                else if (HttpContext.Request.Path.StartsWithSegments("/exam"))
+                {
+                    return InteractiveWebAssembly;
+                }
                 else
                 {
-                    return InteractiveServer;
+                    return InteractiveAuto;
                 }
             }
             else

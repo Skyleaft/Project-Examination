@@ -29,15 +29,17 @@
                             Generate
                         </MudButton>
                     </MudStack>
-
-                    <MudSelect Label="Soal" T="int" @bind-Value="room.ExamId" Variant="Variant.Outlined">
-                        @{
-                            foreach (var item in _exams)
-                            {
-                                <MudSelectItem T="int" Value="item.Id">@item.Nama</MudSelectItem>
-                            }
-                        }
-                    </MudSelect>
+                    
+                    <MudAutocomplete Label="Soal" T="Exam" 
+                                     Variant="Variant.Outlined"
+                                     @bind-Value="selectedExam" 
+                                     SearchFunc="SearchFunc" 
+                                     Clearable="true" 
+                                     ToStringFunc="@(e => e == null ? null : $"{e.Nama} - {e.CreatedOn.Value.ToString("dd/MM/yyyy")}")"
+                                     ShowProgressIndicator="true"
+                                     DropdownSettings="new DropdownSettings(){OverflowBehavior=OverflowBehavior.FlipNever}">
+                        
+                    </MudAutocomplete>
 
                     <MudStack Row="true" Spacing="2" Class="pa-2">
                         <MudDatePicker Variant="Variant.Outlined"
@@ -120,15 +122,12 @@
     [Inject] ISnackbar _snackbar { get; set; }
 
     [Parameter]
-    public
-        Room room { get; set; } = new()
-    {
-        ExamId = 1
-    };
+    public Room room { get; set; } = new();
 
     [Parameter] public bool isEdit { get; set; }
 
     private readonly CancellationTokenSource cts = new();
+    private Exam? selectedExam;
 
     void Cancel()
     {
@@ -138,8 +137,6 @@
     int examid;
 
     string imagePath = "/images/room-bg.jpg";
-
-    IEnumerable<Exam> _exams = new List<Exam>();
 
     DateTime? dateStart = DateTime.Today;
     DateTime? dateEnd = DateTime.Today;
@@ -155,24 +152,7 @@
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            if (auth is not null)
-            {
-                if (isEdit)
-                    room.LastModifiedBy = auth.User.Identity.Name;
-                else
-                    room.CreatedBy = auth.User.Identity.Name;
-            }
-
-            if (isEdit)
-            {
-                dateStart = room.JadwalStart.ToLocalTime();
-                dateEnd = room.JadwalEnd.ToLocalTime();
-                dateOnlyStart = DateOnly.FromDateTime(dateStart.Value);
-                dateOnlyEnd = DateOnly.FromDateTime(dateEnd.Value);
-                timeStart = dateStart.Value.TimeOfDay;
-                timeEnd = dateEnd.Value.TimeOfDay;
-            }
+            
 
             StateHasChanged();
         }
@@ -180,12 +160,25 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var data = await _examRepo.Find(new FindRequest
+        var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (auth is not null)
         {
-            Page = 1,
-            PageSize = 200
-        }, cts.Token);
-        _exams = data.Items;
+            if (isEdit)
+                room.LastModifiedBy = auth.User.Identity.Name;
+            else
+                room.CreatedBy = auth.User.Identity.Name;
+        }
+
+        if (isEdit)
+        {
+            dateStart = room.JadwalStart.ToLocalTime();
+            dateEnd = room.JadwalEnd.ToLocalTime();
+            dateOnlyStart = DateOnly.FromDateTime(dateStart.Value);
+            dateOnlyEnd = DateOnly.FromDateTime(dateEnd.Value);
+            timeStart = dateStart.Value.TimeOfDay;
+            timeEnd = dateEnd.Value.TimeOfDay;
+            selectedExam = await _examRepo.Get(room.ExamId);
+        }
     }
 
     private async Task OnValidSubmit(EditContext context)
@@ -197,6 +190,7 @@
 
         room.JadwalStart = startFixed.ToUniversalTime();
         room.JadwalEnd = endFixed.ToUniversalTime();
+        room.ExamId = selectedExam.Id;
         var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = false };
         var dial = await DialogService.ShowAsync<BluryDialog>("Harap Tunggu...", options);
 
@@ -275,6 +269,17 @@
     {
         await cts.CancelAsync();
         cts.Dispose();
+    }
+
+    private async Task<IEnumerable<Exam>>? SearchFunc(string? value, CancellationToken ct)
+    {
+        var data = await _examRepo.Find(new FindRequest
+        {
+            Page = 1,
+            Search = value,
+            PageSize = 100
+        }, ct);
+        return data.Items;
     }
 
 }

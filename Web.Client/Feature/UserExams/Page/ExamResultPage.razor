@@ -192,7 +192,7 @@
 
     private Variant CheckSoalIsAnswer(Soal? soal)
     {
-        if (room.IsShowKunci)
+        if (room.IsShowKunci && userExam.RetryCount == 0)
         {
             if (userExam.UserAnswers.Find(x => x.SoalId == soal.Id).SoalJawabanId == null)
             {

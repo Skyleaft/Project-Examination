@@ -2,6 +2,8 @@
 @using CoreLib.BankSoal
 @using CoreLib.RoomSet
 @using CoreLib.TakeExam
+@using Web.Client.Interfaces
+@inject IDialogService Dialog
 @implements IAsyncDisposable
 
 <MudDialog>
@@ -9,19 +11,30 @@
         <MudPaper Class="pa-4 ma-2 mb-4">
             <MudStack Spacing="4">
                 <MudText Typo="Typo.h4">@room.Nama</MudText>
-                <MudDataGrid Items="@UserExamsData" Filterable="true"
+                <MudDataGrid 
+                    T="UserExam"
+                    Items="@UserExamsData" 
+                             Filterable="true"
                              FixedHeader="true"
                              Height="40vh"
                              ColumnResizeMode="ResizeMode.Column">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6">Daftar Peserta Ujian</MudText>
                         <MudSpacer/>
+                        <MudButton Variant="Variant.Text" OnClick="OnRefreshClick">Refresh</MudButton>
                     </ToolBarContent>
                     <Columns>
-                        <PropertyColumn Property="x => x.User.NamaLengkap" Title="Nama Lengkap"/>
+                        <PropertyColumn Property="x => x.User.NamaLengkap" Editable="false" Title="Nama Lengkap"/>
                         <PropertyColumn Property="x => CheckStatus(x.IsOngoing, x.IsDone)" Title="Status"/>
                         <PropertyColumn Property="x => x.TimeLeft" Format="hh\:mm" Title="Sisa Waktu"/>
+                        <PropertyColumn Property="x => x.RetryCount.ToString()" Title="Sisa Mengulang"/>
                         <PropertyColumn Property="x => x.ScoreNormalizeData" Format="F2" Title="Nilai"/>
+                        <TemplateColumn CellClass="d-flex justify-end">
+                            <CellTemplate>
+                                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="()=>OnDeleteClick(context.Item)" />
+                                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync"/>
+                            </CellTemplate>
+                        </TemplateColumn>
                     </Columns>
                     <PagerContent>
                         <MudDataGridPager T="UserExam"/>
@@ -45,8 +58,10 @@
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
     [Parameter] public IEnumerable<UserExam> UserExamsData { get; set; }
     [Parameter] public Room room { get; set; }
+    [Parameter] public EventCallback<int> RefreshData { get; set; }
     [Inject] private IDialogService DialogService { get; set; }
     [Inject] ISnackbar _snackbar { get; set; }
+    [Inject] private IUserExam UserExamRepo { get; set; }
 
     [Parameter] public bool isEdit { get; set; }
 
@@ -96,12 +111,64 @@
             return "Selesai";
         return "Belum Dikerjakan";
     }
+    
+    // events
+    void StartedEditingItem(UserExam item)
+    {
+        
+    }
+
+    void CanceledEditingItem(UserExam item)
+    {
+        
+    }
+
+    async Task CommittedItemChanges(UserExam item)
+    {
+        
+    }
 
 
     public async ValueTask DisposeAsync()
     {
         await cts.CancelAsync();
         cts.Dispose();
+    }
+
+    private void EditStarted(UserExam obj)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void CommitEdited(UserExam obj)
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task RefreshDataExam()
+    {
+        UserExamsData = await UserExamRepo.GetAll(room.Id,cts.Token);
+    }
+
+    private async Task OnDeleteClick(UserExam data)
+    {
+        var result = await Dialog.ShowMessageBox(
+            "Warning",
+            $"Yakin Mau Dihapus Data :{data.User.NamaLengkap}",
+            "Delete", cancelText: "Cancel");
+        if (result != null)
+        {
+            await UserExamRepo.Delete(data.Id);
+            await RefreshData.InvokeAsync(1);
+            await RefreshDataExam();
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnRefreshClick()
+    {
+        await RefreshDataExam();
+        StateHasChanged();
     }
 
 }

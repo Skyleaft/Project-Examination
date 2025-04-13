@@ -12,6 +12,7 @@ public interface IUserExam
     public Task<ServiceResponse> Delete(Guid Id);
     public Task<UserExam> Get(Guid Id,CancellationToken ct);
     public Task<UserExam> GetOnly(Guid Id);
+    public Task<IEnumerable<UserExam>> GetAll(Guid RoomId,CancellationToken ct);
     public Task<PaginatedResponse<UserExam>> Find(FindRequest r, CancellationToken ct, string? UserId = "");
     public Task<ServiceResponse> UpdateJawaban(UpdateJawabanDTO r, CancellationToken ct);
     public Task<List<UserAnswer>> GetUserAnswers(Guid UserExamId, CancellationToken ct);

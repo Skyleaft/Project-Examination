@@ -14,136 +14,133 @@
 
 <EditForm Model="userModel" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit" FormName="register">
     <DataAnnotationsValidator/>
-    <MudGrid Class="align-content-center justify-center">
-        <MudItem xs="12" md="8">
-            <MudCard Class="pa-4">
-                <MudCardHeader>
-                    <MudStack Row="true">
-                        <MudIconButton Variant="Variant.Text"
-                                       Icon="@Icons.Material.Filled.ArrowBack"
-                                       OnClick="ToLogin">
-                        </MudIconButton>
-                        <MudText Typo="Typo.h4">Daftar Akun Baru</MudText>
-                    </MudStack>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudGrid>
-                        <MudItem xs="12" sm="6">
-                            <MudCard>
-                                <MudCardHeader>
-                                    <MudText Typo="Typo.h6">Profile User</MudText>
-                                </MudCardHeader>
-                                <MudCardContent>
-                                    <MudStack Spacing="3">
-                                        <MudTextField Label="Nama Lengkap" HelperText="Max. 40 characters"
-                                                      Variant="Variant.Outlined"
-                                                      MaxLength="40"
-                                                      @bind-Value="userModel.NamaLengkap"
-                                                      For="@(() => userModel.NamaLengkap)"/>
-                                        <MudField Label="Jenis Kelamin" Variant="Variant.Outlined" InnerPadding="false">
-                                            <MudRadioGroup T="int" ValueChanged="i => userModel.Gender = (Gender)i">
-                                                <MudRadio Value="1"
-                                                          Color="Color.Primary">
-                                                    Perempuan
-                                                </MudRadio>
-                                                <MudRadio Value="0"
-                                                          Color="Color.Primary">
-                                                    Laki - Laki
-                                                </MudRadio>
+    <MudContainer>
+        <MudCard Class="pa-4">
+            <MudCardHeader>
+                <MudStack Row="true">
+                    <MudIconButton Variant="Variant.Text"
+                                   Icon="@Icons.Material.Filled.ArrowBack"
+                                   OnClick="ToLogin">
+                    </MudIconButton>
+                    <MudText Typo="Typo.h4">Daftar Akun Baru</MudText>
+                </MudStack>
+            </MudCardHeader>
+            <MudCardContent Class="d-flex flex-column flex-grow-1 gap-4">
+                <MudCard>
+                    <MudCardHeader>
+                        <MudText Typo="Typo.h6">Profile User</MudText>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudStack Spacing="3">
+                            <MudTextField Label="Nama Lengkap" HelperText="Max. 40 characters"
+                                          Variant="Variant.Outlined"
+                                          MaxLength="40"
+                                          @bind-Value="userModel.NamaLengkap"
+                                          For="@(() => userModel.NamaLengkap)"/>
+                            <MudField Label="Jenis Kelamin" Variant="Variant.Outlined" InnerPadding="false">
+                                <MudRadioGroup T="int" ValueChanged="i => userModel.Gender = (Gender)i">
+                                    <MudRadio Value="1"
+                                              Color="Color.Primary">
+                                        Perempuan
+                                    </MudRadio>
+                                    <MudRadio Value="0"
+                                              Color="Color.Primary">
+                                        Laki - Laki
+                                    </MudRadio>
 
-                                            </MudRadioGroup>
-                                        </MudField>
-                                        <MudSelect T="string" Label="Pekerjaan"
-                                                   @bind-Value="userModel.Pekerjaan"
-                                                   Variant="Variant.Outlined"
-                                                   AnchorOrigin="Origin.BottomCenter">
-                                            <MudSelectItem T="string" Value="@("Mahasiswa")">Mahasiswa</MudSelectItem>
-                                            <MudSelectItem T="string" Value="@("Guru Honorer")">Guru Honorer
-                                            </MudSelectItem>
-                                            <MudSelectItem T="string" Value="@("Pegawai Honorer")">Pegawai Honorer
-                                            </MudSelectItem>
-                                        </MudSelect>
+                                </MudRadioGroup>
+                            </MudField>
+                            <MudSelect T="string" Label="Pekerjaan"
+                                       @bind-Value="userModel.Pekerjaan"
+                                       Variant="Variant.Outlined">
+                                <MudSelectItem T="string" Value="@("Mahasiswa")">Mahasiswa</MudSelectItem>
+                                <MudSelectItem T="string" Value="@("Guru Honorer")">Guru Honorer
+                                </MudSelectItem>
+                                <MudSelectItem T="string" Value="@("Pegawai Honorer")">Pegawai Honorer
+                                </MudSelectItem>
+                            </MudSelect>
 
-                                        <MudTextField Label="Nomor Telepon" HelperText="Max. 15 characters"
-                                                      Variant="Variant.Outlined"
-                                                      MaxLength="15"
-                                                      InputType="InputType.Number"
-                                                      @bind-Value="userModel.PhoneNumber"
-                                                      For="@(() => userModel.PhoneNumber)"/>
-                                        <MudAutocomplete T="Provinsi" Label="Provinsi"
-                                                         Variant="Variant.Outlined"
-                                                         AdornmentIcon="@Icons.Material.Filled.Search"
-                                                         AdornmentColor="Color.Primary"
-                                                         Strict="false"
-                                                         ValueChanged="(Provinsi selected) => { SelectedProv = selected; FilterKota(SelectedProv.Id); SelectedKota = null; }"
-                                                         ToStringFunc="@(e => e == null ? null : $"{e.NamaProvinsi}")"
-                                                         SearchFunc="@SearchProv"/>
-                                        @{
-                                            if (SelectedProv != null)
-                                            {
-                                                FilterKota(SelectedProv.Id);
-                                                <MudAutocomplete T="Kota" Label="Kota"
-                                                                 Variant="Variant.Outlined"
-                                                                 AdornmentIcon="@Icons.Material.Filled.Search"
-                                                                 AdornmentColor="Color.Primary"
-                                                                 Strict="false"
-                                                                 ValueChanged="kota => { SelectedKota = kota; userModel.KotaId = kota.Id; }"
-                                                                 ToStringFunc="@(e => e == null ? null : $"{e.NamaKota}")"
-                                                                 SearchFunc="@SearchKota"/>
-                                            }
-                                        }
+                            <MudNumericField  Label="Nomor Telepon" HelperText="Max. 15 characters"
+                                              HideSpinButtons="true"
+                                          Variant="Variant.Outlined"
+                                          MaxLength="15"
+                                          @bind-Value="userModel.PhoneNumber"
+                                          For="@(() => userModel.PhoneNumber)"/>
+                            <MudAutocomplete T="Provinsi?" Label="Provinsi"
+                                             Variant="Variant.Outlined"
+                                             AdornmentIcon="@Icons.Material.Filled.Search"
+                                             AdornmentColor="Color.Primary"
+                                             Clearable="true"
+                                             ResetValueOnEmptyText="true"
+                                             ValueChanged="OnProvChanged"
+                                             DropdownSettings="new DropdownSettings(){OverflowBehavior=OverflowBehavior.FlipNever}"
+                                             Strict="false"
+                                             ShowProgressIndicator="true"
+                                             ToStringFunc="@(e => e == null ? null : $"{e.NamaProvinsi}")"
+                                             SearchFunc="@SearchProv">
+                            </MudAutocomplete>
+                            @{
+                                if (SelectedProv != null)
+                                {
+                                    <MudAutocomplete T="Kota?" Label="Kota"
+                                                     @bind-Value="SelectedKota"
+                                                     Variant="Variant.Outlined"
+                                                     AdornmentIcon="@Icons.Material.Filled.Search"
+                                                     AdornmentColor="Color.Primary"
+                                                     DropdownSettings="new DropdownSettings(){OverflowBehavior=OverflowBehavior.FlipNever}"
+                                                     Clearable="true"
+                                                     Strict="false"
+                                                     ResetValueOnEmptyText="true"
+                                                     ToStringFunc="@(e => e == null ? null : $"{e.NamaKota}")"
+                                                     SearchFunc="@SearchKota"/>
+                                }
+                            }
 
-                                    </MudStack>
+                        </MudStack>
 
-                                </MudCardContent>
-                            </MudCard>
+                    </MudCardContent>
+                </MudCard>
 
-                        </MudItem>
+                <MudCard>
+                    <MudCardHeader>
+                        <MudText Typo="Typo.h6">Akun Login</MudText>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudStack Spacing="3">
+                            <MudTextField Label="Email"
+                                          Required
+                                          Variant="Variant.Outlined"
+                                          @bind-Value="userModel.Email"
+                                          For="@(() => userModel.Email)"/>
+                            <MudTextField Label="Username"
+                                          Variant="Variant.Outlined"
+                                          Required
+                                          @bind-Value="userModel.UserName"
+                                          For="@(() => userModel.UserName)"/>
+                            <MudTextField Label="Password" HelperText="Choose a strong password"
+                                          Variant="Variant.Outlined"
+                                          Required
+                                          @bind-Value="userModel.Password"
+                                          For="@(() => userModel.Password)" InputType="InputType.Password"/>
+                            <MudButton FullWidth
+                                       StartIcon="@Icons.Material.Filled.AppRegistration"
+                                       Color="Color.Primary"
+                                       Variant="Variant.Filled" Class="py-4"
+                                       ButtonType="ButtonType.Submit">
+                                Daftar!
+                            </MudButton>
+                            <MudButton FullWidth
+                                       Variant="Variant.Text" Class="py-2"
+                                       ButtonType="ButtonType.Reset">
+                                Batal
+                            </MudButton>
+                        </MudStack>
 
-                        <MudItem xs="12" sm="6">
-                            <MudCard>
-                                <MudCardHeader>
-                                    <MudText Typo="Typo.h6">Akun Login</MudText>
-                                </MudCardHeader>
-                                <MudCardContent>
-                                    <MudStack Spacing="3">
-                                        <MudTextField Label="Email"
-                                                      Required
-                                                      Variant="Variant.Outlined"
-                                                      @bind-Value="userModel.Email"
-                                                      For="@(() => userModel.Email)"/>
-                                        <MudTextField Label="Username"
-                                                      Variant="Variant.Outlined"
-                                                      Required
-                                                      @bind-Value="userModel.UserName"
-                                                      For="@(() => userModel.UserName)"/>
-                                        <MudTextField Label="Password" HelperText="Choose a strong password"
-                                                      Variant="Variant.Outlined"
-                                                      Required
-                                                      @bind-Value="userModel.Password"
-                                                      For="@(() => userModel.Password)" InputType="InputType.Password"/>
-                                        <MudButton FullWidth
-                                                   StartIcon="@Icons.Material.Filled.AppRegistration"
-                                                   Color="Color.Primary"
-                                                   Variant="Variant.Filled" Class="py-4"
-                                                   ButtonType="ButtonType.Submit">
-                                            Daftar!
-                                        </MudButton>
-                                        <MudButton FullWidth
-                                                   Variant="Variant.Text" Class="py-2"
-                                                   ButtonType="ButtonType.Reset">
-                                            Batal
-                                        </MudButton>
-                                    </MudStack>
-
-                                </MudCardContent>
-                            </MudCard>
-                        </MudItem>
-                    </MudGrid>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
+                    </MudCardContent>
+                </MudCard>
+            </MudCardContent>
+        </MudCard>
+    </MudContainer>
 
 </EditForm>
 
@@ -164,8 +161,8 @@
 
     private readonly CancellationTokenSource cts = new();
 
-    Provinsi SelectedProv;
-    Kota SelectedKota;
+    Provinsi? SelectedProv;
+    Kota? SelectedKota;
 
     List<Provinsi> dataProv = new();
     List<Kota> dataKota = new();
@@ -338,6 +335,19 @@
             ;
 
            _mailService.SendMailBackground(userModel.Email,"Konfirmasi Email Aplikasi Ujian Online",bodyEmail, cts.Token);
+    }
+
+    public async Task OnProvChanged(Provinsi? value)
+    {
+        if (value != null)
+        {
+            SelectedKota = null;
+            SelectedProv = value;
+            filterKota = dataKota
+                .Where(x => x.ProvinsiId == value.Id)
+                .ToList(); 
+        }
+        
     }
 
     public async Task FilterKota(string ProvID)

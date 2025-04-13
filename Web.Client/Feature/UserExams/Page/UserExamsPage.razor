@@ -36,19 +36,8 @@ else
                         @{
                             foreach (var item in soalPaging.Items)
                             {
-                                if (reRender)
-                                {
-                                    <div class="d-none d-flex align-center flex-grow-1 ma-8">
-                                        <MudSpacer/>
-                                        <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
-                                        <MudSpacer/>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <SoalCard data="item"
-                                              UpdateJawaban="async sj => await OnUpdateJawaban(sj, item)"/>
-                                }
+                                <SoalCard data="item"
+                                          UpdateJawaban="async sj => await OnUpdateJawaban(sj, item)" reRender="reRender"/>
                             }
                         }
                     </div>
@@ -220,6 +209,7 @@ else
     private async Task PageChanged(int page)
     {
         reRender = true;
+        await Task.Delay(150, cts.Token);
         currentPage = page;
         if (userExam.UserAnswers != null) soalPaging = await userExam.UserAnswers.OrderBy(x => x.Soal.Nomor).ToPagingList(page, 10);
 

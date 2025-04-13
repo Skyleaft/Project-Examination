@@ -145,6 +145,18 @@ public class UserExamService : IUserExam
         return find;
     }
 
+    public async Task<IEnumerable<UserExam>> GetAll(Guid RoomId, CancellationToken ct)
+    {
+        var find = _dbContext
+            .UserExam
+            .AsNoTracking()
+            .Where(x => x.RoomId == RoomId)
+            .Include(x => x.UserAnswers)
+            .Include(x => x.User)
+            .AsSplitQuery();
+        return find;
+    }
+
     public async Task<PaginatedResponse<UserExam>> Find(FindRequest r, CancellationToken ct, string? UserId = "")
     {
         if (string.IsNullOrEmpty(UserId))
