@@ -81,7 +81,6 @@
                                 if (SelectedProv != null)
                                 {
                                     <MudAutocomplete T="Kota?" Label="Kota"
-                                                     @bind-Value="SelectedKota"
                                                      Variant="Variant.Outlined"
                                                      AdornmentIcon="@Icons.Material.Filled.Search"
                                                      AdornmentColor="Color.Primary"
@@ -89,6 +88,7 @@
                                                      Clearable="true"
                                                      Strict="false"
                                                      ResetValueOnEmptyText="true"
+                                                     ValueChanged="(value) => {SelectedKota = value; userModel.KotaId = value.Id; }"
                                                      ToStringFunc="@(e => e == null ? null : $"{e.NamaKota}")"
                                                      SearchFunc="@SearchKota"/>
                                 }
