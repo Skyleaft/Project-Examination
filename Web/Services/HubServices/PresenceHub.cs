@@ -9,7 +9,15 @@ public class PresenceHub(OnlineUserService onlineUserService) : Hub
         var connectionId = Context.ConnectionId;
         var httpContext = Context.GetHttpContext();
         var name = Context.User?.Identity?.Name ?? httpContext?.Request.Query["user"].ToString();
-        var ip = Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString() ?? "Unknown";
+        var realIP = httpContext.Request.Headers["X-Real-IP"].ToString();
+        if (string.IsNullOrEmpty(realIP))
+        {
+            realIP = httpContext.Request.Headers["X-Forwarded-For"].ToString();
+            if(string.IsNullOrEmpty(realIP))
+            {
+                realIP = Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString() ?? "Unknown";
+            }
+        }
 
 
         var device = httpContext?.Request.Query["device"].ToString();
@@ -20,7 +28,7 @@ public class PresenceHub(OnlineUserService onlineUserService) : Hub
         {
             Id = connectionId,
             Name = name,
-            IpAddress = ip,
+            IpAddress = realIP,
             Device = device,
             Latitude = double.Parse(latitude),
             Longitude = double.Parse(longitude)
