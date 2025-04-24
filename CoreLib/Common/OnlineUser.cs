@@ -1,4 +1,4 @@
-﻿namespace Web.Services.HubServices;
+﻿namespace CoreLib.Common;
 
 public class OnlineUser
 {

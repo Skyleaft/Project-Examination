@@ -1,0 +1,107 @@
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@using CoreLib.BankSoal
+@using CoreLib.Common
+@implements IAsyncDisposable
+
+<MudDialog>
+    <DialogContent>
+        <MudPaper Class="pa-4 ma-2 mb-4">
+            <MudField Variant="Variant.Outlined" Label="File Name">@docxResult.FileName</MudField>
+            <MudField Variant="Variant.Outlined" Label="Total Soal">@docxResult.TotalSoal</MudField>
+            <div id="unique_id_scroll_section" class="ma-0" style="height:350px;overflow: auto;">
+                <MudPaper Elevation="0" Class="d-flex flex-column py-6">
+                    @foreach (var item in PaginatedSoal)
+                    {
+                        <SoalComponent soal="item"></SoalComponent>
+                    }
+                    <div class="d-flex flex-column align-center">
+                        <MudPagination
+                            Selected="@CurrentPage"
+                            Count="@TotalPages"
+                            SelectedChanged="OnPageChanged"
+                            Class="mt-4 align-center"
+                        />
+                    </div>
+                    
+                    <MudScrollToTop TopOffset="100"
+                                    Selector="#unique_id_scroll_section"
+                                    VisibleCssClass="visible absolute"
+                                    HiddenCssClass="invisible">
+                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ArrowUpward">Go to top
+                        </MudButton>
+                    </MudScrollToTop>
+                </MudPaper>
+            </div>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudStack Row="true" Spacing="2" Class="ma-2 my-3">
+            <MudButton Variant="Variant.Text" OnClick="Cancel">Close</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Tambahkan">Tambahkan</MudButton>
+        </MudStack>
+
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public DocxResult docxResult { get; set; }
+    [Inject] private IDialogService DialogService { get; set; }
+    [Inject] ISnackbar _snackbar { get; set; }
+    
+    private int CurrentPage { get; set; } = 1;
+    private int PageSize { get; set; } = 10;
+
+    private IEnumerable<Soal> PaginatedSoal => 
+        docxResult.Soals
+            .Skip((CurrentPage - 1) * PageSize)
+            .Take(PageSize);
+    
+    private int TotalPages => 
+        (int)Math.Ceiling((double)docxResult.Soals.Count / PageSize);
+
+    private readonly CancellationTokenSource cts = new();
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    void Tambahkan()
+    {
+        MudDialog.Close();
+    }
+    
+    private void OnPageChanged(int page)
+    {
+        CurrentPage = page;
+    }
+
+    protected override void OnInitialized()
+    {
+        MudDialog.SetTitleAsync($"Preview Upload Data");
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+
+    public async ValueTask DisposeAsync()
+    {
+        await cts.CancelAsync();
+        cts.Dispose();
+    }
+
+}

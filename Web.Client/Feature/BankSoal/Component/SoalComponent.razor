@@ -1,0 +1,21 @@
+﻿@using CoreLib.BankSoal
+
+<MudPaper Elevation="2" Class="py-2 my-4">
+    <MudStack Row="true">
+        <MudText Typo="Typo.h6">@soal.Nomor</MudText>
+        <MudStack>
+            <MudText Typo="Typo.body1">@((MarkupString)soal.Pertanyaan)</MudText>
+            <MudDivider></MudDivider>
+            <MudStack>
+                @foreach (var item in soal.PilihanJawaban)
+                {
+                    <MudText Typo="Typo.body1"> - @item.Jawaban</MudText>
+                } 
+            </MudStack>
+            
+        </MudStack>
+    </MudStack>
+</MudPaper>
+@code {
+    [Parameter]public Soal soal { get; set; }
+}

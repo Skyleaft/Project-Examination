@@ -9,6 +9,7 @@
 @using Web.Client.Feature.BankSoal.Component
 @using Web.Client.Interfaces
 @using Web.Client.Shared.Extensions
+@inject ISnackbar Snackbar
 @implements IAsyncDisposable
 
 @if (isLoading)
@@ -41,7 +42,7 @@ else
                                   Label="Nama Paket Soal"/>
                     <MudField Variant="Variant.Outlined" Class="mt-3" Label="Pengaturan Soal">
                         <div class="d-flex flex-row flex-grow-1 gap-4">
-                            <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Accept=".png, .jpg">
+                            <MudFileUpload T="IBrowserFile" FilesChanged="UploadThumnail" Accept=".png, .jpg">
                                 <ActivatorContent>
                                     <MudFab Color="Color.Primary"
                                             StartIcon="@Icons.Material.Filled.Image"
@@ -89,7 +90,73 @@ else
         </MudItem>
 
         <MudItem xs="12" md="6">
-
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Upload Soal</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Download" Color="Color.Primary" Href="files/Sample-Soal-Template.docx">
+                            Unduh Template
+                        </MudButton>
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudStack Style="width: 100%">
+                        <MudFileUpload T="IBrowserFile"
+                                       @ref="@_fileUpload"
+                                       OnFilesChanged="OnInputFileChanged"
+                                       Hidden="@false"
+                                       Accept=".docx, .doc"
+                                       InputClass="absolute mud-width-full mud-height-full overflow-hidden z-10"
+                                       InputStyle="opacity:0"
+                                       tabindex="-1"
+                                       @ondrop="@ClearDragClass"
+                                       @ondragenter="@SetDragClass"
+                                       @ondragleave="@ClearDragClass"
+                                       @ondragend="@ClearDragClass">
+                            <ActivatorContent>
+                                <MudPaper Height="300px"
+                                          Outlined="true"
+                                          Class="@_dragClass">
+                                    <MudText Typo="Typo.h6">
+                                        Drag and drop files here or click
+                                    </MudText>
+                                    @foreach (var file in _fileNames)
+                                    {
+                                        <MudChip T="string"
+                                                 Color="Color.Dark"
+                                                 Text="@file"
+                                                 tabindex="-1"/>
+                                    }
+                                </MudPaper>
+                            </ActivatorContent>
+                        </MudFileUpload>
+                        <MudToolBar Gutters="@false"
+                                    Class="relative d-flex justify-end gap-4">
+                            <MudButton Color="Color.Primary"
+                                       OnClick="@OpenFilePickerAsync"
+                                       Variant="Variant.Filled">
+                                Open file picker
+                            </MudButton>
+                            <MudButton Color="Color.Primary"
+                                       Disabled="@(!_fileNames.Any())"
+                                       OnClick="@Upload"
+                                       Variant="Variant.Filled">
+                                Upload
+                            </MudButton>
+                            <MudButton Color="Color.Error"
+                                       Disabled="@(!_fileNames.Any())"
+                                       OnClick="@ClearAsync"
+                                       Variant="Variant.Filled">
+                                Clear
+                            </MudButton>
+                        </MudToolBar>
+                    </MudStack>
+                </MudCardContent>
+                
+            </MudCard>
+            
         </MudItem>
     </MudGrid>
 
@@ -287,6 +354,15 @@ else
     [Inject] private IDialogService DialogService { get; set; }
     [Parameter] public int Id { get; set; }
     [Inject] ISnackbar _snackbar { get; set; }
+    [Inject]IDocx _docx { get; set; }
+    [Inject]
+    public IJSRuntime JS { get; set; }
+    
+    private const string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full";
+    private string _dragClass = DefaultDragClass;
+    private readonly List<string> _fileNames = new();
+    private MudFileUpload<IBrowserFile>? _fileUpload;
+    private IBrowserFile currentFile;
 
     bool isLoading = true;
     readonly bool _readOnly = false;
@@ -339,7 +415,7 @@ else
         }
     }
 
-    private async Task UploadFiles(IBrowserFile file)
+    private async Task UploadThumnail(IBrowserFile file)
     {
         var stream = file.OpenReadStream();
         using (var memstream = new MemoryStream())
@@ -535,6 +611,85 @@ else
         }
 
         return "";
+    }
+    
+    private async Task ClearAsync()
+    {
+        await (_fileUpload?.ClearAsync() ?? Task.CompletedTask);
+        _fileNames.Clear();
+        ClearDragClass();
+    }
+
+    private Task OpenFilePickerAsync()
+        => _fileUpload?.OpenFilePickerAsync() ?? Task.CompletedTask;
+
+    private void OnInputFileChanged(InputFileChangeEventArgs e)
+    {
+        ClearDragClass();
+        var files = e.GetMultipleFiles();
+        foreach (var file in files)
+        {
+            _fileNames.Add(file.Name);
+        }
+        currentFile = files.FirstOrDefault();
+    }
+
+    private async Task Upload()
+    {
+        isLoading = true;
+        StateHasChanged();
+        // Upload the files here
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        Snackbar.Add("Sedang Memproses!");
+        var fstream = currentFile.OpenReadStream();
+        using var memstream = new MemoryStream();
+        await fstream.CopyToAsync(memstream);
+        memstream.Position = 0;
+        var data = await _docx.ProcessDocxAsync(memstream, currentFile.Name);
+        isLoading = false;
+        StateHasChanged();
+        var options = new DialogOptions { BackgroundClass = "bg-filter", BackdropClick = true, MaxWidth = MaxWidth.Large};
+        var parameters = new DialogParameters<ViewPreviewUpload> { { x => x.docxResult, data } };
+        var dial = await DialogService.ShowAsync<ViewPreviewUpload>("Upload Preview",parameters,options);
+        var result = await dial.Result;
+        if (!result.Canceled)
+        {
+            
+            if (string.IsNullOrEmpty(model.Nama) || (model.Soals == null || model.Soals.Count == 0))
+            {
+                model.Nama = data.FileName;
+                model.Soals = data.Soals;
+            }
+            else
+            {
+                var totalSoal = model.Soals.Count();
+                var normalizeData = data.Soals.Select((x,i) => new Soal()
+                {
+                    Nomor = totalSoal + i +1,
+                    Id = x.Id,
+                    ExamId = x.ExamId,
+                    isMultipleJawaban = x.isMultipleJawaban,
+                    PilihanJawaban = x.PilihanJawaban,
+                    Pertanyaan = x.Pertanyaan
+                });
+                model.Soals.AddRange(normalizeData);
+
+            }
+        }
+        await ClearAsync();
+
+    }
+
+    private void SetDragClass()
+        => _dragClass = $"{DefaultDragClass} mud-border-primary";
+
+    private void ClearDragClass()
+        => _dragClass = DefaultDragClass;
+
+    private void UnduhTemplate()
+    {
+        var url = _docx.GetDownloadUrl("Sample-Soal-Template.docx");
+        JS.InvokeVoidAsync("open", url, "_blank");
     }
 
 }

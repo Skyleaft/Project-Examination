@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using CoreLib.Common;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Web.Services.HubServices;
 

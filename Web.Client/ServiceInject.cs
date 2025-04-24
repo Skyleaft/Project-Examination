@@ -20,6 +20,7 @@ public static class ServiceInject
         services.AddScoped<IUserExam, UserExamService>();
         services.AddScoped<IReport, ReportService>();
         services.AddScoped<IDashboard, DashboardService>();
+        services.AddScoped<IDocx, DocxUploadService>();
         return services;
     }
 }

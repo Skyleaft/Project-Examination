@@ -1,4 +1,4 @@
-﻿using Web.Services.HubServices;
+﻿using CoreLib.Common;
 
 namespace Web.Client.Services;
 

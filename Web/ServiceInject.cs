@@ -21,6 +21,7 @@ public static class ServiceInject
         services.AddTransient<IMailService, EmailService>();
         services.AddScoped<IReport, ReportService>();
         services.AddScoped<IDashboard, DashboardService>();
+        services.AddScoped<IDocx, WordDocumentService>();
         return services;
     }
 }
