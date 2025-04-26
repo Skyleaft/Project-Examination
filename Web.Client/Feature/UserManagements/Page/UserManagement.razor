@@ -3,6 +3,7 @@
 @using CoreLib.Users
 @using Mapster
 @using Microsoft.AspNetCore.Authorization
+@using MiniExcelLibs
 @using Web.Client.Feature.UserManagements.Dialog
 @using Web.Client.Interfaces
 @using Web.Client.Services
@@ -275,7 +276,9 @@
             x.Email,
             x.PhoneNumber
         }).ToList();
-        var excelFile = ExcelService.GenerateExcelWorkbook(filterd);
+        using var stream = new MemoryStream();
+        await stream.SaveAsAsync(filterd); // MiniExcel extension method
+        var excelFile = stream.ToArray();
         js.InvokeVoidAsync("saveAsFile",
             $"user_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.xlsx",
             Convert.ToBase64String(excelFile)

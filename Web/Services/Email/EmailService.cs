@@ -16,12 +16,7 @@ public class EmailService : IMailService
         BackgroundJobClient = backgroundJobClient;
         Mail_Settings = options.Value;
     }
-
-
-    public void SendMail(MimeMessage email)
-    {
-        throw new NotImplementedException();
-    }
+    
 
     public async Task SendMailAsync(string toEmail, string subject, string body, CancellationToken ct)
     {
