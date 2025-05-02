@@ -81,7 +81,7 @@ public class WordDocumentService(NavigationManager navigationManager):IDocx
             else
             {
                 var text = GetParagraphText(paragraph);
-                string pattern = @"([A-Z])\.\s*(\d+)(?:\s*;\s*([A-Z])\.\s*(\d+))*";
+                string pattern = @"([A-Z])\.\s*(\d+)|([A-Z])\s*\(\s*(\d+)\s*\)";
                 if (Regex.IsMatch(text, pattern))
                 {
                     result.KunJaw.Add(new KunciJawaban()
@@ -103,29 +103,59 @@ public class WordDocumentService(NavigationManager navigationManager):IDocx
             var soal = result.Soals.FirstOrDefault(x => x.Nomor == item.Nomor);
             if (soal != null)
             {
-                var pointstr =item.Jawaban.Split(";");
-                List<int> pointData=new();
-                foreach (var point in pointstr)
+                if (item.Jawaban.Contains(";"))
                 {
-                    var pointint = ExtractNumber(point);
-                    pointData.Add(pointint);
-                }
-
-                if (soal.PilihanJawaban.Count > 0)
-                {
-                    for (int i = 0; i < soal.PilihanJawaban.Count; i++)
+                    var pointstr =item.Jawaban.Split(";");
+                    List<int> pointData=new();
+                    foreach (var point in pointstr)
                     {
-                        soal.PilihanJawaban[i].Point = pointData[i];
-                        if (pointData[i] > 0)
+                        var pointint = ExtractNumber(point);
+                        pointData.Add(pointint);
+                    }
+
+                    if (soal.PilihanJawaban.Count > 0)
+                    {
+                        for (int i = 0; i < soal.PilihanJawaban.Count; i++)
                         {
-                            soal.isMultipleJawaban = true;
-                        }
-                        if (i == pointData.Count - 1)
-                        {
-                            soal.PilihanJawaban[i].IsBenar = true;
+                            soal.PilihanJawaban[i].Point = pointData[i];
+                            if (pointData[i] > 0)
+                            {
+                                soal.isMultipleJawaban = true;
+                            }
+                            if (i == pointData.Count - 1)
+                            {
+                                soal.PilihanJawaban[i].IsBenar = true;
+                            }
                         }
                     }
                 }
+                else if(item.Jawaban.Contains(","))
+                {
+                    var pointstr =item.Jawaban.Split(",");
+                    List<int> pointData=new();
+                    foreach (var point in pointstr)
+                    {
+                        var pointint = ExtractNumber(point);
+                        pointData.Add(pointint);
+                    }
+
+                    if (soal.PilihanJawaban.Count > 0)
+                    {
+                        for (int i = 0; i < soal.PilihanJawaban.Count; i++)
+                        {
+                            soal.PilihanJawaban[i].Point = pointData[i];
+                            if (pointData[i] > 0)
+                            {
+                                soal.isMultipleJawaban = true;
+                            }
+                            if (i == pointData.Count - 1)
+                            {
+                                soal.PilihanJawaban[i].IsBenar = true;
+                            }
+                        }
+                    } 
+                }
+                
             }
             result.Soals[result.Soals.FindIndex(x => x.Nomor == item.Nomor)] = soal;
         }
