@@ -57,7 +57,7 @@ public class WordDocumentService(NavigationManager navigationManager):IDocx
                     currentSoal = new Soal
                     {
                         Id = Guid.NewGuid(),
-                        Nomor = ExtractNumber(numberText),
+                        Nomor = numberIteration,
                         Pertanyaan = GetParagraphText(paragraph),
                         PilihanJawaban = new List<SoalJawaban>(),
                         isMultipleJawaban = false // Default value, can be changed later
@@ -98,7 +98,9 @@ public class WordDocumentService(NavigationManager navigationManager):IDocx
         
         
         //proses point
-        foreach (var item in result.KunJaw)
+        try
+        {
+            foreach (var item in result.KunJaw)
         {
             var soal = result.Soals.FirstOrDefault(x => x.Nomor == item.Nomor);
             if (soal != null)
@@ -138,7 +140,7 @@ public class WordDocumentService(NavigationManager navigationManager):IDocx
                         var pointint = ExtractNumber(point);
                         pointData.Add(pointint);
                     }
-
+                
                     if (soal.PilihanJawaban.Count > 0)
                     {
                         for (int i = 0; i < soal.PilihanJawaban.Count; i++)
@@ -155,10 +157,16 @@ public class WordDocumentService(NavigationManager navigationManager):IDocx
                         }
                     } 
                 }
-                
+                result.Soals[result.Soals.FindIndex(x => x.Nomor == item.Nomor)] = soal;
             }
-            result.Soals[result.Soals.FindIndex(x => x.Nomor == item.Nomor)] = soal;
+            
         }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("err " + ex);
+        }
+        
 
         var unprocSoal = result.Soals.Select(x => x.Nomor)
             .Where(x => result.KunJaw.Select(x => x.Nomor).Contains(x)==false).ToList();
